@@ -8,11 +8,11 @@ def display_menu():
     print(random.choice(banner_list))  # Prints a random banner
     menu = '''
 
-    1. Connect a device             5. Get screenshot               10. Install an APK
-    2. List connected devices       6. Stop ADB server              11. Run an app
-    3. Disconnect all devices       7. Access device shell          12. Uninstall an app
-    4. List installed apps          8. Download file from device
-                                    9. Send file to device
+    1. Connect a device             6. Get screenshot                11. Run an app
+    2. List connected devices       7. List installed apps           12. Uninstall an app   
+    3. Disconnect all devices       8. Download file from device          
+    4. Access device shell          9. Send file to device
+    5. Stop ADB server             10. Install an APK                 
 
 
     99 : Clear Screen                0 : Exit
@@ -30,7 +30,7 @@ def clear_screen():
 def connect():
     print("\n")
     os.system("adb tcpip 5555")
-    print("Enter target phone's IP Address.       Example : 192.168.1.23")
+    print("\nEnter target phone's IP Address.       Example : 192.168.1.23")
     ip = input("> ")
     os.system("adb connect " + ip + ":5555")
 
@@ -58,7 +58,7 @@ def get_shell():
 
 
 def get_screenshot():
-    print("Saving screenshot to PhoneSploit-Pro directory...\n")
+    print("\nSaving screenshot to PhoneSploit-Pro directory...\n")
     os.system("adb shell screencap -p /sdcard/screen.png")
     os.system("adb pull /sdcard/screen.png")
     print("\n")
@@ -66,7 +66,7 @@ def get_screenshot():
 
 def stop_adb():
     os.system("adb kill-server")
-    print("Stopped ADB Server")
+    print("\nStopped ADB Server")
 
 
 def pull_file():
@@ -124,7 +124,7 @@ def main():
 
     # Clearing the screen and presenting the menu
     # taking selction input from user
-    option = int(input("Enter selection > "))
+    option = int(input("\n[Main Menu] Enter selection > "))
 
     match option:
         case 0:
@@ -138,13 +138,13 @@ def main():
         case 3:
             disconnect()
         case 4:
-            list_apps()
-        case 5:
-            get_screenshot()
-        case 6:
-            stop_adb()
-        case 7:
             get_shell()
+        case 5:
+            stop_adb()
+        case 6:
+            get_screenshot()
+        case 7:
+            list_apps()
         case 8:
             pull_file()
         case 9:
