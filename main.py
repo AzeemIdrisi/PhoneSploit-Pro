@@ -10,12 +10,9 @@ def display_menu():
 
     1. Connect a device             6. Get screenshot                11. Run an app
     2. List connected devices       7. List installed apps           12. Uninstall an app   
-    3. Disconnect all devices       8. Download file from device          
+    3. Disconnect all devices       8. Download file from device     13. Screen Record     
     4. Access device shell          9. Send file to device
     5. Stop ADB server             10. Install an APK                 
-
-
-    99 : Clear Screen                0 : Exit
     
     '''
     print(menu)
@@ -50,6 +47,7 @@ def disconnect():
 def exit_phonesploit_pro():
     global run_phonesploit_pro
     run_phonesploit_pro = False
+    print("\nExiting...\n")
 
 
 def get_shell():
@@ -58,9 +56,12 @@ def get_shell():
 
 
 def get_screenshot():
-    print("\nSaving screenshot to PhoneSploit-Pro directory...\n")
     os.system("adb shell screencap -p /sdcard/screen.png")
-    os.system("adb pull /sdcard/screen.png")
+    print("\nEnter location to save screenshot, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        print("\nSaving screenshot to PhoneSploit-Pro directory...\n")
+    os.system(f"adb pull /sdcard/screen.png {destination}")
     print("\n")
 
 
@@ -70,22 +71,22 @@ def stop_adb():
 
 
 def pull_file():
-    print("\n")
-    location = input("Enter file path : /sdcard/")
-    destination = input("Enter destination path : ")
+    location = input("\nEnter file path : /sdcard/")
+    print("\nEnter location to save file, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        print("\nSaving file to PhoneSploit-Pro directory...\n")
     os.system("adb pull /sdcard/" + location + " " + destination)
 
 
 def push_file():
-    print("\n")
-    location = input("Enter file path : ")
+    location = input("\nEnter file path : ")
     destination = input("Enter destination path : /sdcard/")
     os.system("adb push " + location + " /sdcard/" + destination)
 
 
 def install_app():
-    print("\n")
-    file_location = input("Enter apk path : ")
+    file_location = input("\nEnter apk path : ")
     os.system("adb install " + file_location)
     print("\n")
 
@@ -98,11 +99,10 @@ def uninstall_app():
 
 
 def launch_app():
-
     print("\nEnter package name.     Example : com.spotify.music ")
-    package = input("> ")
+    package_name = input("> ")
 
-    os.system("adb shell monkey -p " + package + " 1")
+    os.system("adb shell monkey -p " + package_name + " 1")
     print("\n")
 
 
@@ -120,10 +120,23 @@ def list_apps():
     print("\n")
 
 
+def screenrecord():
+    time = input("\nEnter the recording duration (in seconds) > ")
+    os.system(
+        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
+    print("\nEnter location to save video, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        print("\nSaving video to PhoneSploit-Pro directory...\n")
+    os.system(f"adb pull /sdcard/demo.mp4 {destination}")
+    print("\n")
+
+
 def main():
 
     # Clearing the screen and presenting the menu
     # taking selction input from user
+    print("\n 99 : Clear Screen                0 : Exit")
     option = int(input("\n[Main Menu] Enter selection > "))
 
     match option:
@@ -155,8 +168,10 @@ def main():
             launch_app()
         case 12:
             uninstall_app()
+        case 13:
+            screenrecord()
         case other:
-            print("Invalid selection!\n")
+            print("\nInvalid selection!\n")
 
 
 # Starting point of the program
