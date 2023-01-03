@@ -11,7 +11,7 @@ def display_menu():
     1. Connect a device             6. Get screenshot                11. Run an app
     2. List connected devices       7. List installed apps           12. Uninstall an app   
     3. Disconnect all devices       8. Download file from device     13. Screen Record     
-    4. Access device shell          9. Send file to device
+    4. Access device shell          9. Send file to device           14. Restart device
     5. Stop ADB server             10. Install an APK                 
     
     '''
@@ -132,6 +132,11 @@ def screenrecord():
     print("\n")
 
 
+def reboot():
+    os.system('adb reboot')
+    print('\n')
+
+
 def main():
 
     # Clearing the screen and presenting the menu
@@ -170,6 +175,8 @@ def main():
             uninstall_app()
         case 13:
             screenrecord()
+        case 14:
+            reboot()
         case other:
             print("\nInvalid selection!\n")
 
