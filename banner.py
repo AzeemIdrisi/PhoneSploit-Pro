@@ -148,6 +148,21 @@ banner12 = '''
 banner_list = [banner1, banner2, banner3, banner4, banner5,
                banner6, banner7, banner8, banner9, banner10, banner11, banner12]
 
+instructions_banner = '''
+    ____           __                  __  _                 
+   /  _/___  _____/ /________  _______/ /_(_)___  ____  _____
+   / // __ \/ ___/ __/ ___/ / / / ___/ __/ / __ \/ __ \/ ___/
+ _/ // / / (__  ) /_/ /  / /_/ / /__/ /_/ / /_/ / / / (__  ) 
+/___/_/ /_/____/\__/_/   \__,_/\___/\__/_/\____/_/ /_/____/  
+                                                            
+'''
+
+hacking_banner = '''
+
+█░█ ▄▀█ █▀▀ █▄▀ █ █▄░█ █▀▀ ░ ░ ░
+█▀█ █▀█ █▄▄ █░█ █ █░▀█ █▄█ ▄ ▄ ▄
+
+'''
 for i in range(len(banner_list)):
     print(f"{i+1}")
     print(banner_list[i])
