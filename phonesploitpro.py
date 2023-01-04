@@ -10,27 +10,26 @@ from banner import hacking_banner
 
 
 def check_packages():
+
     adb_status = subprocess.call(['which', 'adb'])
     if adb_status != 0:
         print('\nERROR : ADB is NOT installed!\n')
         print('\nPlease install Android-Tools (adb) to continue.\n')
         exit_phonesploit_pro()
+        return
 
     metasploit_status = subprocess.call(['which', 'msfconsole'])
     if metasploit_status != 0:
         print('\nERROR : Metasploit-Framework is NOT installed!\n')
         print('\nPlease install Metasploit-Framework to continue.\n')
         exit_phonesploit_pro()
+        return
 
     python_version = platform.python_version()
     if python_version < '3.10':
         print("\nPlease update Python to version 3.10 or higher to run this program.\n")
         exit_phonesploit_pro()
-
-    operating_system = platform.system()
-    if operating_system == 'Windows':
-        print('\nWindows is currently not supported.\n')
-        exit_phonesploit_pro()
+        return
 
 
 def display_menu():
@@ -50,7 +49,7 @@ def display_menu():
 
 def clear_screen():
     ''' Clears the screen and display menu '''
-    os.system("clear")
+    os.system(clear)
     display_menu()
 
 
@@ -175,7 +174,7 @@ def get_ip_address():
 
 
 def instructions():
-    os.system('clear')
+    os.system(clear)
     instruction = '''
 
 This attack will launch Metasploit Framework             i.e msfconsole
@@ -286,7 +285,14 @@ def main():
 
 # Starting point of the program
 run_phonesploit_pro = True
-check_packages()
+clear = 'clear'
+
+# Checking OS
+operating_system = platform.system()
+if operating_system == 'Windows':
+    clear = 'cls'
+else:
+    check_packages()  # Checking packages in Linux
 if run_phonesploit_pro:
     clear_screen()
     while run_phonesploit_pro:
