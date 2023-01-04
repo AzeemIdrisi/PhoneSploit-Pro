@@ -1,9 +1,9 @@
 # PhoneSploit Pro
 #### PhoneSploit with Metasploit integration.
 
-A hacking script written in Python3 to remotely exploit Android devices using ADB.
+A hacking script written in Python3 to remotely exploit Android devices using ADB (Android Debugging Bridge).
 
-This script can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one-click.
+This script can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
 # Script Features :
 * Connect device using ADB remotely
@@ -22,7 +22,7 @@ This script can automatically __Create__, __Install__, and __Run__ payload to th
 * Restart/Reboot the target device
 * __Hack Device Completely__ : Automatically create a payload using __msfvenom__, install it, and run it in target device, then automatically launch and setup __Metasploit-Framework__ to get a __meterpreter__ session.
 
-Getting a meterpreter session means the device is completely hacked using Metasploit-Framework and you can do anything with it.
+Getting a meterpreter session means the device is completely hacked using Metasploit Framework, and you can do anything with it.
 
 # Requirements : 
 * Git
@@ -30,7 +30,10 @@ Getting a meterpreter session means the device is completely hacked using Metasp
 * Android-Tools (ADB)
 * Metasploit-Framework
 
-# Installation :
+# Run PhoneSploit Pro :
+
+PhoneSploit Pro does not need any installation and runs directly using Python3
+
 #### On Linux / macOS :
 
 Open terminal and paste the following commands : 
@@ -94,7 +97,8 @@ Visit : https://developer.android.com/studio/releases/platform-tools.html#downlo
 
 
 # Install Metasploit-Framework:
-__Linux or macOS__ :
+
+#### On Linux or macOS :
 ```
 curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
   chmod 755 msfinstall && \
@@ -105,8 +109,14 @@ or Follow this link : https://docs.metasploit.com/docs/using-metasploit/getting-
 
 or Visit : https://www.metasploit.com/download
 
-__Windows__ :
+#### On Windows :
 
 Visit : https://www.metasploit.com/download
 
 or Follow : https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#windows-anti-virus-software-flags-the-contents-of-these-packages
+
+# Disclaimer
+
+Neither the project nor its creator promote any kind of illegal activity. This project is for the purpose of penetration testing only. Please do not use this tool on other people's devices without their permission or to harm others.
+
+Use this project responsibly on your own devices.
