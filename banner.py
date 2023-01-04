@@ -163,6 +163,7 @@ hacking_banner = '''
 █▀█ █▀█ █▄▄ █░█ █ █░▀█ █▄█ ▄ ▄ ▄
 
 '''
-for i in range(len(banner_list)):
-    print(f"{i+1}")
-    print(banner_list[i])
+
+# for i in range(len(banner_list)):
+#     print(f"{i+1}")
+#     print(banner_list[i])

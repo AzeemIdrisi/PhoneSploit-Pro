@@ -2,9 +2,25 @@ import os
 import random
 import socket
 import time
+import subprocess
 from banner import banner_list
 from banner import instructions_banner
 from banner import hacking_banner
+
+
+def check_packages():
+    global run_phonesploit_pro
+    adb_status = subprocess.call(['which', 'adb'])
+    if adb_status != 0:
+        print('\nERROR :ADB is NOT installed!\n')
+        print('\nPlease install Android-Tools (adb) to continue.\n')
+        run_phonesploit_pro = False
+
+    metasploit_status = subprocess.call(['which', 'msfconsole'])
+    if metasploit_status != 0:
+        print('\nERROR : Metasploit-Framework is NOT installed!\n')
+        print('\nPlease install Metasploit-Framework to continue.\n')
+        run_phonesploit_pro = False
 
 
 def display_menu():
@@ -126,6 +142,7 @@ def list_apps():
 
 def screenrecord():
     time = input("\nEnter the recording duration (in seconds) > ")
+    print('\nStarting Screen Recording...\n')
     os.system(
         f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
     print("\nEnter location to save video, Press 'Enter' for default")
@@ -151,7 +168,7 @@ def instructions():
     os.system('clear')
     instruction = '''
 
-This attack will launch Metasploit              i.e msfconsole
+This attack will launch Metasploit Framework             i.e msfconsole
 
 Use 'Ctrl + C' to stop at any point
 
@@ -163,13 +180,13 @@ Use 'Ctrl + C' to stop at any point
 
     meterpreter > help
 
-3. To exit meterpreter or Metasploit enter 'exit -y':
+3. To exit meterpreter enter 'exit' or To Metasploit enter 'exit -y':
 
-    meterpreter > exit -y
+    meterpreter > exit
 
     msf6 > exit -y
      
-[PhoneSploit Pro]   Press 'Enter' to continue
+[PhoneSploit Pro]   Press 'Enter' to continue attack
     '''
     print(instructions_banner + instruction)
     input('> ')
@@ -259,6 +276,8 @@ def main():
 
 # Starting point of the program
 run_phonesploit_pro = True
-clear_screen()
-while run_phonesploit_pro:
-    main()
+check_packages()
+if run_phonesploit_pro:
+    clear_screen()
+    while run_phonesploit_pro:
+        main()
