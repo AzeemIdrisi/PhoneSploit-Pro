@@ -1,7 +1,7 @@
 # PhoneSploit Pro
 #### PhoneSploit with Metasploit integration.
 
-A hacking script written in Python3 to remotely exploit Android devices using ADB (Android Debugging Bridge).
+A hacking script written in `Python 3` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
 
 This script can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
@@ -20,19 +20,19 @@ This script can automatically __Create__, __Install__, and __Run__ payload to th
 * Uninstall an app
 * Screen Record target device screen for a specified time and automatically pull it to computer
 * Restart/Reboot the target device
-* __Hack Device Completely__ : Automatically create a payload using __msfvenom__, install it, and run it in target device, then automatically launch and setup __Metasploit-Framework__ to get a __meterpreter__ session.
+* __Hack Device Completely__ : Automatically create a payload using `msfvenom`, install it, and run it in target device, then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
 
 Getting a meterpreter session means the device is completely hacked using Metasploit Framework, and you can do anything with it.
 
 # Requirements : 
-* Git
-* Python 3.10 or newer
-* Android-Tools (ADB)
-* Metasploit-Framework
+* [`git`](https://git-scm.com/) : Git
+* [`python3`](https://www.python.org/) : Python 3.10 or Newer
+* [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debugging Bridge (ADB) from `Android SDK Platform Tools`
+* [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
 
 # Run PhoneSploit Pro :
 
-PhoneSploit Pro does not need any installation and runs directly using Python3
+* __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
 
 #### On Linux / macOS :
 
@@ -98,7 +98,7 @@ Visit : https://developer.android.com/studio/releases/platform-tools.html#downlo
 
 # Install Metasploit-Framework:
 
-#### On Linux or macOS :
+#### On Linux / macOS :
 ```
 curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
   chmod 755 msfinstall && \
@@ -117,6 +117,9 @@ or Follow : https://docs.metasploit.com/docs/using-metasploit/getting-started/ni
 
 # Disclaimer
 
-Neither the project nor its creator promote any kind of illegal activity. This project is for the purpose of penetration testing only. Please do not use this tool on other people's devices without their permission or to harm others.
-
-Use this project responsibly on your own devices.
+* Neither the project nor its developers promote any kind of illegal activity and are not responsible for any misuse or damage caused by this program.
+* This project is for the purpose of penetration testing only.
+* Please do not use this tool on other people's devices without their permission.
+* Do not use this tool to harm others.
+* Use this project responsibly on your own devices only.
+* It is the end user's responsibility to obey all applicable local, state, federal, and international laws.
