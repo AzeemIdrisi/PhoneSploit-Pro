@@ -3,6 +3,7 @@ import random
 import socket
 import time
 import subprocess
+import platform
 from banner import banner_list
 from banner import instructions_banner
 from banner import hacking_banner
@@ -12,7 +13,7 @@ def check_packages():
     global run_phonesploit_pro
     adb_status = subprocess.call(['which', 'adb'])
     if adb_status != 0:
-        print('\nERROR :ADB is NOT installed!\n')
+        print('\nERROR : ADB is NOT installed!\n')
         print('\nPlease install Android-Tools (adb) to continue.\n')
         run_phonesploit_pro = False
 
@@ -20,6 +21,16 @@ def check_packages():
     if metasploit_status != 0:
         print('\nERROR : Metasploit-Framework is NOT installed!\n')
         print('\nPlease install Metasploit-Framework to continue.\n')
+        run_phonesploit_pro = False
+
+    python_version = platform.python_version()
+    if python_version < '3.10':
+        print("\nPlease update Python to version 3.10 or higher to run this program.\n")
+        run_phonesploit_pro = False
+
+    operating_system = platform.system()
+    if operating_system == 'Windows':
+        print('\nWindows is currently not supported.\n')
         run_phonesploit_pro = False
 
 
