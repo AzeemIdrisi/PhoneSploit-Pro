@@ -89,11 +89,11 @@ Open terminal and paste the following command :
 brew install android-platform-tools
 ```
 
-or Visit : https://developer.android.com/studio/releases/platform-tools.html#downloads
+or Visit this link : [Click Here](https://developer.android.com/studio/releases/platform-tools.html#downloads)
 
 #### ADB on Windows :
 
-Visit : https://developer.android.com/studio/releases/platform-tools.html#downloads
+Visit this link : [Click Here](https://developer.android.com/studio/releases/platform-tools.html#downloads)
 
 
 # Install Metasploit-Framework:
@@ -105,15 +105,58 @@ curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/t
   ./msfinstall
  ```
  
-or Follow this link : https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#installing-metasploit-on-linux--macos
+or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#installing-metasploit-on-linux--macos)
 
-or Visit : https://www.metasploit.com/download
+or Visit this link : [Click Here](https://www.metasploit.com/download)
 
 #### On Windows :
 
-Visit : https://www.metasploit.com/download
+Visit this link : [Click Here](https://www.metasploit.com/download)
 
-or Follow : https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#windows-anti-virus-software-flags-the-contents-of-these-packages
+or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#windows-anti-virus-software-flags-the-contents-of-these-packages)
+
+# Tutorial
+
+#### Setting up Android Phone for the first time
+
+* __Enabling the Developer Options__
+
+1. Open `Settings`.
+2. Go to `About Phone`.
+3. Find `Build Number`.
+4. Tap on `Build Number` 7 times.
+5. Enter your pattern, PIN or password to enable the `Developer options` menu.
+6. The `Developer options` menu will now appear in your Settings menu.
+
+* __Enabling USB Debugging__
+1. Open `Settings`.
+2. Go to `System` > `Developer options`.
+3. Scroll down and Enable `USB debugging`.
+
+* __Connecting with Computer__
+1. Connect your Android device and `adb` host computer to a common Wi-Fi network.
+2. Connect the device to the host computer with a USB cable.
+3. Open terminal in the computer and enter the following command :
+```
+adb devices
+```
+4. A pop up will appear in the Android phone when you connect your phone to a new PC for the first time : `Allow USB debugging?`.
+5. Click on `Always allow from this computer` check-box and then click `Allow`.
+6. Then enter the following command :
+```
+adb tcpip 5555
+```
+7. Now you can connect the Android Phone over Wi-Fi.
+8. Disconnect the USB cable.
+9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
+10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the `IP address` to connect wirelessly.
+
+
+#### Connecting the Android phone for the next time
+
+1. Connect your Android device and host computer to a common Wi-Fi network.
+2. Run __PhoneSploit Pro__ and connect using `IP address`.
+
 
 # Disclaimer
 
