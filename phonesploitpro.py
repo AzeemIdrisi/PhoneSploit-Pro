@@ -10,28 +10,27 @@ from banner import hacking_banner
 
 
 def check_packages():
-    global run_phonesploit_pro
     adb_status = subprocess.call(['which', 'adb'])
     if adb_status != 0:
         print('\nERROR : ADB is NOT installed!\n')
         print('\nPlease install Android-Tools (adb) to continue.\n')
-        run_phonesploit_pro = False
+        exit_phonesploit_pro()
 
     metasploit_status = subprocess.call(['which', 'msfconsole'])
     if metasploit_status != 0:
         print('\nERROR : Metasploit-Framework is NOT installed!\n')
         print('\nPlease install Metasploit-Framework to continue.\n')
-        run_phonesploit_pro = False
+        exit_phonesploit_pro()
 
     python_version = platform.python_version()
     if python_version < '3.10':
         print("\nPlease update Python to version 3.10 or higher to run this program.\n")
-        run_phonesploit_pro = False
+        exit_phonesploit_pro()
 
     operating_system = platform.system()
     if operating_system == 'Windows':
         print('\nWindows is currently not supported.\n')
-        run_phonesploit_pro = False
+        exit_phonesploit_pro()
 
 
 def display_menu():
