@@ -1,9 +1,12 @@
 # PhoneSploit Pro
 ### PhoneSploit with Metasploit integration.
 
-A hacking tool written in `Python 3` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
+A hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
 
-This tool can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
+> Complete Automation to get a `meterpreter` session in One Click
+
+This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
+
 
 # Features :
 * Connect device using ADB remotely.
@@ -20,9 +23,11 @@ This tool can automatically __Create__, __Install__, and __Run__ payload to the 
 * Uninstall an app.
 * List all installed apps in target device.
 * Restart/Reboot the target device to `System`, `Recovery`, `Bootloader`, `Fastboot`.
-* __Hack Device Completely__ : Automatically create a payload using `msfvenom`, install it, and run it in target device, then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
-
-Getting a meterpreter session means the device is completely hacked using Metasploit-Framework, and you can do anything with it.
+* __Hack Device Completely__ : 
+  - Automatically fetch `IP Address` to create payload.
+  - Automatically create a payload using `msfvenom`, install it, and run it on target device.
+  - Then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
+  - Getting a `meterpreter` session means the device is completely hacked using Metasploit-Framework, and you can do anything with it.
 
 * List all files and folders of the target devices.
 * Copy all WhatsApp Data to computer.
@@ -162,14 +167,14 @@ adb tcpip 5555
 7. Now you can connect the Android Phone over Wi-Fi.
 8. Disconnect the USB cable.
 9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
-10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP address` to connect wirelessly.
+10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect wirelessly.
 
 
 
 ## Connecting the Android phone for the next time
 
 1. Connect your Android device and host computer to a common Wi-Fi network.
-2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP address` to connect wirelessly.
+2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect wirelessly.
 
 
 # This tool is tested on :
