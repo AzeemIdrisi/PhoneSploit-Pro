@@ -8,18 +8,20 @@ from modules import banner
 
 
 def start():
-    os.system('mkdir -p "Downloaded-Files"')
     # Checking OS
     operating_system = platform.system()
     global clear
     if operating_system == 'Windows':
+        # Windows specific configuration
+        os.system('if not exist Downloaded-Files mkdir Downloaded-Files')
         clear = 'cls'
     else:
-        check_packages()  # Checking packages in Linux
+        # On Linux / macOS
+        os.system('mkdir -p Downloaded-Files')
+        check_packages()  # Checking for required packages
 
 
 def check_packages():
-
     adb_status = subprocess.call(['which', 'adb'])
     if adb_status != 0:
         print('\nERROR : ADB is NOT installed!\n')

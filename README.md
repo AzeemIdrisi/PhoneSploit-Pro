@@ -36,6 +36,8 @@ Getting a meterpreter session means the device is completely hacked using Metasp
 
 #### On Linux / macOS :
 
+Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements-) softwares are installed.
+
 Open terminal and paste the following commands : 
 ```
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
@@ -46,17 +48,21 @@ python3 phonesploitpro.py
 ```
 #### On Windows :
 
+Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements-) softwares are installed.
+
+
 Open terminal and paste the following commands : 
 ```
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 
 cd PhoneSploit-Pro/
 ```
+1. Download and extract latest `platform-tools` from [here](https:/github.com/AzeemIdrisi/PhoneSploit-Pro#adb-on-windows-)
 
-Copy all files from your ADB directory to PhoneSploit-Pro directory and then run :
+2. Copy all files from the extracted `platform-tools` or `adb` directory to __PhoneSploit-Pro__ directory and then run :
 
 ```
-python3 phonesploitpro.py
+python phonesploitpro.py
 ```
 
 
