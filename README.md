@@ -6,20 +6,21 @@ A hacking tool written in `Python 3` to remotely exploit Android devices using `
 This tool can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
 # Features :
-* Connect device using ADB remotely
-* List connected devices
-* Disconnect all devices
-* Access connected device shell
-* Stop ADB Server
-* Take screenshot and pull it to computer automatically
-* List all installed apps in target device
-* Download file/folder from target device
-* Send file/folder from computer to target device
-* Install an APK file from computer to target device
-* Run an App
-* Uninstall an app
-* Screen Record target device screen for a specified time and automatically pull it to computer
-* Restart/Reboot the target device
+* Connect device using ADB remotely.
+* List connected devices.
+* Disconnect all devices.
+* Access connected device shell.
+* Stop ADB Server.
+* Take screenshot and pull it to computer automatically.
+* List all installed apps in target device.
+* Download file/folder from target device.
+* Send file/folder from computer to target device.
+* Install an APK file from computer to target device.
+* Run an app.
+* Uninstall an app.
+* Screen Record target device screen for a specified time and automatically pull it to computer.
+* List all files and folders of the target devices.
+* Restart/Reboot the target device to `System`, `Recovery`, `Bootloader`, `Fastboot`.
 * __Hack Device Completely__ : Automatically create a payload using `msfvenom`, install it, and run it in target device, then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
 
 Getting a meterpreter session means the device is completely hacked using Metasploit Framework, and you can do anything with it.
