@@ -166,6 +166,16 @@ adb tcpip 5555
 2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP address` to connect wirelessly.
 
 
+# This tool is tested on :
+
+* Windows 11
+* Ubuntu
+* Linux Mint
+* Fedora
+* Arch Linux
+* Parrot Security OS
+
+
 # Developer
 
 <a href="https://github.com/azeemidrisi/">
