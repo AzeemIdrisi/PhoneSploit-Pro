@@ -1,11 +1,11 @@
 # PhoneSploit Pro
 ### PhoneSploit with Metasploit integration.
 
-A hacking script written in `Python 3` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
+A hacking tool written in `Python 3` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
 
-This script can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
+This tool can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
-# Script Features :
+# Program Features :
 * Connect device using ADB remotely
 * List connected devices
 * Disconnect all devices
@@ -166,9 +166,19 @@ adb tcpip 5555
 2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP address` to connect wirelessly.
 
 
+# Developer
+
+<a href="https://github.com/azeemidrisi/">
+  <img src="https://contrib.rocks/image?repo=azeemidrisi/phonesploit-pro" />
+</a>
+
+
+**Mohd Azeem** - [@AzeemIdrisi](https://github.com/azeemidrisi/)
+ 
+
 # Disclaimer
 
-* Neither the project nor its developers promote any kind of illegal activity and are not responsible for any misuse or damage caused by this program.
+* Neither the project nor its developers promote any kind of illegal activity and are not responsible for any misuse or damage caused by this project.
 * This project is for the purpose of penetration testing only.
 * Please do not use this tool on other people's devices without their permission.
 * Do not use this tool to harm others.
