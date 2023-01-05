@@ -57,7 +57,7 @@ git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 
 cd PhoneSploit-Pro/
 ```
-1. Download and extract latest `platform-tools` from [here](https://github.com/AzeemIdrisi/PhoneSploit-Pro/edit/main/README.md#adb-on-windows-).
+1. Download and extract latest `platform-tools` from [here](https://github.com/AzeemIdrisi/PhoneSploit-Pro#adb-on-windows-).
 
 2. Copy all files from the extracted `platform-tools` or `adb` directory to __PhoneSploit-Pro__ directory and then run :
 
