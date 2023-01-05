@@ -12,18 +12,23 @@ This tool can automatically __Create__, __Install__, and __Run__ payload to the 
 * Access connected device shell.
 * Stop ADB Server.
 * Take screenshot and pull it to computer automatically.
-* List all installed apps in target device.
+* Screen Record target device screen for a specified time and automatically pull it to computer.
 * Download file/folder from target device.
 * Send file/folder from computer to target device.
-* Install an APK file from computer to target device.
 * Run an app.
+* Install an APK file from computer to target device.
 * Uninstall an app.
-* Screen Record target device screen for a specified time and automatically pull it to computer.
-* List all files and folders of the target devices.
+* List all installed apps in target device.
 * Restart/Reboot the target device to `System`, `Recovery`, `Bootloader`, `Fastboot`.
 * __Hack Device Completely__ : Automatically create a payload using `msfvenom`, install it, and run it in target device, then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
 
-Getting a meterpreter session means the device is completely hacked using Metasploit Framework, and you can do anything with it.
+Getting a meterpreter session means the device is completely hacked using Metasploit-Framework, and you can do anything with it.
+
+* List all files and folders of the target devices.
+* Copy all WhatsApp Data to computer.
+* Copy all Screenshots to computer.
+* Copy all Camera Photos to computer.
+* Take screenshots and screen-record anonymously (Automatically delete file from target device).
 
 # Requirements : 
 * [`git`](https://git-scm.com/) : Git
@@ -58,7 +63,7 @@ git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 
 cd PhoneSploit-Pro/
 ```
-1. Download and extract latest `platform-tools` from [here](https://github.com/AzeemIdrisi/PhoneSploit-Pro#adb-on-windows-).
+1. Download and extract latest `platform-tools` from [here](https://developer.android.com/studio/releases/platform-tools.html#downloads).
 
 2. Copy all files from the extracted `platform-tools` or `adb` directory to __PhoneSploit-Pro__ directory and then run :
 

