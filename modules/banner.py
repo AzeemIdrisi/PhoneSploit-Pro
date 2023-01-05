@@ -1,3 +1,13 @@
+menu = '''
+
+    1. Connect a device             6. Get Screenshot                11. Install an APK  
+    2. List connected devices       7. Screen Record                 12. Uninstall an app
+    3. Disconnect all devices       8. Download file from device     13. List installed apps 
+    4. Access device shell          9. Send file to device           14. Restart device
+    5. Stop ADB server             10. Run an app                    15. Hack Device (Using Metasploit)
+
+    '''
+
 banner1 = '''
 
 ██████╗░██╗░░██╗░█████╗░███╗░░██╗███████╗░██████╗██████╗░██╗░░░░░░█████╗░██╗████████╗  ██████╗░██████╗░░█████╗░

