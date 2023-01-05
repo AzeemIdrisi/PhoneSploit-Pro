@@ -84,7 +84,7 @@ sudo dnf install adb
 
 __Arch Linux / Manjaro__
 ```
-sudo pacman -S adb
+sudo pacman -Sy android-tools
 ```
 
 #### ADB on macOS :
