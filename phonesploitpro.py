@@ -84,7 +84,7 @@ def check_packages():
 def display_menu():
     ''' Displays a random banner and menu'''
     print(random.choice(banner.banner_list))  # Prints a random banner
-    print(banner.menu)
+    print(page)
 
 
 def clear_screen():
@@ -197,6 +197,13 @@ def pull_file():
 
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+
+    # updating location = file_name if it existed inside a folder
+    # Example : sdcard/DCIM/longtime.jpg -> longtime.jpg
+    file_path = location.split('/')
+    location = file_path[len(file_path)-1]
+
+    # processing request
     if choice == 'y':
         os.system(f"{opener} {destination}/{location}")
 
@@ -254,9 +261,27 @@ def list_apps():
     print("\n")
 
 
-def reboot():
-    os.system('adb reboot')
+def reboot(arg):
+    if arg == 'system':
+        os.system('adb reboot')
+    else:
+        os.system(f'adb reboot {arg}')
     print('\n')
+
+
+def list_files():
+    print('\n')
+    os.system('adb shell ls -a /sdcard/')
+    print('\n')
+
+
+def change_page(name):
+    global page
+    if name == 'p':
+        page = banner.menu
+    elif name == 'n':
+        page = banner.menu2
+    clear_screen()
 
 
 def get_ip_address():
@@ -267,29 +292,7 @@ def get_ip_address():
 
 def instructions():
     os.system(clear)
-    instruction = '''
-
-This attack will launch Metasploit-Framework             i.e msfconsole
-
-Use 'Ctrl + C' to stop at any point
-
-1. Wait until you see:
-    
-    meterpreter >
-
-2. Then use 'help' command to see all meterpreter commands:
-
-    meterpreter > help
-
-3. To exit meterpreter enter 'exit' or To Metasploit enter 'exit -y':
-
-    meterpreter > exit
-
-    msf6 > exit -y
-     
-[PhoneSploit Pro]   Press 'Enter' to continue attack
-    '''
-    print(banner.instructions_banner + instruction)
+    print(banner.instructions_banner + banner.instruction)
     input('> ')
 
 
@@ -341,9 +344,13 @@ def main():
     # Clearing the screen and presenting the menu
     # taking selction input from user
     print("\n 99 : Clear Screen                0 : Exit")
-    option = input("\n[Main Menu] Enter selection > ")
+    option = input("\n[Main Menu] Enter selection > ").lower()
 
     match option:
+        case 'p':
+            change_page('p')
+        case 'n':
+            change_page('n')
         case '0':
             exit_phonesploit_pro()
         case '99':
@@ -375,9 +382,17 @@ def main():
         case '13':
             list_apps()
         case '14':
-            reboot()
+            reboot('system')
         case '15':
             hack()
+        case '16':
+            list_files()
+        case '17':
+            reboot('recovery')
+        case '18':
+            reboot('bootloader')
+        case '19':
+            reboot('fastboot')
         case other:
             print("\nInvalid selection!\n")
 
@@ -389,6 +404,7 @@ run_phonesploit_pro = True
 operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
+page = banner.menu
 
 start()
 

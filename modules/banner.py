@@ -1,11 +1,45 @@
 menu = '''
 
-    1. Connect a device             6. Get Screenshot                11. Install an APK  
-    2. List connected devices       7. Screen Record                 12. Uninstall an app
-    3. Disconnect all devices       8. Download file from device     13. List installed apps 
-    4. Access device shell          9. Send file to device           14. Restart device
-    5. Stop ADB server             10. Run an app                    15. Hack Device (Using Metasploit)
+    1. Connect a device             6. Get Screenshot                       11. Install an APK  
+    2. List connected devices       7. Screen Record                        12. Uninstall an app
+    3. Disconnect all devices       8. Download file/folder from device     13. List installed apps 
+    4. Access device shell          9. Send file/folder to device           14. Restart device
+    5. Stop ADB server             10. Run an app                           15. Hack Device (Using Metasploit)
 
+
+    N : Next Page                   Page : 1 / 2
+    '''
+menu2 = '''
+
+    16. List all Folders/Files
+    17. Reboot to Recovery 
+    18. Reboot to Bootloader
+    19. Reboot to Fastboot
+
+
+    P : Previous Page               Page : 2 / 2
+    '''
+instruction = '''
+
+This attack will launch Metasploit-Framework             i.e msfconsole
+
+Use 'Ctrl + C' to stop at any point
+
+1. Wait until you see:
+    
+    meterpreter >
+
+2. Then use 'help' command to see all meterpreter commands:
+
+    meterpreter > help
+
+3. To exit meterpreter enter 'exit' or To Metasploit enter 'exit -y':
+
+    meterpreter > exit
+
+    msf6 > exit -y
+     
+[PhoneSploit Pro]   Press 'Enter' to continue attack
     '''
 
 banner1 = '''
