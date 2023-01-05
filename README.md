@@ -5,7 +5,7 @@ A hacking tool written in `Python 3` to remotely exploit Android devices using `
 
 This tool can automatically __Create__, __Install__, and __Run__ payload to the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
-# Program Features :
+# Features :
 * Connect device using ADB remotely
 * List connected devices
 * Disconnect all devices
@@ -66,7 +66,7 @@ python phonesploitpro.py
 ```
 
 
-# Install ADB
+# Install ADB : 
 
 #### ADB on Linux :
 
@@ -102,7 +102,7 @@ or Visit this link : [Click Here](https://developer.android.com/studio/releases/
 Visit this link : [Click Here](https://developer.android.com/studio/releases/platform-tools.html#downloads)
 
 
-# Install Metasploit-Framework:
+# Install Metasploit-Framework :
 
 #### On Linux / macOS :
 ```
