@@ -8,7 +8,7 @@ A hacking tool written in `Python` to remotely exploit Android devices using `AD
 This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
 
-# Features :
+# Features 
 * Connect device using ADB remotely.
 * List connected devices.
 * Disconnect all devices.
@@ -35,13 +35,13 @@ This tool can automatically __Create__, __Install__, and __Run__ payload on the 
 * Copy all Camera Photos to computer.
 * Take screenshots and screen-record anonymously (Automatically delete file from target device).
 
-# Requirements : 
+# Requirements  
 * [`git`](https://git-scm.com/) : Git
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debugging Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
 
-# Run PhoneSploit Pro :
+# Run PhoneSploit Pro 
 
 > __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
 
@@ -77,23 +77,23 @@ python phonesploitpro.py
 ```
 
 
-# Install ADB : 
+# Installing ADB 
 
 #### ADB on Linux :
 
 Open terminal and paste the following commands :
 
-__Debian / Ubuntu__
+* __Debian / Ubuntu__
 ```
 sudo apt install adb
 ```
 
-__Fedora__
+* __Fedora__
 ```
 sudo dnf install adb
 ```
 
-__Arch Linux / Manjaro__
+* __Arch Linux / Manjaro__
 ```
 sudo pacman -Sy android-tools
 ```
@@ -113,7 +113,7 @@ or Visit this link : [Click Here](https://developer.android.com/studio/releases/
 Visit this link : [Click Here](https://developer.android.com/studio/releases/platform-tools.html#downloads)
 
 
-# Install Metasploit-Framework :
+# Installing Metasploit-Framework 
 
 #### On Linux / macOS :
 ```
@@ -177,14 +177,17 @@ adb tcpip 5555
 2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect wirelessly.
 
 
-# This tool is tested on :
+# This tool is tested on
 
-* Windows 11
-* Ubuntu
-* Linux Mint
-* Fedora
-* Arch Linux
-* Parrot Security OS
+- [x] Windows 11
+- [x] Ubuntu
+- [x] Linux Mint
+- [ ] Kali Linux
+- [x] Fedora
+- [x] Arch Linux
+- [x] Parrot Security OS
+- [ ] macOS
+- [ ] Termux
 
 
 # Developer
