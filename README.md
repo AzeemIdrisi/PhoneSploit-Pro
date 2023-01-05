@@ -1,5 +1,5 @@
 # PhoneSploit Pro
-#### PhoneSploit with Metasploit integration.
+### PhoneSploit with Metasploit integration.
 
 A hacking script written in `Python 3` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
 
@@ -32,7 +32,7 @@ Getting a meterpreter session means the device is completely hacked using Metasp
 
 # Run PhoneSploit Pro :
 
-* __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
+> __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
 
 #### On Linux / macOS :
 
@@ -57,7 +57,7 @@ git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 
 cd PhoneSploit-Pro/
 ```
-1. Download and extract latest `platform-tools` from [here](https:/github.com/AzeemIdrisi/PhoneSploit-Pro#adb-on-windows-)
+1. Download and extract latest `platform-tools` from [here](https://github.com/AzeemIdrisi/PhoneSploit-Pro/edit/main/README.md#adb-on-windows-).
 
 2. Copy all files from the extracted `platform-tools` or `adb` directory to __PhoneSploit-Pro__ directory and then run :
 
@@ -123,7 +123,8 @@ or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasp
 
 # Tutorial
 
-#### Setting up Android Phone for the first time
+
+## Setting up Android Phone for the first time
 
 * __Enabling the Developer Options__
 
@@ -155,13 +156,14 @@ adb tcpip 5555
 7. Now you can connect the Android Phone over Wi-Fi.
 8. Disconnect the USB cable.
 9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
-10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the `IP address` to connect wirelessly.
+10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP address` to connect wirelessly.
 
 
-#### Connecting the Android phone for the next time
+
+## Connecting the Android phone for the next time
 
 1. Connect your Android device and host computer to a common Wi-Fi network.
-2. Run __PhoneSploit Pro__ and connect using `IP address`.
+2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP address` to connect wirelessly.
 
 
 # Disclaimer
