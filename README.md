@@ -7,7 +7,7 @@ A hacking tool written in `Python` to remotely exploit Android devices using `AD
 
 This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
-The goal of this project is to make penetration testing easy on Android devices. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
+The goal of this project is to make penetration testing on Android devices easy. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
 
 # Features 
 * Connect device using ADB remotely.
@@ -44,7 +44,7 @@ The goal of this project is to make penetration testing easy on Android devices.
 
 # Run PhoneSploit Pro 
 
-> __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
+__PhoneSploit Pro__ does not need any installation and runs directly using `python3`
 
 #### On Linux / macOS :
 
