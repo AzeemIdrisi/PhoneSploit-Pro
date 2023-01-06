@@ -7,6 +7,7 @@ A hacking tool written in `Python` to remotely exploit Android devices using `AD
 
 This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
+The goal of this project is to make penetration testing easy on Android devices. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
 
 # Features 
 * Connect device using ADB remotely.
@@ -47,7 +48,7 @@ This tool can automatically __Create__, __Install__, and __Run__ payload on the 
 
 #### On Linux / macOS :
 
-Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements-) softwares are installed.
+Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) softwares are installed.
 
 Open terminal and paste the following commands : 
 ```
@@ -59,7 +60,7 @@ python3 phonesploitpro.py
 ```
 #### On Windows :
 
-Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements-) softwares are installed.
+Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) softwares are installed.
 
 
 Open terminal and paste the following commands : 
@@ -190,6 +191,16 @@ adb tcpip 5555
 - [ ] Termux
 
 
+# Disclaimer
+
+* Neither the project nor its developers promote any kind of illegal activity and are not responsible for any misuse or damage caused by this project.
+* This project is for the purpose of penetration testing only.
+* Please do not use this tool on other people's devices without their permission.
+* Do not use this tool to harm others.
+* Use this project responsibly on your own devices only.
+* It is the end user's responsibility to obey all applicable local, state, federal, and international laws.
+
+
 # Developer
 
 <a href="https://github.com/azeemidrisi/">
@@ -199,12 +210,3 @@ adb tcpip 5555
 
 **Mohd Azeem** - [@AzeemIdrisi](https://github.com/azeemidrisi/)
  
-
-# Disclaimer
-
-* Neither the project nor its developers promote any kind of illegal activity and are not responsible for any misuse or damage caused by this project.
-* This project is for the purpose of penetration testing only.
-* Please do not use this tool on other people's devices without their permission.
-* Do not use this tool to harm others.
-* Use this project responsibly on your own devices only.
-* It is the end user's responsibility to obey all applicable local, state, federal, and international laws.
