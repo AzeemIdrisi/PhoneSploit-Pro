@@ -19,7 +19,6 @@ menu2 = f'''
     {color.WHITE}20. {color.GREEN}Copy All Camera Photos
 
 
-
    {color.YELLOW} 
   P : Previous Page               (Page : 2 / 2)'''
 
@@ -53,7 +52,7 @@ banner2 = f'''
         ░█─── ▀──▀ ▀▀▀▀ ▀──▀ ▀▀▀ ░█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ──▀── 　 ░█─── ▀─▀▀ ▀▀▀▀
 
 
-                                        {color.WHITE}By github.com/AzeemIdrisi
+                                                 {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner3 = f'''

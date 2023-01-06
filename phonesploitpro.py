@@ -34,8 +34,8 @@ def windows_config():
 def check_packages():
     adb_status = subprocess.call(['which', 'adb'])
     if adb_status != 0:
-        print('\nERROR : ADB is NOT installed!\n')
-        print('\nPlease install Android-Tools (adb)\n')
+        print(f'\n{color.RED}ERROR : ADB is NOT installed!\n')
+        print(f'\n{color.CYAN}Please install Android-Tools (adb){color.WHITE}\n')
 
         choice = input(
             '\nDo you still want to continue to PhoneSploit Pro? [Y / N] > ').lower()
@@ -56,8 +56,8 @@ def check_packages():
 
     metasploit_status = subprocess.call(['which', 'msfconsole'])
     if metasploit_status != 0:
-        print('\nERROR : Metasploit-Framework is NOT installed!\n')
-        print('\nPlease install Metasploit-Framework\n')
+        print(f'\n{color.RED}ERROR : Metasploit-Framework is NOT installed!\n')
+        print(f'\n{color.CYAN}Please install Metasploit-Framework{color.WHITE}\n')
 
         choice = input(
             '\nDo you still want to continue to PhoneSploit Pro? [Y / N] > ').lower()
@@ -84,16 +84,23 @@ def check_packages():
 
 
 def display_menu():
-    ''' Displays a random banner and menu'''
-    print(random.choice(color.color_list), random.choice(
-        banner.banner_list))  # Prints a random banner
-    print(page)
+    ''' Displays banner and menu'''
+    print(selected_banner, page)
 
 
 def clear_screen():
     ''' Clears the screen and display menu '''
     os.system(clear)
     display_menu()
+
+
+def change_page(name):
+    global page
+    if name == 'p':
+        page = banner.menu1
+    elif name == 'n':
+        page = banner.menu2
+    clear_screen()
 
 
 def connect():
@@ -295,15 +302,6 @@ def list_files():
     print('\n')
     os.system('adb shell ls -a /sdcard/')
     print('\n')
-
-
-def change_page(name):
-    global page
-    if name == 'p':
-        page = banner.menu1
-    elif name == 'n':
-        page = banner.menu2
-    clear_screen()
 
 
 def get_ip_address():
@@ -555,6 +553,9 @@ operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
 page = banner.menu1
+banner_color = random.choice(color.color_list)
+# Concatinating banner color with the selected banner
+selected_banner = banner_color + random.choice(banner.banner_list)
 
 start()
 
