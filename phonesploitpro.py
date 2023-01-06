@@ -6,6 +6,7 @@ import subprocess
 import platform
 import datetime
 from modules import banner
+from modules import color
 
 
 def start():
@@ -84,7 +85,8 @@ def check_packages():
 
 def display_menu():
     ''' Displays a random banner and menu'''
-    print(random.choice(banner.banner_list))  # Prints a random banner
+    print(random.choice(color.color_list), random.choice(
+        banner.banner_list))  # Prints a random banner
     print(page)
 
 
@@ -484,8 +486,9 @@ def main():
 
     # Clearing the screen and presenting the menu
     # taking selction input from user
-    print("\n 99 : Clear Screen                0 : Exit")
-    option = input("\n[Main Menu] Enter selection > ").lower()
+    print(f"\n {color.CYAN}99 : Clear Screen                0 : Exit")
+    option = input(
+        f"{color.RED}\n[Main Menu] {color.WHITE}Enter selection > ").lower()
 
     match option:
         case 'p':

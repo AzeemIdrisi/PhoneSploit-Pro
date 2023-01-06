@@ -3,6 +3,7 @@
 
 A hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
 
+
 > Complete Automation to get a `meterpreter` session in One Click
 
 This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
@@ -148,11 +149,13 @@ or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasp
 6. The `Developer options` menu will now appear in your Settings menu.
 
 * __Enabling USB Debugging__
+
 1. Open `Settings`.
 2. Go to `System` > `Developer options`.
 3. Scroll down and Enable `USB debugging`.
 
 * __Connecting with Computer__
+
 1. Connect your Android device and `adb` host computer to a common Wi-Fi network.
 2. Connect the device to the host computer with a USB cable.
 3. Open terminal in the computer and enter the following command :
@@ -188,7 +191,6 @@ adb tcpip 5555
 - [x] Arch Linux
 - [x] Parrot Security OS
 - [ ] macOS
-- [ ] Termux
 
 
 # Disclaimer
