@@ -189,14 +189,17 @@ adb tcpip 5555
 
 # This tool is tested on
 
-- [x] Windows 11
 - [x] Ubuntu
 - [x] Linux Mint
 - [ ] Kali Linux
 - [x] Fedora
 - [x] Arch Linux
 - [x] Parrot Security OS
+- [x] Windows 11
 - [ ] macOS
+
+**Linux** is recommended for running PhoneSploit Pro.
+Some features might not work properly on Windows.
 
 
 # Screenshots

@@ -225,6 +225,10 @@ def pull_file():
     file_path = location.split('/')
     location = file_path[len(file_path)-1]
 
+    # Reverse slash ('\') splitting for Windows only
+    file_path = location.split('\\')
+    location = file_path[len(file_path)-1]
+
     # processing request
     if choice == 'y' or choice == '':
         os.system(f"{opener} {destination}/{location}")
@@ -505,6 +509,11 @@ def open_photo():
 
     file_path = location.split('/')
     file_name = file_path[len(file_path)-1]
+
+    # Reverse slash ('\') splitting for Windows only
+    file_path = file_name.split('\\')
+    file_name = file_path[len(file_path)-1]
+
     file_name = file_name.replace("'", '')
     file_name = "'"+file_name+"'"
     print(file_name)
@@ -521,6 +530,11 @@ def open_audio():
 
     file_path = location.split('/')
     file_name = file_path[len(file_path)-1]
+
+    # Reverse slash ('\') splitting for Windows only
+    file_path = file_name.split('\\')
+    file_name = file_path[len(file_path)-1]
+
     file_name = file_name.replace("'", '')
     file_name = "'"+file_name+"'"
     print(file_name)
@@ -542,6 +556,11 @@ def open_video():
 
     file_path = location.split('/')
     file_name = file_path[len(file_path)-1]
+
+    # Reverse slash ('\') splitting for Windows only
+    file_path = file_name.split('\\')
+    file_name = file_path[len(file_path)-1]
+
     file_name = file_name.replace("'", '')
     file_name = "'"+file_name+"'"
     print(file_name)
