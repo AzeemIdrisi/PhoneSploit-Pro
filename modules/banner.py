@@ -1,3 +1,8 @@
+'''
+Script : PhoneSploit Pro
+Author : Mohd Azeem (github.com/AzeemIdrisi)
+'''
+
 from modules import color
 menu1 = f'''
 
@@ -12,11 +17,11 @@ menu1 = f'''
   N : Next Page                   (Page : 1 / 2)'''
 menu2 = f'''
 
-    {color.WHITE}16. {color.GREEN}List all Folders/Files      {color.WHITE}21. {color.GREEN}Anonymous Screenshot
+    {color.WHITE}16. {color.GREEN}List all Folders/Files      {color.WHITE}21. {color.GREEN}Anonymous Screenshot                {color.WHITE}26. {color.GREEN}Play a Video on device
     {color.WHITE}17. {color.GREEN}Advanced Reboot Options     {color.WHITE}22. {color.GREEN}Anonymous Screen Record
-    {color.WHITE}18. {color.GREEN}Copy WhatsApp Data           
-    {color.WHITE}19. {color.GREEN}Copy All Screenshots        
-    {color.WHITE}20. {color.GREEN}Copy All Camera Photos
+    {color.WHITE}18. {color.GREEN}Copy WhatsApp Data          {color.WHITE}23. {color.GREEN}Open a Link on device 
+    {color.WHITE}19. {color.GREEN}Copy All Screenshots        {color.WHITE}24. {color.GREEN}Display a Photo on device
+    {color.WHITE}20. {color.GREEN}Copy All Camera Photos      {color.WHITE}25. {color.GREEN}Play an Audio on device
 
 
    {color.YELLOW} 

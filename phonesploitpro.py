@@ -1,3 +1,8 @@
+'''
+Script : PhoneSploit Pro
+Author : Mohd Azeem (github.com/AzeemIdrisi)
+'''
+
 import os
 import random
 import socket
@@ -484,6 +489,73 @@ def anonymous_screenrecord():
     print("\n")
 
 
+def open_link():
+    print(f'\n{color.YELLOW}Enter URL :             {color.CYAN}Example : https://github.com {color.WHITE}')
+    url = input(f'{color.CYAN}> ')
+
+    print(f'\n{color.YELLOW}Opening "{url}" on device        \n{color.WHITE}')
+    os.system(f'adb shell am start -a android.intent.action.VIEW -d {url}')
+    print('\n')
+
+
+def open_photo():
+    location = input(
+        f"\n{color.YELLOW}Enter file path to upload Photo : {color.WHITE}")
+    os.system("adb push " + location + " /sdcard/")
+
+    file_path = location.split('/')
+    file_name = file_path[len(file_path)-1]
+    file_name = file_name.replace("'", '')
+    file_name = "'"+file_name+"'"
+    print(file_name)
+    print(f'\n{color.YELLOW}Opening Photo on device        \n{color.WHITE}')
+    os.system(
+        f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t image/jpeg')  # -a android.intent.action.VIEW
+    print('\n')
+
+
+def open_audio():
+    location = input(
+        f"\n{color.YELLOW}Enter file path to upload Audio : {color.WHITE}")
+    os.system("adb push " + location + " /sdcard/")
+
+    file_path = location.split('/')
+    file_name = file_path[len(file_path)-1]
+    file_name = file_name.replace("'", '')
+    file_name = "'"+file_name+"'"
+    print(file_name)
+    print(f'\n{color.YELLOW}Playing Audio on device        \n{color.WHITE}')
+    os.system(
+        f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t audio/mp3')
+
+    print(
+        f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
+    time.sleep(5)
+    os.system('adb shell input keyevent 126')  # To play the file using Chrome)
+    print('\n')
+
+
+def open_video():
+    location = input(
+        f"\n{color.YELLOW}Enter file path to upload Video : {color.WHITE}")
+    os.system("adb push " + location + " /sdcard/")
+
+    file_path = location.split('/')
+    file_name = file_path[len(file_path)-1]
+    file_name = file_name.replace("'", '')
+    file_name = "'"+file_name+"'"
+    print(file_name)
+    print(f'\n{color.YELLOW}Playing Video on device        \n{color.WHITE}')
+    os.system(
+        f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t video/mp4')
+
+    print(
+        f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
+    time.sleep(5)
+    os.system('adb shell input keyevent 126')  # To play the file using Chrome
+    print('\n')
+
+
 def main():
 
     # Clearing the screen and presenting the menu
@@ -545,6 +617,14 @@ def main():
             anonymous_screenshot()
         case '22':
             anonymous_screenrecord()
+        case '23':
+            open_link()
+        case '24':
+            open_photo()
+        case '25':
+            open_audio()
+        case '26':
+            open_video()
         case other:
             print("\nInvalid selection!\n")
 

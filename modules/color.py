@@ -1,3 +1,8 @@
+'''
+Script : PhoneSploit Pro
+Author : Mohd Azeem (github.com/AzeemIdrisi)
+'''
+
 RED = '\033[91m'
 GREEN = '\033[92m'
 # ORANGE = '\033[33m'
