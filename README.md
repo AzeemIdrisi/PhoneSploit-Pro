@@ -11,6 +11,7 @@ This tool can automatically __Create__, __Install__, and __Run__ payload on the 
 
 The goal of this project is to make penetration testing on Android devices easy. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
 
+
 # Features 
 * Connect device using ADB remotely.
 * List connected devices.
@@ -82,6 +83,13 @@ cd PhoneSploit-Pro/
 ```
 python phonesploitpro.py
 ```
+
+
+# Screenshots
+
+![Screenshot from 2023-01-07 16-59-58](https://user-images.githubusercontent.com/112647789/211148389-3473b716-1639-48e8-9355-7407e1a227f7.png)
+![Screenshot from 2023-01-07 16-43-50](https://user-images.githubusercontent.com/112647789/211148491-f60e3eae-dcb6-40fc-8527-ae8774767dc9.png)
+
 
 
 # Installing ADB 
@@ -198,15 +206,8 @@ adb tcpip 5555
 - [x] Windows 11
 - [ ] macOS
 
-**Linux** is recommended for running PhoneSploit Pro.
+**Linux** is recommended for running PhoneSploit Pro, thus all new features are primarily tested on this platform.
 Some features might not work properly on Windows.
-
-
-# Screenshots
-
-![Screenshot from 2023-01-07 16-59-58](https://user-images.githubusercontent.com/112647789/211148389-3473b716-1639-48e8-9355-7407e1a227f7.png)
-![Screenshot from 2023-01-07 16-43-50](https://user-images.githubusercontent.com/112647789/211148491-f60e3eae-dcb6-40fc-8527-ae8774767dc9.png)
-
 
 
 # Disclaimer

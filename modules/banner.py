@@ -6,22 +6,22 @@ Author : Mohd Azeem (github.com/AzeemIdrisi)
 from modules import color
 menu1 = f'''
 
-    {color.WHITE}1. {color.GREEN}Connect a device             {color.WHITE}6. {color.GREEN}Get Screenshot                       {color.WHITE}11. {color.GREEN}Install an APK  
-    {color.WHITE}2. {color.GREEN}List connected devices       {color.WHITE}7. {color.GREEN}Screen Record                        {color.WHITE}12. {color.GREEN}Uninstall an App
-    {color.WHITE}3. {color.GREEN}Disconnect all devices       {color.WHITE}8. {color.GREEN}Download File/Folder from device     {color.WHITE}13. {color.GREEN}List installed Apps 
-    {color.WHITE}4. {color.GREEN}Access device shell          {color.WHITE}9. {color.GREEN}Send File/Folder to device           {color.WHITE}14. {color.GREEN}Restart device
-    {color.WHITE}5. {color.GREEN}Stop ADB server             {color.WHITE}10. {color.GREEN}Run an App                           {color.WHITE}15. {color.GREEN}Hack Device {color.RED}(Using Metasploit)
+    {color.WHITE}1. {color.GREEN}Connect a Device             {color.WHITE}6. {color.GREEN}Get Screenshot                       {color.WHITE}11. {color.GREEN}Install an APK  
+    {color.WHITE}2. {color.GREEN}List Connected Devices       {color.WHITE}7. {color.GREEN}Screen Record                        {color.WHITE}12. {color.GREEN}Uninstall an App
+    {color.WHITE}3. {color.GREEN}Disconnect All Devices       {color.WHITE}8. {color.GREEN}Download File/Folder from Device     {color.WHITE}13. {color.GREEN}List Installed Apps 
+    {color.WHITE}4. {color.GREEN}Access Device Shell          {color.WHITE}9. {color.GREEN}Send File/Folder to Device           {color.WHITE}14. {color.GREEN}Restart Device
+    {color.WHITE}5. {color.GREEN}Stop ADB Server             {color.WHITE}10. {color.GREEN}Run an App                           {color.WHITE}15. {color.GREEN}Hack Device {color.RED}(Using Metasploit)
 
 
    {color.YELLOW} 
   N : Next Page                   (Page : 1 / 2)'''
 menu2 = f'''
 
-    {color.WHITE}16. {color.GREEN}List all Folders/Files      {color.WHITE}21. {color.GREEN}Anonymous Screenshot                {color.WHITE}26. {color.GREEN}Play a Video on device
+    {color.WHITE}16. {color.GREEN}List All Folders/Files      {color.WHITE}21. {color.GREEN}Anonymous Screenshot                {color.WHITE}26. {color.GREEN}Play a Video on Device
     {color.WHITE}17. {color.GREEN}Advanced Reboot Options     {color.WHITE}22. {color.GREEN}Anonymous Screen Record
-    {color.WHITE}18. {color.GREEN}Copy WhatsApp Data          {color.WHITE}23. {color.GREEN}Open a Link on device 
-    {color.WHITE}19. {color.GREEN}Copy All Screenshots        {color.WHITE}24. {color.GREEN}Display a Photo on device
-    {color.WHITE}20. {color.GREEN}Copy All Camera Photos      {color.WHITE}25. {color.GREEN}Play an Audio on device
+    {color.WHITE}18. {color.GREEN}Copy WhatsApp Data          {color.WHITE}23. {color.GREEN}Open a Link on Device 
+    {color.WHITE}19. {color.GREEN}Copy All Screenshots        {color.WHITE}24. {color.GREEN}Display a Photo on Device
+    {color.WHITE}20. {color.GREEN}Copy All Camera Photos      {color.WHITE}25. {color.GREEN}Play an Audio on Device
 
 
    {color.YELLOW} 
