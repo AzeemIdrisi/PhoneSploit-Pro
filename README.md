@@ -1,5 +1,6 @@
 # PhoneSploit Pro
 ### PhoneSploit with Metasploit integration.
+[![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
 
 A hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
 
@@ -36,6 +37,10 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Copy all Screenshots to computer.
 * Copy all Camera Photos to computer.
 * Take screenshots and screen-record anonymously (Automatically delete file from target device).
+* Open a link/URL on targest device.
+* Display an Image/Photo on target device.
+* Play an audio on target device.
+* Play a video on taget device.
 
 # Requirements  
 * [`git`](https://git-scm.com/) : Git
@@ -134,6 +139,7 @@ Visit this link : [Click Here](https://www.metasploit.com/download)
 
 or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#windows-anti-virus-software-flags-the-contents-of-these-packages)
 
+
 # Tutorial
 
 
@@ -191,6 +197,13 @@ adb tcpip 5555
 - [x] Arch Linux
 - [x] Parrot Security OS
 - [ ] macOS
+
+
+# Screenshots
+
+![Screenshot from 2023-01-07 16-39-16](https://user-images.githubusercontent.com/112647789/211147288-ed26726c-2646-42a3-8aa7-339248abf291.png)
+
+![Screenshot from 2023-01-07 16-43-50](https://user-images.githubusercontent.com/112647789/211147338-96e95ae8-dd4b-4aa9-92a4-0c2bcb1f74bf.png)
 
 
 # Disclaimer
