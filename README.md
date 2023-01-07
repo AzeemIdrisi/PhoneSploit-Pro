@@ -37,8 +37,8 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Copy all Screenshots to computer.
 * Copy all Camera Photos to computer.
 * Take screenshots and screen-record anonymously (Automatically delete file from target device).
-* Open a link/URL on targest device.
-* Display an Image/Photo on target device.
+* Open a link/URL on target device.
+* Display an image/photo on target device.
 * Play an audio on target device.
 * Play a video on taget device.
 

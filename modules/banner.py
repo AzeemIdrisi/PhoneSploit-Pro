@@ -10,7 +10,7 @@ menu1 = f'''
     {color.WHITE}2. {color.GREEN}List connected devices       {color.WHITE}7. {color.GREEN}Screen Record                        {color.WHITE}12. {color.GREEN}Uninstall an App
     {color.WHITE}3. {color.GREEN}Disconnect all devices       {color.WHITE}8. {color.GREEN}Download File/Folder from device     {color.WHITE}13. {color.GREEN}List installed Apps 
     {color.WHITE}4. {color.GREEN}Access device shell          {color.WHITE}9. {color.GREEN}Send File/Folder to device           {color.WHITE}14. {color.GREEN}Restart device
-    {color.WHITE}5. {color.GREEN}Stop ADB server             {color.WHITE}10. {color.GREEN}Run an App                           {color.WHITE}15. {color.GREEN}Hack Device (Using Metasploit)
+    {color.WHITE}5. {color.GREEN}Stop ADB server             {color.WHITE}10. {color.GREEN}Run an App                           {color.WHITE}15. {color.GREEN}Hack Device {color.RED}(Using Metasploit)
 
 
    {color.YELLOW} 
