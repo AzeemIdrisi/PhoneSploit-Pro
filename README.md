@@ -37,10 +37,10 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Copy all Screenshots to computer.
 * Copy all Camera Photos to computer.
 * Take screenshots and screen-record anonymously (Automatically delete file from target device).
-* Open a link/URL on target device.
+* Open a link on target device.
 * Display an image/photo on target device.
 * Play an audio on target device.
-* Play a video on taget device.
+* Play a video on target device.
 
 # Requirements  
 * [`git`](https://git-scm.com/) : Git
@@ -204,9 +204,9 @@ Some features might not work properly on Windows.
 
 # Screenshots
 
-![Screenshot from 2023-01-07 16-39-16](https://user-images.githubusercontent.com/112647789/211147288-ed26726c-2646-42a3-8aa7-339248abf291.png)
+![Screenshot from 2023-01-07 16-59-58](https://user-images.githubusercontent.com/112647789/211148389-3473b716-1639-48e8-9355-7407e1a227f7.png)
+![Screenshot from 2023-01-07 16-43-50](https://user-images.githubusercontent.com/112647789/211148491-f60e3eae-dcb6-40fc-8527-ae8774767dc9.png)
 
-![Screenshot from 2023-01-07 16-43-50](https://user-images.githubusercontent.com/112647789/211147338-96e95ae8-dd4b-4aa9-92a4-0c2bcb1f74bf.png)
 
 
 # Disclaimer
