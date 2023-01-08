@@ -1,11 +1,13 @@
 # PhoneSploit Pro
 ### PhoneSploit with Metasploit integration.
 [![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
+![Python](https://img.shields.io/badge/python-v3.10%2B-orange?logo=python)
+![GitHub last commit](https://img.shields.io/github/last-commit/AzeemIdrisi/PhoneSploit-Pro?logo=github)
 
-A hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debugging Bridge).
+An All-In-One hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
 
 
-> Complete Automation to get a `meterpreter` session in One Click
+#### Complete Automation to get a `meterpreter` session in One Click
 
 This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
@@ -46,7 +48,7 @@ The goal of this project is to make penetration testing on Android devices easy.
 # Requirements  
 * [`git`](https://git-scm.com/) : Git
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
-* [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debugging Bridge (ADB) from `Android SDK Platform Tools`
+* [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
 
 # Run PhoneSploit Pro 
