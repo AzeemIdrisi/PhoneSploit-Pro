@@ -87,9 +87,8 @@ python phonesploitpro.py
 
 # Screenshots
 
-![Screenshot from 2023-01-07 16-59-58](https://user-images.githubusercontent.com/112647789/211148389-3473b716-1639-48e8-9355-7407e1a227f7.png)
-![Screenshot from 2023-01-07 16-43-50](https://user-images.githubusercontent.com/112647789/211148491-f60e3eae-dcb6-40fc-8527-ae8774767dc9.png)
-
+![Screenshot from 2023-01-07 23-25-24](https://user-images.githubusercontent.com/112647789/211164436-deee568e-587f-4634-ba68-71042a16334f.png)
+![Screenshot from 2023-01-07 23-39-40](https://user-images.githubusercontent.com/112647789/211164602-591c2b78-633e-489c-a03e-c5dbd6d2b94f.png)
 
 
 # Installing ADB 
@@ -206,7 +205,7 @@ adb tcpip 5555
 - [x] Windows 11
 - [ ] macOS
 
-**Linux** is recommended for running PhoneSploit Pro, thus all new features are primarily tested on this platform.
+All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
 Some features might not work properly on Windows.
 
 
