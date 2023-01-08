@@ -47,7 +47,7 @@ Use 'Ctrl + C' to stop at any point
 
     {color.GREEN}msf6 > {color.YELLOW}exit -y       {color.WHITE}
      
-{color.RED}[PhoneSploit Pro]   {color.WHITE}Press 'Enter' to continue attack
+{color.RED}[PhoneSploit Pro]   {color.WHITE}Press 'Enter' to continue attack / '0' to Go Back to Main Menu
     '''
 
 banner2 = f'''
