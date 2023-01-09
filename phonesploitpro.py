@@ -520,6 +520,73 @@ def anonymous_screenrecord():
     print("\n")
 
 
+def use_keycode():
+    keycodes = True
+    os.system(clear)
+    print(banner.keycode_menu)
+    while keycodes:
+        print(f"\n {color.CYAN}99 : Clear Screen                0 : Main Menu")
+        keycode_option = input(
+            f"{color.RED}\n[KEYCODE] {color.WHITE}Enter selection > ").lower()
+
+        match keycode_option:
+            case '0':
+                keycodes = False
+                display_menu()
+            case '99':
+                os.system(clear)
+                print(banner.keycode_menu)
+            case '1':
+                text = input(f'\n{color.CYAN}Enter text > {color.WHITE}')
+                os.system(f'adb shell input text "{text}"')
+                print(f'{color.YELLOW}\nEntered {color.WHITE}"{text}"')
+            case '2':
+                os.system('adb shell input keyevent 3')
+                print(f'{color.YELLOW}\nPressed Home Button{color.WHITE}')
+            case '3':
+                os.system('adb shell input keyevent 4')
+                print(f'{color.YELLOW}\nPressed Back Button{color.WHITE}')
+            case '4':
+                os.system('adb shell input keyevent 187')
+                print(f'{color.YELLOW}\nPressed Recent Apps Button{color.WHITE}')
+            case '5':
+                os.system('adb shell input keyevent 26')
+                print(f'{color.YELLOW}\nPressed Power Key{color.WHITE}')
+            case '6':
+                os.system('adb shell input keyevent 19')
+                print(f'{color.YELLOW}\nPressed DPAD Up{color.WHITE}')
+            case '7':
+                os.system('adb shell input keyevent 20')
+                print(f'{color.YELLOW}\nPressed DPAD Down{color.WHITE}')
+            case '8':
+                os.system('adb shell input keyevent 21')
+                print(f'{color.YELLOW}\nPressed DPAD Left{color.WHITE}')
+            case '9':
+                os.system('adb shell input keyevent 22')
+                print(f'{color.YELLOW}\nPressed DPAD Right{color.WHITE}')
+            case '10':
+                os.system('adb shell input keyevent 67')
+                print(f'{color.YELLOW}\nPressed Delete/Backspace{color.WHITE}')
+            case '11':
+                os.system('adb shell input keyevent 66')
+                print(f'{color.YELLOW}\nPressed Enter{color.WHITE}')
+            case '12':
+                os.system('adb shell input keyevent 24')
+                print(f'{color.YELLOW}\nPressed Volume Up{color.WHITE}')
+            case '13':
+                os.system('adb shell input keyevent 25')
+                print(f'{color.YELLOW}\nPressed Volume Down{color.WHITE}')
+            case '14':
+                os.system('adb shell input keyevent 126')
+                print(f'{color.YELLOW}\nPressed Media Play{color.WHITE}')
+            case '15':
+                os.system('adb shell input keyevent 127')
+                print(f'{color.YELLOW}\nPressed Media Pause{color.WHITE}')
+
+            case other:
+                print("\nInvalid selection!\n")
+
+
 def open_link():
     print(f'\n{color.YELLOW}Enter URL :             {color.CYAN}Example : https://github.com {color.WHITE}')
     url = input(f'{color.CYAN}> ')
@@ -602,6 +669,39 @@ def open_video():
     print('\n')
 
 
+def get_device_info():
+    model = os.popen(f'adb shell getprop ro.product.model').read()
+    manufacturer = os.popen(
+        f'adb shell getprop ro.product.manufacturer').read()
+    chipset = os.popen(f'adb shell getprop ro.product.board').read()
+    android = os.popen(f'adb shell getprop ro.build.version.release').read()
+    security_patch = os.popen(
+        f'adb shell getprop ro.build.version.security_patch').read()
+    device = os.popen(f'adb shell getprop ro.product.vendor.device').read()
+    sim = os.popen(f'adb shell getprop gsm.sim.operator.alpha').read()
+    encryption_state = os.popen(f'adb shell getprop ro.crypto.state').read()
+    build_date = os.popen(f'adb shell getprop ro.build.date').read()
+    sdk_version = os.popen(f'adb shell getprop ro.build.version.sdk').read()
+    wifi_interface = os.popen(f'adb shell getprop wifi.interface').read()
+    battery = os.popen(f'adb shell dumpsys battery').read()
+
+    print(f'''
+{color.YELLOW}Model :{color.WHITE} {model}\
+{color.YELLOW}Manufacturer :{color.WHITE} {manufacturer}\
+{color.YELLOW}Chipset :{color.WHITE} {chipset}\
+{color.YELLOW}Android Version :{color.WHITE} {android}\
+{color.YELLOW}Security Patch :{color.WHITE} {security_patch}\
+{color.YELLOW}Device :{color.WHITE} {device}\
+{color.YELLOW}SIM :{color.WHITE} {sim}\
+{color.YELLOW}Encryption State :{color.WHITE} {encryption_state}\
+{color.YELLOW}Build Date :{color.WHITE} {build_date}\
+{color.YELLOW}SDK Version :{color.WHITE} {sdk_version}\
+{color.YELLOW}WiFi Interface :{color.WHITE} {wifi_interface}\
+{color.YELLOW}Battery Information :
+{color.WHITE} {battery}
+''')
+
+
 def main():
 
     # Clearing the screen and presenting the menu
@@ -671,6 +771,10 @@ def main():
             open_audio()
         case '26':
             open_video()
+        case '27':
+            get_device_info()
+        case '28':
+            use_keycode()
         case other:
             print("\nInvalid selection!\n")
 

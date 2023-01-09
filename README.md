@@ -1,5 +1,6 @@
 # PhoneSploit Pro
 ### PhoneSploit with Metasploit integration.
+![Version](https://img.shields.io/badge/version-v1.1-blue)
 [![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
 ![Python](https://img.shields.io/badge/python-v3.10%2B-orange?logo=python)
 ![GitHub last commit](https://img.shields.io/github/last-commit/AzeemIdrisi/PhoneSploit-Pro?logo=github)
@@ -15,6 +16,8 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 
 # Features 
+## v1.0
+
 * Connect device using ADB remotely.
 * List connected devices.
 * Disconnect all devices.
@@ -35,6 +38,9 @@ The goal of this project is to make penetration testing on Android devices easy.
   - Then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
   - Getting a `meterpreter` session means the device is completely hacked using Metasploit-Framework, and you can do anything with it.
 
+
+## v1.1
+
 * List all files and folders of the target devices.
 * Copy all WhatsApp Data to computer.
 * Copy all Screenshots to computer.
@@ -44,6 +50,8 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Display an image/photo on target device.
 * Play an audio on target device.
 * Play a video on target device.
+* Get device information.
+* Use Keycodes to control device remotely.
 
 # Requirements  
 * [`git`](https://git-scm.com/) : Git
