@@ -66,7 +66,7 @@ banner3 = f'''
         █▀▀ █▀█ █▄█ █░▀█ ██▄ ▄█ █▀▀ █▄▄ █▄█ █ ░█░   █▀▀ █▀▄ █▄█ 
 
 
-            {color.RED}v1.1{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.1{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner4 = f'''
@@ -87,7 +87,6 @@ banner5 = f'''
     /_/  /_//_/\___/_//_/\__/___/ .__/_/\___/_/\__/  /_/  /_/  \___/
                                /_/                                                                                                      
 
-
         {color.RED}v1.1{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
 '''
 
@@ -98,7 +97,6 @@ banner6 = f'''
      / ____/ / / / /_/ / / / /  __/__/ / /_/ / / /_/ / / /_     / ____/ /  / /_/ /
     /_/   /_/ /_/\____/_/ /_/\___/____/ .___/_/\____/_/\__/    /_/   /_/   \____/
                                      /_/                                                                                                       
-    
     
            {color.RED}v1.1{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
 
@@ -114,7 +112,6 @@ banner10 = f'''
         \/_/    \/_/\/_/\/___/  \/_/\/_/\/____/ \/_____/\ \ \/ \/____/\/___/  \/_/\/__/     \/_/  \/_/ \/___/      
                                                          \ \_\                                                       
                                                           \/_/                                              
-
 
             {color.RED}v1.1{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
 
@@ -171,9 +168,9 @@ keycode_menu = f'''
     {color.WHITE}2. {color.GREEN}Home Button                        {color.WHITE}12. {color.GREEN}Volume Up
     {color.WHITE}3. {color.GREEN}Back Button                        {color.WHITE}13. {color.GREEN}Volume Down          
     {color.WHITE}4. {color.GREEN}Recent Apps Button                 {color.WHITE}14. {color.GREEN}Media Play           
-    {color.WHITE}5. {color.GREEN}Power Key                          {color.WHITE}15. {color.GREEN}Media Pause
-    {color.WHITE}6. {color.GREEN}DPAD Up                
-    {color.WHITE}7. {color.GREEN}DPAD Down
+    {color.WHITE}5. {color.GREEN}Power Button                       {color.WHITE}15. {color.GREEN}Media Pause
+    {color.WHITE}6. {color.GREEN}DPAD Up                            {color.WHITE}16. {color.GREEN}Tab Key
+    {color.WHITE}7. {color.GREEN}DPAD Down                          {color.WHITE}17. {color.GREEN}Esc Key
     {color.WHITE}8. {color.GREEN}DPAD Left           
     {color.WHITE}9. {color.GREEN}DPAD Right
    {color.WHITE}10. {color.GREEN}Delete/Backspace

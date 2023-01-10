@@ -582,6 +582,12 @@ def use_keycode():
             case '15':
                 os.system('adb shell input keyevent 127')
                 print(f'{color.YELLOW}\nPressed Media Pause{color.WHITE}')
+            case '16':
+                os.system('adb shell input keyevent 61')
+                print(f'{color.YELLOW}\nPressed Tab Key{color.WHITE}')
+            case '17':
+                os.system('adb shell input keyevent 111')
+                print(f'{color.YELLOW}\nPressed Esc Key{color.WHITE}')
 
             case other:
                 print("\nInvalid selection!\n")
