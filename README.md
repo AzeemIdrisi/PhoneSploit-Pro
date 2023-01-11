@@ -1,5 +1,5 @@
 # PhoneSploit Pro
-### PhoneSploit with Metasploit integration.
+### PhoneSploit with Metasploit Integration.
 ![Version](https://img.shields.io/badge/version-v1.1-blue)
 [![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
 ![Python](https://img.shields.io/badge/python-v3.10%2B-orange?logo=python)
@@ -65,7 +65,7 @@ __PhoneSploit Pro__ does not need any installation and runs directly using `pyth
 
 #### On Linux / macOS :
 
-Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) softwares are installed.
+Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) software are installed.
 
 Open terminal and paste the following commands : 
 ```
@@ -77,7 +77,7 @@ python3 phonesploitpro.py
 ```
 #### On Windows :
 
-Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) softwares are installed.
+Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) software are installed.
 
 
 Open terminal and paste the following commands : 
@@ -184,7 +184,7 @@ or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasp
 ```
 adb devices
 ```
-4. A pop up will appear in the Android phone when you connect your phone to a new PC for the first time : `Allow USB debugging?`.
+4. A pop-up will appear in the Android phone when you connect your phone to a new PC for the first time : `Allow USB debugging?`.
 5. Click on `Always allow from this computer` check-box and then click `Allow`.
 6. Then enter the following command :
 ```
@@ -193,14 +193,14 @@ adb tcpip 5555
 7. Now you can connect the Android Phone over Wi-Fi.
 8. Disconnect the USB cable.
 9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
-10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect wirelessly.
+10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
 
 
 
 ## Connecting the Android phone for the next time
 
 1. Connect your Android device and host computer to a common Wi-Fi network.
-2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect wirelessly.
+2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
 
 
 # This tool is tested on

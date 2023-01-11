@@ -1,7 +1,7 @@
-'''
+"""
 Script : PhoneSploit Pro
 Author : Mohd Azeem (github.com/AzeemIdrisi)
-'''
+"""
 
 import os
 import random
@@ -89,12 +89,12 @@ def check_packages():
 
 
 def display_menu():
-    ''' Displays banner and menu'''
+    """ Displays banner and menu"""
     print(selected_banner, page)
 
 
 def clear_screen():
-    ''' Clears the screen and display menu '''
+    """ Clears the screen and display menu """
     os.system(clear)
     display_menu()
 
@@ -175,10 +175,10 @@ def screenrecord():
     # Getting a temporary file name to store time specific results
     file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
 
-    time = input("\nEnter the recording duration (in seconds) > ")
+    duration = input("\nEnter the recording duration (in seconds) > ")
     print('\nStarting Screen Recording...\n')
     os.system(
-        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/{file_name}")
+        f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}")
     print("\nEnter location to save video, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
@@ -321,7 +321,7 @@ def get_ip_address():
 
 
 def instructions():
-    '''Prints instructions for Metasploit and returns user's choice'''
+    """Prints instructions for Metasploit and returns user's choice"""
     os.system(clear)
     print(banner.instructions_banner + banner.instruction)
     choice = input('> ')
@@ -488,10 +488,10 @@ def anonymous_screenrecord():
     # Getting a temporary file name to store time specific results
     file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
 
-    time = input("\nEnter the recording duration (in seconds) > ")
+    duration = input("\nEnter the recording duration (in seconds) > ")
     print('\nStarting Screen Recording...\n')
     os.system(
-        f"adb shell screenrecord --verbose --time-limit {time} /sdcard/{file_name}")
+        f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}")
     print("\nEnter location to save video, Press 'Enter' for default")
     destination = input("> ")
     if destination == "":
@@ -645,7 +645,7 @@ def open_audio():
     print(
         f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
     time.sleep(5)
-    os.system('adb shell input keyevent 126')  # To play the file using Chrome)
+    os.system('adb shell input keyevent 126')  # To play the file using Chrome
     print('\n')
 
 
@@ -711,7 +711,7 @@ def get_device_info():
 def main():
 
     # Clearing the screen and presenting the menu
-    # taking selction input from user
+    # taking selection input from user
     print(f"\n {color.CYAN}99 : Clear Screen                0 : Exit")
     option = input(
         f"{color.RED}\n[Main Menu] {color.WHITE}Enter selection > ").lower()
@@ -793,9 +793,9 @@ operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
 page = banner.menu1
-banner_color = random.choice(color.color_list)
-# Concatinating banner color with the selected banner
-selected_banner = banner_color + random.choice(banner.banner_list)
+# Concatenating banner color with the selected banner
+selected_banner = random.choice(
+    color.color_list) + random.choice(banner.banner_list)
 
 start()
 

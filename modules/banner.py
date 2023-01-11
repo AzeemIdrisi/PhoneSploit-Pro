@@ -159,18 +159,14 @@ hacking_banner = f'''{color.GREEN}
     {color.WHITE}
 '''
 
-# for i in range(len(banner_list)):
-#     print(f"{i+1}")
-#     print(banner_list[i])
-
 keycode_menu = f'''
     {color.WHITE}1. {color.GREEN}Keyboard Text Input                {color.WHITE}11. {color.GREEN}Enter
-    {color.WHITE}2. {color.GREEN}Home Button                        {color.WHITE}12. {color.GREEN}Volume Up
-    {color.WHITE}3. {color.GREEN}Back Button                        {color.WHITE}13. {color.GREEN}Volume Down          
-    {color.WHITE}4. {color.GREEN}Recent Apps Button                 {color.WHITE}14. {color.GREEN}Media Play           
+    {color.WHITE}2. {color.GREEN}Home                               {color.WHITE}12. {color.GREEN}Volume Up
+    {color.WHITE}3. {color.GREEN}Back                               {color.WHITE}13. {color.GREEN}Volume Down          
+    {color.WHITE}4. {color.GREEN}Recent Apps                        {color.WHITE}14. {color.GREEN}Media Play           
     {color.WHITE}5. {color.GREEN}Power Button                       {color.WHITE}15. {color.GREEN}Media Pause
-    {color.WHITE}6. {color.GREEN}DPAD Up                            {color.WHITE}16. {color.GREEN}Tab Key
-    {color.WHITE}7. {color.GREEN}DPAD Down                          {color.WHITE}17. {color.GREEN}Esc Key
+    {color.WHITE}6. {color.GREEN}DPAD Up                            {color.WHITE}16. {color.GREEN}Tab 
+    {color.WHITE}7. {color.GREEN}DPAD Down                          {color.WHITE}17. {color.GREEN}Esc
     {color.WHITE}8. {color.GREEN}DPAD Left           
     {color.WHITE}9. {color.GREEN}DPAD Right
    {color.WHITE}10. {color.GREEN}Delete/Backspace
