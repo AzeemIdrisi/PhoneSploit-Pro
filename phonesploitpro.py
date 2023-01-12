@@ -140,7 +140,6 @@ def get_shell():
 
 
 def get_screenshot():
-
     # Getting a temporary file name to store time specific results
     file_name = f'screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png'
     os.system(f"adb shell screencap -p /sdcard/{file_name}")
@@ -223,11 +222,11 @@ def pull_file():
     # updating location = file_name if it existed inside a folder
     # Example : sdcard/DCIM/longtime.jpg -> longtime.jpg
     file_path = location.split('/')
-    location = file_path[len(file_path)-1]
+    location = file_path[len(file_path) - 1]
 
     # Reverse slash ('\') splitting for Windows only
     file_path = location.split('\\')
-    location = file_path[len(file_path)-1]
+    location = file_path[len(file_path) - 1]
 
     # processing request
     if choice == 'y' or choice == '':
@@ -608,14 +607,14 @@ def open_photo():
     os.system("adb push " + location + " /sdcard/")
 
     file_path = location.split('/')
-    file_name = file_path[len(file_path)-1]
+    file_name = file_path[len(file_path) - 1]
 
     # Reverse slash ('\') splitting for Windows only
     file_path = file_name.split('\\')
-    file_name = file_path[len(file_path)-1]
+    file_name = file_path[len(file_path) - 1]
 
     file_name = file_name.replace("'", '')
-    file_name = "'"+file_name+"'"
+    file_name = "'" + file_name + "'"
     print(file_name)
     print(f'\n{color.YELLOW}Opening Photo on device        \n{color.WHITE}')
     os.system(
@@ -629,14 +628,14 @@ def open_audio():
     os.system("adb push " + location + " /sdcard/")
 
     file_path = location.split('/')
-    file_name = file_path[len(file_path)-1]
+    file_name = file_path[len(file_path) - 1]
 
     # Reverse slash ('\') splitting for Windows only
     file_path = file_name.split('\\')
-    file_name = file_path[len(file_path)-1]
+    file_name = file_path[len(file_path) - 1]
 
     file_name = file_name.replace("'", '')
-    file_name = "'"+file_name+"'"
+    file_name = "'" + file_name + "'"
     print(file_name)
     print(f'\n{color.YELLOW}Playing Audio on device        \n{color.WHITE}')
     os.system(
@@ -655,14 +654,14 @@ def open_video():
     os.system("adb push " + location + " /sdcard/")
 
     file_path = location.split('/')
-    file_name = file_path[len(file_path)-1]
+    file_name = file_path[len(file_path) - 1]
 
     # Reverse slash ('\') splitting for Windows only
     file_path = file_name.split('\\')
-    file_name = file_path[len(file_path)-1]
+    file_name = file_path[len(file_path) - 1]
 
     file_name = file_name.replace("'", '')
-    file_name = "'"+file_name+"'"
+    file_name = "'" + file_name + "'"
     print(file_name)
     print(f'\n{color.YELLOW}Playing Video on device        \n{color.WHITE}')
     os.system(
@@ -689,7 +688,6 @@ def get_device_info():
     build_date = os.popen(f'adb shell getprop ro.build.date').read()
     sdk_version = os.popen(f'adb shell getprop ro.build.version.sdk').read()
     wifi_interface = os.popen(f'adb shell getprop wifi.interface').read()
-    battery = os.popen(f'adb shell dumpsys battery').read()
 
     print(f'''
 {color.YELLOW}Model :{color.WHITE} {model}\
@@ -703,13 +701,16 @@ def get_device_info():
 {color.YELLOW}Build Date :{color.WHITE} {build_date}\
 {color.YELLOW}SDK Version :{color.WHITE} {sdk_version}\
 {color.YELLOW}WiFi Interface :{color.WHITE} {wifi_interface}\
-{color.YELLOW}Battery Information :
-{color.WHITE} {battery}
 ''')
 
 
-def main():
+def battery_info():
+    battery = os.popen(f'adb shell dumpsys battery').read()
+    print(f'''\n{color.YELLOW}Battery Information :
+{color.WHITE}{battery}\n''')
 
+
+def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
     print(f"\n {color.CYAN}99 : Clear Screen                0 : Exit")
@@ -780,6 +781,8 @@ def main():
         case '27':
             get_device_info()
         case '28':
+            battery_info()
+        case '29':
             use_keycode()
         case other:
             print("\nInvalid selection!\n")

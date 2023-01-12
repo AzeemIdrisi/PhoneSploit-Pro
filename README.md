@@ -51,6 +51,7 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Play an audio on target device.
 * Play a video on target device.
 * Get device information.
+* Get battery information.
 * Use Keycodes to control device remotely.
 
 # Requirements  
