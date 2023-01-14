@@ -99,7 +99,8 @@ python phonesploitpro.py
 # Screenshots
 
 ![Screenshot from 2023-01-09 23-55-52](https://user-images.githubusercontent.com/112647789/211380789-0824e17e-d3a4-4661-bd8b-58a82a47f868.png)
-![Screenshot from 2023-01-09 23-56-22](https://user-images.githubusercontent.com/112647789/211380821-ea3145fc-14cb-47a1-96b4-7af5323bab00.png)
+![Screenshot from 2023-01-14 11-50-02](https://user-images.githubusercontent.com/112647789/212458910-5ce01a6e-c7bd-43e3-9de5-c139580bc8db.png)
+
 
 # Installing ADB 
 
