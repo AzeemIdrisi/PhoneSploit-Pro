@@ -8,7 +8,7 @@
 An All-In-One hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
 
 
-#### Complete Automation to get a `meterpreter` session in One Click
+#### Complete Automation to get a Meterpreter session in One Click
 
 This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
 
