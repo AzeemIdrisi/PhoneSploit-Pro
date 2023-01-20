@@ -110,9 +110,9 @@ python phonesploitpro.py
 
 # Screenshots
 
-![Screenshot Page 1](docs/Screenshot-1.png)
-![Screenshot Page 2](docs/Screenshot-2.png)
-![Screenshot Page 3](docs/Screenshot-3.png)
+![Screenshot Page 1](Screenshot-1.png)
+![Screenshot Page 2](Screenshot-2.png)
+![Screenshot Page 3](Screenshot-3.png)
 
 
 
