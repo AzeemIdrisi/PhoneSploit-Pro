@@ -100,11 +100,14 @@ def clear_screen():
 
 
 def change_page(name):
-    global page
+    global page, page_number
     if name == 'p':
-        page = banner.menu1
+        if page_number > 0:
+            page_number = page_number - 1
     elif name == 'n':
-        page = banner.menu2
+        if page_number < 2:
+            page_number = page_number + 1
+    page = banner.menu[page_number]
     clear_screen()
 
 
@@ -151,10 +154,10 @@ def get_screenshot():
     if screenshot_location == "":
         screenshot_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving screenshot to {screenshot_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving screenshot to {screenshot_location}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
 
@@ -190,10 +193,10 @@ def screenrecord():
     if screenrecord_location == "":
         screenrecord_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving video to {screenrecord_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving video to {screenrecord_location}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
 
@@ -221,9 +224,9 @@ def pull_file():
     if pull_location == "":
         pull_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving file to {pull_location}\n{color.WHITE}")
+        print(f"\n{color.PURPLE}Saving file to {pull_location}\n{color.WHITE}")
     os.system(f'adb pull /sdcard/{location} {pull_location}')
 
     # Asking to open file
@@ -268,14 +271,16 @@ def install_app():
 
 
 def uninstall_app():
-    print("\nEnter package name.     Example : com.spotify.music ")
+    print(
+        f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music ")
     package_name = input("> ")
     os.system("adb uninstall " + package_name)
     print("\n")
 
 
 def launch_app():
-    print("\nEnter package name.     Example : com.spotify.music ")
+    print(
+        f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music ")
     package_name = input("> ")
 
     os.system("adb shell monkey -p " + package_name + " 1")
@@ -414,9 +419,9 @@ def copy_whatsapp():
     if pull_location == "":
         pull_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving data to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving data to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving data to {pull_location}\n{color.WHITE}")
+        print(f"\n{color.PURPLE}Saving data to {pull_location}\n{color.WHITE}")
 
     location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
     # 'test -d' checks if directory exist or not
@@ -442,9 +447,10 @@ def copy_screenshots():
     if pull_location == "":
         pull_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving Screenshots to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving Screenshots to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving Screenshots to {pull_location}\n{color.WHITE}")
+        print(
+            f"\n{color.PURPLE}Saving Screenshots to {pull_location}\n{color.WHITE}")
 
     location = '/sdcard/Pictures/Screenshots'
     os.system(f"adb pull {location} {pull_location}")
@@ -460,9 +466,9 @@ def copy_camera():
     if pull_location == "":
         pull_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving Photos to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving Photos to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
     else:
-        print(f"\n{color.CYAN}Saving Photos to {pull_location}\n{color.WHITE}")
+        print(f"\n{color.PURPLE}Saving Photos to {pull_location}\n{color.WHITE}")
 
     location = '/sdcard/DCIM/Camera'
     os.system(f"adb pull {location} {pull_location}")
@@ -481,10 +487,10 @@ def anonymous_screenshot():
     if screenshot_location == "":
         screenshot_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving screenshot to PhoneSploit-Pro/{screenshot_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving screenshot to {screenshot_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving screenshot to {screenshot_location}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
 
@@ -523,10 +529,10 @@ def anonymous_screenrecord():
     if screenrecord_location == "":
         screenrecord_location = 'Downloaded-Files'
         print(
-            f"\n{color.CYAN}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving video to PhoneSploit-Pro/{screenrecord_location}\n{color.WHITE}")
     else:
         print(
-            f"\n{color.CYAN}Saving video to {screenrecord_location}\n{color.WHITE}")
+            f"\n{color.PURPLE}Saving video to {screenrecord_location}\n{color.WHITE}")
 
     os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
 
@@ -737,6 +743,118 @@ def battery_info():
 {color.WHITE}{battery}\n''')
 
 
+def send_sms():
+    print(
+        f'\n{color.RED}[Warning] {color.CYAN}This feature is currently in BETA, Tested on Android 12 only{color.WHITE}')
+
+    number = input(
+        f'{color.YELLOW}\nEnter Phone number with country code{color.WHITE} (e.g. +91XXXXXXXXXX) > ')
+    message = input(
+        f'{color.YELLOW}\nEnter your message {color.WHITE}> ')
+
+    print(f'{color.CYAN}\nSending SMS to {number} ...{color.WHITE}')
+    os.system(
+        f'adb shell service call isms 5 i32 0 s16 "com.android.mms.service" s16 "null" s16 "{number}" s16 "null" s16 "{message}" s16 "null" s16 "null" s16 "null" s16 "null"')
+
+
+def unlock_device():
+    password = input(
+        f'{color.YELLOW}\nEnter password or Press \'Enter\' for blank{color.WHITE} > ')
+    os.system('adb shell input keyevent 26')
+    os.system('adb shell input swipe 200 900 200 300 200')
+    os.system(f'adb shell input text "{password}"')
+    os.system('adb shell input keyevent 66')
+    print(f'{color.GREEN}\nDevice unlocked{color.WHITE}')
+
+
+def lock_device():
+    os.system('adb shell input keyevent 26')
+    print(f'{color.GREEN}\nDevice locked{color.WHITE}')
+
+
+def dump_sms():
+    global pull_location
+    if pull_location == '':
+        print(
+            f"\n{color.YELLOW}Enter location to save SMS file, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.PURPLE}Saving SMS file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+    else:
+        print(f"\n{color.PURPLE}Saving SMS file to {pull_location}\n{color.WHITE}")
+    print(f'{color.GREEN}\nExtracting all SMS{color.WHITE}')
+    file_name = f'sms_dump-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.txt'
+    os.system(
+        f'adb shell content query --uri content://sms/ --projection address:date:body > {pull_location}/{file_name}')
+
+
+def dump_contacts():
+    global pull_location
+    if pull_location == '':
+        print(
+            f"\n{color.YELLOW}Enter location to save Contacts file, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.PURPLE}Saving Contacts file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+    else:
+        print(
+            f"\n{color.PURPLE}Saving Contacts file to {pull_location}\n{color.WHITE}")
+    print(f'{color.GREEN}\nExtracting all Contacts{color.WHITE}')
+    file_name = f'contacts_dump-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.txt'
+    os.system(
+        f'adb shell content query --uri content://contacts/phones/  --projection display_name:number > {pull_location}/{file_name}')
+
+
+def dump_call_logs():
+    global pull_location
+    if pull_location == '':
+        print(
+            f"\n{color.YELLOW}Enter location to save Call Logs file, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.PURPLE}Saving Call Logs file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+    else:
+        print(
+            f"\n{color.PURPLE}Saving Call Logs file to {pull_location}\n{color.WHITE}")
+    print(f'{color.GREEN}\nExtracting all Call Logs{color.WHITE}')
+    file_name = f'call_logs_dump-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.txt'
+    os.system(
+        f'adb shell content query --uri content://call_log/calls --projection name:number:duration:date > {pull_location}/{file_name}')
+
+
+def extract_apk():
+    print(
+        f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music ")
+    package_name = input("> ")
+
+    global pull_location
+    if pull_location == '':
+        print(
+            f"\n{color.YELLOW}Enter location to save APK file, Press 'Enter' for default{color.WHITE}")
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = 'Downloaded-Files'
+        print(
+            f"\n{color.PURPLE}Saving APK file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+    else:
+        print(
+            f"\n{color.PURPLE}Saving APK file to {pull_location}\n{color.WHITE}")
+    print(f'{color.GREEN}\nExtracting APK...{color.WHITE}')
+    path = os.popen(f'adb shell pm path {package_name}').read()
+    path = path.replace('package:', '')
+    os.system(f'adb pull {path}')
+    file_name = package_name.replace('.', '_')
+    os.system(f'mv base.apk {pull_location}/{file_name}.apk')
+
+    print("\n")
+
+
 def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
@@ -811,6 +929,20 @@ def main():
             battery_info()
         case '29':
             use_keycode()
+        case '30':
+            send_sms()
+        case '31':
+            unlock_device()
+        case '32':
+            lock_device()
+        case '33':
+            dump_sms()
+        case '34':
+            dump_contacts()
+        case '35':
+            dump_call_logs()
+        case '36':
+            extract_apk()
         case other:
             print("\nInvalid selection!\n")
 
@@ -822,7 +954,8 @@ run_phonesploit_pro = True
 operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
-page = banner.menu1
+page_number = 0
+page = banner.menu[page_number]
 
 # Locations
 screenshot_location = ''

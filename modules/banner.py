@@ -14,18 +14,33 @@ menu1 = f'''
 
 
    {color.YELLOW} 
-  N : Next Page                   (Page : 1 / 2)'''
+  N : Next Page                                      (Page : 1 / 3)'''
+
 menu2 = f'''
 
     {color.WHITE}16. {color.GREEN}List All Folders/Files      {color.WHITE}21. {color.GREEN}Anonymous Screenshot                {color.WHITE}26. {color.GREEN}Play a Video on Device
     {color.WHITE}17. {color.GREEN}Advanced Reboot Options     {color.WHITE}22. {color.GREEN}Anonymous Screen Record             {color.WHITE}27. {color.GREEN}Get Device Information
     {color.WHITE}18. {color.GREEN}Copy WhatsApp Data          {color.WHITE}23. {color.GREEN}Open a Link on Device               {color.WHITE}28. {color.GREEN}Get Battery Information
     {color.WHITE}19. {color.GREEN}Copy All Screenshots        {color.WHITE}24. {color.GREEN}Display a Photo on Device           {color.WHITE}29. {color.GREEN}Use Keycodes (Control Device)
-    {color.WHITE}20. {color.GREEN}Copy All Camera Photos      {color.WHITE}25. {color.GREEN}Play an Audio on Device
+    {color.WHITE}20. {color.GREEN}Copy All Camera Photos      {color.WHITE}25. {color.GREEN}Play an Audio on Device             {color.WHITE}30. {color.GREEN}Send SMS
 
 
    {color.YELLOW} 
-  P : Previous Page               (Page : 2 / 2)'''
+  P : Previous Page         N : Next Page            (Page : 2 / 3)'''
+
+menu3 = f'''
+
+    {color.WHITE}31. {color.GREEN}Unlock Device               {color.WHITE}36. {color.GREEN}Extract APK from Installed App      {color.WHITE}    {color.GREEN}
+    {color.WHITE}32. {color.GREEN}Lock Device                 {color.WHITE}    {color.GREEN}                                    {color.WHITE}    {color.GREEN}
+    {color.WHITE}33. {color.GREEN}Dump All SMS                {color.WHITE}    {color.GREEN}                                    {color.WHITE}    {color.GREEN}
+    {color.WHITE}34. {color.GREEN}Dump All Contacts           {color.WHITE}    {color.GREEN}                                    {color.WHITE}    {color.GREEN}
+    {color.WHITE}35. {color.GREEN}Dump Call Logs              {color.WHITE}    {color.GREEN}                                    {color.WHITE}    {color.GREEN}
+
+
+   {color.YELLOW} 
+  P : Previous Page                                  (Page : 3 / 3)'''
+
+menu = [menu1, menu2, menu3]
 
 instruction = f'''
 
@@ -57,7 +72,7 @@ banner2 = f'''
         ░█─── ▀──▀ ▀▀▀▀ ▀──▀ ▀▀▀ ░█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ──▀── 　 ░█─── ▀─▀▀ ▀▀▀▀
 
 
-            {color.RED}v1.1{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.2{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner3 = f'''
@@ -66,7 +81,7 @@ banner3 = f'''
         █▀▀ █▀█ █▄█ █░▀█ ██▄ ▄█ █▀▀ █▄▄ █▄█ █ ░█░   █▀▀ █▀▄ █▄█ 
 
 
-            {color.RED}v1.1{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.2{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner4 = f'''
@@ -78,7 +93,7 @@ banner4 = f'''
                 \/            \/     \/        \/|__|                                                      
 
 
-        {color.RED}v1.1{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
+        {color.RED}v1.2{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
 '''
 banner5 = f'''
        ___  __                 ____     __     _ __     ___         
@@ -87,7 +102,7 @@ banner5 = f'''
     /_/  /_//_/\___/_//_/\__/___/ .__/_/\___/_/\__/  /_/  /_/  \___/
                                /_/                                                                                                      
 
-        {color.RED}v1.1{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
+        {color.RED}v1.2{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner6 = f'''
@@ -98,7 +113,7 @@ banner6 = f'''
     /_/   /_/ /_/\____/_/ /_/\___/____/ .___/_/\____/_/\__/    /_/   /_/   \____/
                                      /_/                                                                                                       
     
-           {color.RED}v1.1{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
+           {color.RED}v1.2{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -113,7 +128,7 @@ banner10 = f'''
                                                          \ \_\                                                       
                                                           \/_/                                              
 
-            {color.RED}v1.1{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.2{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -126,7 +141,7 @@ banner11 = f'''
                                             /_/                                                      
 
 
-            {color.RED}v1.1{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.2{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -137,7 +152,7 @@ banner12 = f'''
         ▒█░░░ ▀░░▀ ▀▀▀▀ ▀░░▀ ▀▀▀ ▒█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ░░▀░░ 　 ▒█░░░ ▀░▀▀ ▀▀▀▀   
 
 
-            {color.RED}v1.1{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.2{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 banner_list = [banner2, banner3, banner4, banner5,
