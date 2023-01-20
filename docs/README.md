@@ -1,6 +1,6 @@
 # PhoneSploit Pro
 ### PhoneSploit with Metasploit Integration.
-![Version](https://img.shields.io/badge/version-v1.1-blue)
+![Version](https://img.shields.io/badge/version-v1.2-blue)
 [![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
 ![Python](https://img.shields.io/badge/python-v3.10%2B-orange?logo=python)
 ![GitHub last commit](https://img.shields.io/github/last-commit/AzeemIdrisi/PhoneSploit-Pro?logo=github)
@@ -54,6 +54,18 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Get battery information.
 * Use Keycodes to control device remotely.
 
+
+## v1.2
+
+* Send SMS through target device.
+* Unlock device (Automatic screen on, swipe up and password input).
+* Lock device.
+* Dump all SMS from device to computer.
+* Dump all Contacts from device to computer.
+* Dump all Call Logs from device to computer.
+* Extract APK from an installed app.
+
+
 # Requirements  
 * [`git`](https://git-scm.com/) : Git
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
@@ -98,8 +110,10 @@ python phonesploitpro.py
 
 # Screenshots
 
-![Screenshot from 2023-01-09 23-55-52](https://user-images.githubusercontent.com/112647789/211380789-0824e17e-d3a4-4661-bd8b-58a82a47f868.png)
-![Screenshot from 2023-01-14 11-50-02](https://user-images.githubusercontent.com/112647789/212458910-5ce01a6e-c7bd-43e3-9de5-c139580bc8db.png)
+![Screenshot Page 1](Screenshot-1.png)
+![Screenshot Page 2](Screenshot-2.png)
+![Screenshot Page 3](Screenshot-3.png)
+
 
 
 # Installing ADB 
