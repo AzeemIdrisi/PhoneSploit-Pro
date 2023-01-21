@@ -10,7 +10,6 @@ import time
 import subprocess
 import platform
 import datetime
-import readline  # Arrow Key
 from modules import banner
 from modules import color
 
@@ -23,6 +22,7 @@ def start():
         # Windows specific configuration
         windows_config()
     else:
+        import readline  # Arrow Key
         # On Linux / macOS
         # Creates a folder to store pulled files
         os.system('mkdir -p Downloaded-Files')
