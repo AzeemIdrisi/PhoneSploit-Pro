@@ -30,9 +30,10 @@ def start():
 
 
 def windows_config():
-    global clear, opener
+    global clear, opener, move
     clear = 'cls'
     opener = 'start'
+    move = 'move'
     # Creates a folder to store pulled files
     os.system('if not exist Downloaded-Files mkdir Downloaded-Files')
 
@@ -910,7 +911,7 @@ def extract_apk():
         path = path.replace('package:', '')
         os.system(f'adb pull {path}')
         file_name = package_name.replace('.', '_')
-        os.system(f'mv base.apk {pull_location}/{file_name}.apk')
+        os.system(f'{move} base.apk {pull_location}/{file_name}.apk')
 
         print("\n")
 
@@ -1014,6 +1015,7 @@ run_phonesploit_pro = True
 operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
+move = 'mv'
 page_number = 0
 page = banner.menu[page_number]
 
