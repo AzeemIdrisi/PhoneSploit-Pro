@@ -10,6 +10,7 @@ import time
 import subprocess
 import platform
 import datetime
+import readline  # Arrow Key
 from modules import banner
 from modules import color
 
@@ -113,10 +114,14 @@ def change_page(name):
 
 def connect():
     print("\n")
-    os.system("adb tcpip 5555")
-    print(f"\n{color.CYAN}Enter target phone's IP Address.       {color.YELLOW}Example : 192.168.1.23{color.WHITE}")
+    # os.system("adb tcpip 5555")
+    print(f"\n{color.CYAN}Enter target phone's IP Address       {color.YELLOW}Example : 192.168.1.23{color.WHITE}")
     ip = input("> ")
-    os.system("adb connect " + ip + ":5555")
+    if ip == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        os.system("adb connect " + ip + ":5555")
 
 
 def list_devices():
@@ -254,9 +259,14 @@ def pull_file():
 
 
 def push_file():
-    location = input("\nEnter file path : ")
-    destination = input("Enter destination path : /sdcard/")
-    os.system("adb push " + location + " /sdcard/" + destination)
+    location = input(f"\n{color.CYAN}Enter file path{color.WHITE} > ")
+    if location == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        destination = input(
+            f"\n{color.CYAN}Enter destination path{color.WHITE} > /sdcard/")
+        os.system("adb push " + location + " /sdcard/" + destination)
 
 
 def stop_adb():
@@ -265,17 +275,27 @@ def stop_adb():
 
 
 def install_app():
-    file_location = input("\nEnter apk path : ")
-    os.system("adb install " + file_location)
-    print("\n")
+    file_location = input(f"\n{color.CYAN}Enter APK path{color.WHITE} > ")
+
+    if file_location == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        os.system("adb install " + file_location)
+        print("\n")
 
 
 def uninstall_app():
     print(
-        f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music ")
+        f"\n{color.CYAN}Enter package name     {color.WHITE}Example : com.spotify.music ")
     package_name = input("> ")
-    os.system("adb uninstall " + package_name)
-    print("\n")
+
+    if package_name == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        os.system("adb uninstall " + package_name)
+        print("\n")
 
 
 def launch_app():
@@ -283,8 +303,12 @@ def launch_app():
         f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music ")
     package_name = input("> ")
 
-    os.system("adb shell monkey -p " + package_name + " 1")
-    print("\n")
+    if package_name == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        os.system("adb shell monkey -p " + package_name + " 1")
+        print("\n")
 
 
 def list_apps():
@@ -293,12 +317,16 @@ def list_apps():
     1. List third party packages
     2. List all packages
     ''')
-    mode = int(input("> "))
-    if mode == 1:
-        os.system("adb shell pm list packages -3")
-    elif mode == 2:
-        os.system("adb shell pm list packages")
-    print("\n")
+    mode = (input("> "))
+    if mode == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        if mode == '1':
+            os.system("adb shell pm list packages -3")
+        elif mode == '2':
+            os.system("adb shell pm list packages")
+        print("\n")
 
 
 def reboot(key):
@@ -629,82 +657,103 @@ def open_link():
     print(f'\n{color.YELLOW}Enter URL :             {color.CYAN}Example : https://github.com {color.WHITE}')
     url = input(f'{color.CYAN}> ')
 
-    print(f'\n{color.YELLOW}Opening "{url}" on device        \n{color.WHITE}')
-    os.system(f'adb shell am start -a android.intent.action.VIEW -d {url}')
-    print('\n')
+    if url == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        print(f'\n{color.YELLOW}Opening "{url}" on device        \n{color.WHITE}')
+        os.system(f'adb shell am start -a android.intent.action.VIEW -d {url}')
+        print('\n')
 
 
 def open_photo():
     location = input(
-        f"\n{color.YELLOW}Enter file path to upload Photo : {color.WHITE}")
-    os.system("adb push " + location + " /sdcard/")
+        f"\n{color.YELLOW}Enter file path to upload Photo{color.WHITE} > ")
 
-    file_path = location.split('/')
-    file_name = file_path[len(file_path) - 1]
+    if location == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
 
-    # Reverse slash ('\') splitting for Windows only
-    file_path = file_name.split('\\')
-    file_name = file_path[len(file_path) - 1]
+        os.system("adb push " + location + " /sdcard/")
+        file_path = location.split('/')
+        file_name = file_path[len(file_path) - 1]
 
-    file_name = file_name.replace("'", '')
-    file_name = "'" + file_name + "'"
-    print(file_name)
-    print(f'\n{color.YELLOW}Opening Photo on device        \n{color.WHITE}')
-    os.system(
-        f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t image/jpeg')  # -a android.intent.action.VIEW
-    print('\n')
+        # Reverse slash ('\') splitting for Windows only
+        file_path = file_name.split('\\')
+        file_name = file_path[len(file_path) - 1]
+
+        file_name = file_name.replace("'", '')
+        file_name = "'" + file_name + "'"
+        print(file_name)
+        print(f'\n{color.YELLOW}Opening Photo on device        \n{color.WHITE}')
+        os.system(
+            f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t image/jpeg')  # -a android.intent.action.VIEW
+        print('\n')
 
 
 def open_audio():
     location = input(
-        f"\n{color.YELLOW}Enter file path to upload Audio : {color.WHITE}")
-    os.system("adb push " + location + " /sdcard/")
+        f"\n{color.YELLOW}Enter file path to upload Audio{color.WHITE} > ")
 
-    file_path = location.split('/')
-    file_name = file_path[len(file_path) - 1]
+    if location == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        os.system("adb push " + location + " /sdcard/")
 
-    # Reverse slash ('\') splitting for Windows only
-    file_path = file_name.split('\\')
-    file_name = file_path[len(file_path) - 1]
+        file_path = location.split('/')
+        file_name = file_path[len(file_path) - 1]
 
-    file_name = file_name.replace("'", '')
-    file_name = "'" + file_name + "'"
-    print(file_name)
-    print(f'\n{color.YELLOW}Playing Audio on device        \n{color.WHITE}')
-    os.system(
-        f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t audio/mp3')
+        # Reverse slash ('\') splitting for Windows only
+        file_path = file_name.split('\\')
+        file_name = file_path[len(file_path) - 1]
 
-    print(
-        f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
-    time.sleep(5)
-    os.system('adb shell input keyevent 126')  # To play the file using Chrome
-    print('\n')
+        file_name = file_name.replace("'", '')
+        file_name = "'" + file_name + "'"
+        print(file_name)
+        print(f'\n{color.YELLOW}Playing Audio on device        \n{color.WHITE}')
+        os.system(
+            f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t audio/mp3')
+
+        print(
+            f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
+        time.sleep(5)
+        # To play the file using Chrome
+        os.system('adb shell input keyevent 126')
+        print('\n')
 
 
 def open_video():
     location = input(
-        f"\n{color.YELLOW}Enter file path to upload Video : {color.WHITE}")
-    os.system("adb push " + location + " /sdcard/")
+        f"\n{color.YELLOW}Enter file path to upload Video{color.WHITE} > ")
 
-    file_path = location.split('/')
-    file_name = file_path[len(file_path) - 1]
+    if location == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        os.system("adb push " + location + " /sdcard/")
 
-    # Reverse slash ('\') splitting for Windows only
-    file_path = file_name.split('\\')
-    file_name = file_path[len(file_path) - 1]
+        file_path = location.split('/')
+        file_name = file_path[len(file_path) - 1]
 
-    file_name = file_name.replace("'", '')
-    file_name = "'" + file_name + "'"
-    print(file_name)
-    print(f'\n{color.YELLOW}Playing Video on device        \n{color.WHITE}')
-    os.system(
-        f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t video/mp4')
+        # Reverse slash ('\') splitting for Windows only
+        file_path = file_name.split('\\')
+        file_name = file_path[len(file_path) - 1]
 
-    print(
-        f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
-    time.sleep(5)
-    os.system('adb shell input keyevent 126')  # To play the file using Chrome
-    print('\n')
+        file_name = file_name.replace("'", '')
+        file_name = "'" + file_name + "'"
+        print(file_name)
+        print(f'\n{color.YELLOW}Playing Video on device        \n{color.WHITE}')
+        os.system(
+            f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t video/mp4')
+
+        print(
+            f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}")
+        time.sleep(5)
+        # To play the file using Chrome
+        os.system('adb shell input keyevent 126')
+        print('\n')
 
 
 def get_device_info():
@@ -749,12 +798,17 @@ def send_sms():
 
     number = input(
         f'{color.YELLOW}\nEnter Phone number with country code{color.WHITE} (e.g. +91XXXXXXXXXX) > ')
-    message = input(
-        f'{color.YELLOW}\nEnter your message {color.WHITE}> ')
 
-    print(f'{color.CYAN}\nSending SMS to {number} ...{color.WHITE}')
-    os.system(
-        f'adb shell service call isms 5 i32 0 s16 "com.android.mms.service" s16 "null" s16 "{number}" s16 "null" s16 "{message}" s16 "null" s16 "null" s16 "null" s16 "null"')
+    if number == '':
+        print(
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    else:
+        message = input(
+            f'{color.YELLOW}\nEnter your message {color.WHITE}> ')
+
+        print(f'{color.CYAN}\nSending SMS to {number} ...{color.WHITE}')
+        os.system(
+            f'adb shell service call isms 5 i32 0 s16 "com.android.mms.service" s16 "null" s16 "{number}" s16 "null" s16 "{message}" s16 "null" s16 "null" s16 "null" s16 "null"')
 
 
 def unlock_device():
@@ -762,7 +816,8 @@ def unlock_device():
         f'{color.YELLOW}\nEnter password or Press \'Enter\' for blank{color.WHITE} > ')
     os.system('adb shell input keyevent 26')
     os.system('adb shell input swipe 200 900 200 300 200')
-    os.system(f'adb shell input text "{password}"')
+    if not password == '':  # if password is not blank
+        os.system(f'adb shell input text "{password}"')
     os.system('adb shell input keyevent 66')
     print(f'{color.GREEN}\nDevice unlocked{color.WHITE}')
 
@@ -830,29 +885,34 @@ def dump_call_logs():
 
 def extract_apk():
     print(
-        f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music ")
+        f"\n{color.CYAN}Enter package name     {color.WHITE}Example : com.spotify.music ")
     package_name = input("> ")
 
-    global pull_location
-    if pull_location == '':
+    if package_name == '':
         print(
-            f"\n{color.YELLOW}Enter location to save APK file, Press 'Enter' for default{color.WHITE}")
-        pull_location = input("> ")
-    if pull_location == "":
-        pull_location = 'Downloaded-Files'
-        print(
-            f"\n{color.PURPLE}Saving APK file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
     else:
-        print(
-            f"\n{color.PURPLE}Saving APK file to {pull_location}\n{color.WHITE}")
-    print(f'{color.GREEN}\nExtracting APK...{color.WHITE}')
-    path = os.popen(f'adb shell pm path {package_name}').read()
-    path = path.replace('package:', '')
-    os.system(f'adb pull {path}')
-    file_name = package_name.replace('.', '_')
-    os.system(f'mv base.apk {pull_location}/{file_name}.apk')
 
-    print("\n")
+        global pull_location
+        if pull_location == '':
+            print(
+                f"\n{color.YELLOW}Enter location to save APK file, Press 'Enter' for default{color.WHITE}")
+            pull_location = input("> ")
+        if pull_location == "":
+            pull_location = 'Downloaded-Files'
+            print(
+                f"\n{color.PURPLE}Saving APK file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}")
+        else:
+            print(
+                f"\n{color.PURPLE}Saving APK file to {pull_location}\n{color.WHITE}")
+        print(f'{color.GREEN}\nExtracting APK...{color.WHITE}')
+        path = os.popen(f'adb shell pm path {package_name}').read()
+        path = path.replace('package:', '')
+        os.system(f'adb pull {path}')
+        file_name = package_name.replace('.', '_')
+        os.system(f'mv base.apk {pull_location}/{file_name}.apk')
+
+        print("\n")
 
 
 def main():
