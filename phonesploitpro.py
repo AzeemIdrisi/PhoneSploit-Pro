@@ -22,8 +22,8 @@ def start():
         # Windows specific configuration
         windows_config()
     else:
-        import readline  # Arrow Key
         # On Linux / macOS
+        import readline  # Arrow Key
         # Creates a folder to store pulled files
         os.system('mkdir -p Downloaded-Files')
         check_packages()  # Checking for required packages
