@@ -1031,4 +1031,7 @@ start()
 if run_phonesploit_pro:
     clear_screen()
     while run_phonesploit_pro:
-        main()
+        try:
+            main()
+        except KeyboardInterrupt:
+            exit_phonesploit_pro()
