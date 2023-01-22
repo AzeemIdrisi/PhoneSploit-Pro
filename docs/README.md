@@ -37,7 +37,7 @@ The goal of this project is to make penetration testing on Android devices easy.
 * List all installed apps in target device.
 * Restart/Reboot the target device to `System`, `Recovery`, `Bootloader`, `Fastboot`.
 * __Hack Device Completely__ : 
-  - Automatically fetch `IP Address` to create payload.
+  - Automatically fetch your `IP Address` to set `LHOST` to create a payload APK file.
   - Automatically create a payload using `msfvenom`, install it, and run it on target device.
   - Then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
   - Getting a `meterpreter` session means the device is completely hacked using Metasploit-Framework, and you can do anything with it.
