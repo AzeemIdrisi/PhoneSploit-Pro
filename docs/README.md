@@ -71,7 +71,6 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 
 # Requirements  
-* [`git`](https://git-scm.com/) : Git
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
@@ -87,9 +86,11 @@ Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requ
 Open terminal and paste the following commands : 
 ```
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
-
+```
+```
 cd PhoneSploit-Pro/
-
+```
+```
 python3 phonesploitpro.py
 ```
 #### On Windows :
