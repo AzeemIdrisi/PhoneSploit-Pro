@@ -243,12 +243,6 @@ def pull_file():
     file_path = location.split('/')
     location = file_path[len(file_path) - 1]
 
-    # Reverse slash ('\') splitting for Windows only
-    global operating_system
-    if operating_system == 'Windows':
-        file_path = file_name.split('\\')
-        file_name = file_path[len(file_path) - 1]
-
     # processing request
     if choice == 'y' or choice == '':
         os.system(f"{opener} {pull_location}/{location}")
