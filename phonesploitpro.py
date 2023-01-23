@@ -222,7 +222,8 @@ def screenrecord():
 
 def pull_file():
     global pull_location
-    location = input("\nEnter file path : /sdcard/")
+    print(f"\n{color.CYAN}Enter file path           {color.YELLOW}Example : /sdcard/Download/sample.jpg{color.WHITE}")
+    location = input("\n> /sdcard/")
     if pull_location == '':
         print(
             f"\n{color.YELLOW}Enter location to save all files, Press 'Enter' for default{color.WHITE}")
@@ -262,7 +263,7 @@ def push_file():
             f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
     else:
         destination = input(
-            f"\n{color.CYAN}Enter destination path{color.WHITE} > /sdcard/")
+            f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
         os.system("adb push " + location + " /sdcard/" + destination)
 
 
@@ -410,7 +411,8 @@ def hack():
         time.sleep(5)  # waiting for apk to be installed
 
         # Keyboard input to accept app install
-        print(f"\n{color.CYAN}Accepting app install\n{color.WHITE}")
+        print(
+            f"\n{color.CYAN}Sending keycodes to accept the app installation\n{color.WHITE}")
         os.system('adb shell input keyevent 20')
         os.system('adb shell input keyevent 20')
         os.system('adb shell input keyevent 66')
@@ -421,7 +423,8 @@ def hack():
         time.sleep(3)  # waiting for app to launch
 
         # Keyboard input to accept app permissions
-        print(f"\n{color.CYAN}Accepting app permissions\n{color.WHITE}")
+        print(
+            f"\n{color.CYAN}Sending keycodes to accept the app permissions\n{color.WHITE}")
         os.system('adb shell input keyevent 22')
         os.system('adb shell input keyevent 22')
         os.system('adb shell input keyevent 66')
