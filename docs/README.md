@@ -37,7 +37,7 @@ The goal of this project is to make penetration testing on Android devices easy.
 * List all installed apps in target device.
 * Restart/Reboot the target device to `System`, `Recovery`, `Bootloader`, `Fastboot`.
 * __Hack Device Completely__ : 
-  - Automatically fetch your `IP Address` to set `LHOST` to create a payload APK file.
+  - Automatically fetch your `IP Address` to set `LHOST`.
   - Automatically create a payload using `msfvenom`, install it, and run it on target device.
   - Then automatically launch and setup __Metasploit-Framework__ to get a `meterpreter` session.
   - Getting a `meterpreter` session means the device is completely hacked using Metasploit-Framework, and you can do anything with it.
@@ -101,7 +101,8 @@ Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requ
 Open terminal and paste the following commands : 
 ```
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
-
+```
+```
 cd PhoneSploit-Pro/
 ```
 1. Download and extract latest `platform-tools` from [here](https://developer.android.com/studio/releases/platform-tools.html#downloads).
@@ -228,11 +229,12 @@ adb tcpip 5555
 
 - [x] Ubuntu
 - [x] Linux Mint
-- [ ] Kali Linux
+- [x] Kali Linux
 - [x] Fedora
 - [x] Arch Linux
 - [x] Parrot Security OS
 - [x] Windows 11
+- [x] Termux
 - [ ] macOS
 
 All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
