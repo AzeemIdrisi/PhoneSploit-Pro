@@ -69,11 +69,15 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Dump all Call Logs from device to computer.
 * Extract APK from an installed app.
 
+## v1.3
+
+* Mirror and Control the target device. 
 
 # Requirements  
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
+* [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy (Screen Copy)
 
 # Run PhoneSploit Pro 
 
@@ -177,6 +181,10 @@ Visit this link : [Click Here](https://www.metasploit.com/download)
 
 or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#windows-anti-virus-software-flags-the-contents-of-these-packages)
 
+# Installing scrcpy
+
+Visit 'scrcpy' project on GitHub for latest installation instructions : [Click Here](https://github.com/Genymobile/scrcpy#get-the-app)
+
 
 # Tutorial
 
@@ -227,14 +235,14 @@ adb tcpip 5555
 
 # This tool is tested on
 
-- [x] Ubuntu
-- [x] Linux Mint
-- [x] Kali Linux
-- [x] Fedora
-- [x] Arch Linux
-- [x] Parrot Security OS
-- [x] Windows 11
-- [x] Termux
+-  ✅ Ubuntu
+-  ✅ Linux Mint
+-  ✅ Kali Linux
+-  ✅ Fedora
+-  ✅ Arch Linux
+-  ✅ Parrot Security OS
+-  ✅ Windows 11
+-  ✅ Termux (Android)
 - [ ] macOS
 
 All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
