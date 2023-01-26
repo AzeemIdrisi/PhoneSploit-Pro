@@ -328,6 +328,21 @@ def list_apps():
 
 
 def reboot(key):
+    print(
+        f'\n{color.RED}[Warning]{color.YELLOW} Restarting will disconnect the device{color.WHITE}')
+    choice = input('\nDo you want to continue?     Y / N > ').lower()
+    if choice == 'y' or choice == '':
+        pass
+    elif choice == 'n':
+        return
+    else:
+        while choice != 'y' and choice != 'n' and choice != '':
+            choice = input('\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y' or choice == '':
+                pass
+            elif choice == 'n':
+                return
+
     if key == 'system':
         os.system('adb reboot')
     else:
@@ -337,13 +352,16 @@ def reboot(key):
         2. Reboot to Bootloader
         3. Reboot to Fastboot Mode
         ''')
-        mode = int(input("> "))
-        if mode == 1:
+        mode = (input("> "))
+        if mode == '1':
             os.system('adb reboot recovery')
-        elif mode == 2:
+        elif mode == '2':
             os.system('adb reboot bootloader')
-        elif mode == 3:
+        elif mode == '3':
             os.system('adb reboot fastboot')
+        else:
+            print("\nInvalid selection, Going back to Main Menu")
+            return
 
     print("\n")
 
