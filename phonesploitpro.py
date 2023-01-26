@@ -83,6 +83,28 @@ def check_packages():
                     exit_phonesploit_pro()
                     return
 
+    scrcpy_status = subprocess.call(['which', 'scrcpy'])
+    if scrcpy_status != 0:
+        print(f'\n{color.RED}ERROR : scrcpy is NOT installed!\n')
+        print(f'\n{color.CYAN}Please install scrcpy{color.WHITE}\n')
+
+        choice = input(
+            '\nDo you still want to continue to PhoneSploit Pro?     Y / N > ').lower()
+        if choice == 'y' or choice == '':
+            return
+        elif choice == 'n':
+            exit_phonesploit_pro()
+            return
+        else:
+            while choice != 'y' and choice != 'n' and choice != '':
+                choice = input(
+                    '\nInvalid choice!, Press Y or N > ').lower()
+                if choice == 'y' or choice == '':
+                    return
+                elif choice == 'n':
+                    exit_phonesploit_pro()
+                    return
+
     python_version = platform.python_version()
     if python_version < '3.10':
         print("\nPlease update Python to version 3.10 or Newer to run this program.\n")
@@ -939,6 +961,11 @@ def extract_apk():
         print("\n")
 
 
+def display_control():
+    os.system('scrcpy')
+    print('\n')
+
+
 def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
@@ -964,7 +991,7 @@ def main():
         case '4':
             get_shell()
         case '5':
-            stop_adb()
+            display_control()
         case '6':
             get_screenshot()
         case '7':
@@ -1027,6 +1054,8 @@ def main():
             dump_call_logs()
         case '36':
             extract_apk()
+        case '37':
+            stop_adb()
         case other:
             print("\nInvalid selection!\n")
 
