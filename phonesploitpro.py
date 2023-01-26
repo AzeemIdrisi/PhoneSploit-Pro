@@ -961,7 +961,7 @@ def extract_apk():
         print("\n")
 
 
-def display_control():
+def mirror():
     os.system('scrcpy')
     print('\n')
 
@@ -991,7 +991,7 @@ def main():
         case '4':
             get_shell()
         case '5':
-            display_control()
+            mirror()
         case '6':
             get_screenshot()
         case '7':

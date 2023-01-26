@@ -9,7 +9,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/AzeemIdrisi/PhoneSploit-Pro?style=social)
 
 
-An All-In-One hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
+An all-in-one hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
 
 
 #### Complete Automation to get a Meterpreter session in One Click
@@ -69,11 +69,15 @@ The goal of this project is to make penetration testing on Android devices easy.
 * Dump all Call Logs from device to computer.
 * Extract APK from an installed app.
 
+## v1.3
+
+* Mirror and Control the target device. 
 
 # Requirements  
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
+* [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy (Screen Copy)
 
 # Run PhoneSploit Pro 
 
@@ -116,9 +120,9 @@ python phonesploitpro.py
 
 # Screenshots
 
-![Screenshot Page 1](Screenshot-1.png)
-![Screenshot Page 2](Screenshot-2.png)
-![Screenshot Page 3](Screenshot-3.png)
+![Screenshot Page 1](docs/Screenshot-1.png)
+![Screenshot Page 2](docs/Screenshot-2.png)
+![Screenshot Page 3](docs/Screenshot-3.png)
 
 
 
@@ -177,6 +181,10 @@ Visit this link : [Click Here](https://www.metasploit.com/download)
 
 or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#windows-anti-virus-software-flags-the-contents-of-these-packages)
 
+# Installing scrcpy
+
+Visit the `scrcpy` GitHub page for latest installation instructions : [Click Here](https://github.com/Genymobile/scrcpy#get-the-app)
+
 
 # Tutorial
 
@@ -227,15 +235,14 @@ adb tcpip 5555
 
 # This tool is tested on
 
-- [x] Ubuntu
-- [x] Linux Mint
-- [x] Kali Linux
-- [x] Fedora
-- [x] Arch Linux
-- [x] Parrot Security OS
-- [x] Windows 11
-- [x] Termux
-- [ ] macOS
+-  ✅ Ubuntu
+-  ✅ Linux Mint
+-  ✅ Kali Linux
+-  ✅ Fedora
+-  ✅ Arch Linux
+-  ✅ Parrot Security OS
+-  ✅ Windows 11
+-  ✅ Termux (Android)
 
 All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
 Some features might not work properly on Windows.
