@@ -161,6 +161,11 @@ or Visit this link : [Click Here](https://developer.android.com/studio/releases/
 
 Visit this link : [Click Here](https://developer.android.com/studio/releases/platform-tools.html#downloads)
 
+#### ADB on Termux :
+```
+pkg install android-tools
+```
+
 
 # Installing Metasploit-Framework 
 
@@ -185,6 +190,7 @@ or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasp
 
 Visit the `scrcpy` GitHub page for latest installation instructions : [Click Here](https://github.com/Genymobile/scrcpy#get-the-app)
 
+**On Windows** : Copy all the files from the extracted **scrcpy** folder to **PhoneSploit-Pro** folder.
 
 # Tutorial
 
