@@ -9,7 +9,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/AzeemIdrisi/PhoneSploit-Pro?style=social)
 
 
-An All-In-One hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
+An all-in-one hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
 
 
 #### Complete Automation to get a Meterpreter session in One Click
@@ -120,9 +120,9 @@ python phonesploitpro.py
 
 # Screenshots
 
-![Screenshot Page 1](Screenshot-1.png)
-![Screenshot Page 2](Screenshot-2.png)
-![Screenshot Page 3](Screenshot-3.png)
+![Screenshot Page 1](docs/Screenshot-1.png)
+![Screenshot Page 2](docs/Screenshot-2.png)
+![Screenshot Page 3](docs/Screenshot-3.png)
 
 
 
@@ -183,7 +183,7 @@ or Follow this link : [Click Here](https://docs.metasploit.com/docs/using-metasp
 
 # Installing scrcpy
 
-Visit 'scrcpy' project on GitHub for latest installation instructions : [Click Here](https://github.com/Genymobile/scrcpy#get-the-app)
+Visit the `scrcpy` GitHub page for latest installation instructions : [Click Here](https://github.com/Genymobile/scrcpy#get-the-app)
 
 
 # Tutorial
@@ -243,7 +243,6 @@ adb tcpip 5555
 -  ✅ Parrot Security OS
 -  ✅ Windows 11
 -  ✅ Termux (Android)
-- [ ] macOS
 
 All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
 Some features might not work properly on Windows.
