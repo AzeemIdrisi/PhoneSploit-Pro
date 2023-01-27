@@ -138,8 +138,9 @@ def change_page(name):
 def connect():
     # Connect only 1 device at a time
     # Restart ADB on new connection.
-    os.system('adb kill-server&&adb start-server')
-    print("\n")
+    os.system(
+        'adb kill-server > hidden.txt 2>&1&&adb start-server > hidden.txt 2>&1')
+    # print("\n")
     # os.system("adb tcpip 5555")
     print(f"\n{color.CYAN}Enter target phone's IP Address       {color.YELLOW}Example : 192.168.1.23{color.WHITE}")
     ip = input("> ")
