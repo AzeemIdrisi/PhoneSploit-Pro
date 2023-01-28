@@ -189,7 +189,7 @@ def get_screenshot():
 
     # Asking to open file
     choice = input(
-        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
+        f'\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenshot_location}/{file_name}")
 
@@ -230,7 +230,7 @@ def screenrecord():
 
     # Asking to open file
     choice = input(
-        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
+        f'\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenrecord_location}/{file_name}")
 
@@ -261,7 +261,7 @@ def pull_file():
 
     # Asking to open file
     choice = input(
-        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
+        f'\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
 
     # updating location = file_name if it existed inside a folder
     # Example : sdcard/DCIM/longtime.jpg -> longtime.jpg
@@ -568,7 +568,7 @@ def anonymous_screenshot():
 
     # Asking to open file
     choice = input(
-        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
+        f'\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenshot_location}/{file_name}")
 
@@ -611,7 +611,7 @@ def anonymous_screenrecord():
     os.system(f"adb shell rm /sdcard/{file_name}")
     # Asking to open file
     choice = input(
-        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
+        f'\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenrecord_location}/{file_name}")
 
