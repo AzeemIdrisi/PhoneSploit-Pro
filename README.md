@@ -19,6 +19,16 @@ This tool can automatically __Create__, __Install__, and __Run__ payload on the 
 The goal of this project is to make penetration testing on Android devices easy. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
 
 
+# Disclaimer
+
+* Neither the project nor its developer promote any kind of illegal activity and are not responsible for any misuse or damage caused by this project.
+* This project is for the purpose of penetration testing only.
+* Please do not use this tool on other people's devices without their permission.
+* Do not use this tool to harm others.
+* Use this project responsibly on your own devices only.
+* It is the end user's responsibility to obey all applicable local, state, federal, and international laws.
+
+
 # Features 
 ## v1.0
 
@@ -252,16 +262,6 @@ adb tcpip 5555
 
 All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
 Some features might not work properly on Windows.
-
-
-# Disclaimer
-
-* Neither the project nor its developer promote any kind of illegal activity and are not responsible for any misuse or damage caused by this project.
-* This project is for the purpose of penetration testing only.
-* Please do not use this tool on other people's devices without their permission.
-* Do not use this tool to harm others.
-* Use this project responsibly on your own devices only.
-* It is the end user's responsibility to obey all applicable local, state, federal, and international laws.
 
 
 # Developer
