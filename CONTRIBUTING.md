@@ -1,6 +1,6 @@
 # Contributing
 
-Please try to make valueable contributions and avoid spam pull requests.
+Please try to make valuable contributions and avoid spam pull requests.
 
 #### For minor changes
 * Fork the project and make the changes.
