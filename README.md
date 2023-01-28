@@ -2,7 +2,7 @@
 ### PhoneSploit with Metasploit Integration.
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/AzeemIdrisi/PhoneSploit-Pro)
 [![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
-![Python](https://img.shields.io/badge/python-v3.10%2B-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/python-v3.10%2B-blue)
 ![GitHub Release Date](https://img.shields.io/github/release-date/AzeemIdrisi/PhoneSploit-Pro?logo=github)
 ![GitHub last commit](https://img.shields.io/github/last-commit/AzeemIdrisi/PhoneSploit-Pro?logo=github)
 ![GitHub Repo stars](https://img.shields.io/github/stars/AzeemIdrisi/PhoneSploit-Pro?style=social)

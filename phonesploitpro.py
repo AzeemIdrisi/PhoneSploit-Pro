@@ -105,12 +105,6 @@ def check_packages():
                     exit_phonesploit_pro()
                     return
 
-    python_version = platform.python_version()
-    if python_version < '3.10':
-        print("\nPlease update Python to version 3.10 or Newer to run this program.\n")
-        exit_phonesploit_pro()
-        return
-
 
 def display_menu():
     """ Displays banner and menu"""
@@ -194,7 +188,8 @@ def get_screenshot():
     os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    choice = input(
+        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenshot_location}/{file_name}")
 
@@ -213,8 +208,9 @@ def screenrecord():
     # Getting a temporary file name to store time specific results
     file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
 
-    duration = input("\nEnter the recording duration (in seconds) > ")
-    print('\nStarting Screen Recording...\n')
+    duration = input(
+        f"\n{color.CYAN}Enter the recording duration (in seconds) > {color.WHITE}")
+    print(f'\n{color.YELLOW}Starting Screen Recording...\n{color.WHITE}')
     os.system(
         f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}")
 
@@ -233,7 +229,8 @@ def screenrecord():
     os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    choice = input(
+        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenrecord_location}/{file_name}")
 
@@ -263,7 +260,8 @@ def pull_file():
     os.system(f'adb pull /sdcard/{location} {pull_location}')
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    choice = input(
+        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
 
     # updating location = file_name if it existed inside a folder
     # Example : sdcard/DCIM/longtime.jpg -> longtime.jpg
@@ -372,12 +370,11 @@ def reboot(key):
     if key == 'system':
         os.system('adb reboot')
     else:
-        print('''
-
-        1. Reboot to Recovery Mode
-        2. Reboot to Bootloader
-        3. Reboot to Fastboot Mode
-        ''')
+        print(f'''
+{color.WHITE}1.{color.GREEN} Reboot to Recovery Mode
+{color.WHITE}2.{color.GREEN} Reboot to Bootloader
+{color.WHITE}3.{color.GREEN} Reboot to Fastboot Mode
+{color.WHITE}''')
         mode = (input("> "))
         if mode == '1':
             os.system('adb reboot recovery')
@@ -570,7 +567,8 @@ def anonymous_screenshot():
     os.system(f"adb shell rm /sdcard/{file_name}")
 
     # Asking to open file
-    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    choice = input(
+        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenshot_location}/{file_name}")
 
@@ -589,8 +587,9 @@ def anonymous_screenrecord():
     # Getting a temporary file name to store time specific results
     file_name = f'vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4'
 
-    duration = input("\nEnter the recording duration (in seconds) > ")
-    print('\nStarting Screen Recording...\n')
+    duration = input(
+        f"\n{color.CYAN}Enter the recording duration (in seconds) > {color.WHITE}")
+    print(f'\n{color.YELLOW}Starting Screen Recording...\n{color.WHITE}')
     os.system(
         f"adb shell screenrecord --verbose --time-limit {duration} /sdcard/{file_name}")
 
@@ -611,7 +610,8 @@ def anonymous_screenrecord():
     print(f'\n{color.YELLOW}Deleting video from Target\'s device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
     # Asking to open file
-    choice = input('\nDo you want to Open the file?     Y / N > ').lower()
+    choice = input(
+        f'\n{color.YELLOW}Do you want to Open the file?     Y / N {color.WHITE}> ').lower()
     if choice == 'y' or choice == '':
         os.system(f"{opener} {screenrecord_location}/{file_name}")
 
@@ -698,8 +698,8 @@ def use_keycode():
 
 
 def open_link():
-    print(f'\n{color.YELLOW}Enter URL :             {color.CYAN}Example : https://github.com {color.WHITE}')
-    url = input(f'{color.CYAN}> ')
+    print(f'\n{color.YELLOW}Enter URL              {color.CYAN}Example : https://github.com {color.WHITE}')
+    url = input('> ')
 
     if url == '':
         print(
@@ -966,7 +966,35 @@ def extract_apk():
 
 
 def mirror():
-    os.system('scrcpy')
+    print(f'''
+{color.WHITE}1.{color.GREEN} Default Mode
+{color.WHITE}2.{color.GREEN} Custom Mode {color.YELLOW}(Tweak settings to increase performance)
+{color.WHITE}''')
+    mode = input("> ")
+    if mode == '1' or mode == '':
+        os.system('scrcpy')
+    elif mode == '2':
+        print(
+            f'\n{color.CYAN}Enter size limit {color.YELLOW}(e.g. 1024){color.WHITE}')
+        size = input("> ")
+        if not size == '':
+            size = '-m ' + size
+
+        print(
+            f'\n{color.CYAN}Enter bit-rate {color.YELLOW}(e.g. 2)   {color.WHITE}(Default : 8 Mbps)')
+        bitrate = input("> ")
+        if not bitrate == '':
+            bitrate = '-b ' + bitrate + 'M'
+
+        print(f'\n{color.CYAN}Enter frame-rate {color.YELLOW}(e.g. 15){color.WHITE}')
+        framerate = input("> ")
+        if not framerate == '':
+            framerate = '--max-fps=' + framerate
+
+        os.system(f'scrcpy {size} {bitrate} {framerate}')
+    else:
+        print("\nInvalid selection, Going back to Main Menu")
+        return
     print('\n')
 
 
