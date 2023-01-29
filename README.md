@@ -273,3 +273,6 @@ Some features might not work properly on Windows.
 
 **Mohd Azeem** - [@AzeemIdrisi](https://github.com/azeemidrisi/)
  
+If you like this project, you can buy me a Coffee:
+
+<a href="https://www.buymeacoffee.com/AzeemIdrisi" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
