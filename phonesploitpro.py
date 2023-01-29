@@ -334,21 +334,21 @@ def launch_app():
 
 
 def list_apps():
-    print('''
+    print(f'''
 
-    1. List third party packages
-    2. List all packages
+{color.WHITE}1.{color.GREEN} List third party packages {color.WHITE}
+{color.WHITE}2.{color.GREEN} List all packages {color.WHITE}
     ''')
     mode = (input("> "))
-    if mode == '':
-        print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+
+    if mode == '1':
+        os.system("adb shell pm list packages -3")
+    elif mode == '2':
+        os.system("adb shell pm list packages")
     else:
-        if mode == '1':
-            os.system("adb shell pm list packages -3")
-        elif mode == '2':
-            os.system("adb shell pm list packages")
-        print("\n")
+        print(
+            f'\n{color.RED}Invalid input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+    print("\n")
 
 
 def reboot(key):
