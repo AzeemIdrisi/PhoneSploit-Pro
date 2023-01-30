@@ -136,6 +136,7 @@ def connect():
     if ip == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
         # Restart ADB on new connection.
         os.system(
@@ -279,14 +280,25 @@ def pull_file():
 
 
 def push_file():
-    location = input(f"\n{color.CYAN}Enter file path{color.WHITE} > ")
+    location = input(
+        f"\n{color.CYAN}Enter file path in computer{color.WHITE} > ")
+
     if location == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
-        destination = input(
-            f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
-        os.system("adb push " + location + " /sdcard/" + destination)
+        location = location.replace("'", "")
+        location = location.replace('"', '')
+        if not os.path.isfile(location):
+            print(
+                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
+            return
+        else:
+            location = "'"+location+"'"
+            destination = input(
+                f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
+            os.system("adb push " + location + " /sdcard/" + destination)
 
 
 def stop_adb():
@@ -295,13 +307,23 @@ def stop_adb():
 
 
 def install_app():
-    file_location = input(f"\n{color.CYAN}Enter APK path{color.WHITE} > ")
+    file_location = input(
+        f"\n{color.CYAN}Enter APK path in computer{color.WHITE} > ")
 
     if file_location == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
-        os.system("adb install " + file_location)
+        file_location = file_location.replace("'", "")
+        file_location = file_location.replace('"', '')
+        if not os.path.isfile(file_location):
+            print(
+                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
+            return
+        else:
+            file_location = "'"+file_location+"'"
+            os.system("adb install " + file_location)
         print("\n")
 
 
@@ -326,6 +348,7 @@ def launch_app():
     if package_name == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
         os.system("adb shell monkey -p " + package_name + " 1")
         print("\n")
@@ -703,6 +726,7 @@ def open_link():
     if url == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
         print(f'\n{color.YELLOW}Opening "{url}" on device        \n{color.WHITE}')
         os.system(f'adb shell am start -a android.intent.action.VIEW -d {url}')
@@ -711,14 +735,23 @@ def open_link():
 
 def open_photo():
     location = input(
-        f"\n{color.YELLOW}Enter file path to upload Photo{color.WHITE} > ")
+        f"\n{color.YELLOW}Enter Photo location in computer{color.WHITE} > ")
 
     if location == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
+        location = location.replace("'", "")
+        location = location.replace('"', '')
+        if not os.path.isfile(location):
+            print(
+                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
+            return
+        else:
+            location = "'"+location+"'"
+            os.system("adb push " + location + " /sdcard/")
 
-        os.system("adb push " + location + " /sdcard/")
         file_path = location.split('/')
         file_name = file_path[len(file_path) - 1]
 
@@ -739,13 +772,22 @@ def open_photo():
 
 def open_audio():
     location = input(
-        f"\n{color.YELLOW}Enter file path to upload Audio{color.WHITE} > ")
+        f"\n{color.YELLOW}Enter Audio location in computer{color.WHITE} > ")
 
     if location == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
-        os.system("adb push " + location + " /sdcard/")
+        location = location.replace("'", "")
+        location = location.replace('"', '')
+        if not os.path.isfile(location):
+            print(
+                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
+            return
+        else:
+            location = "'"+location+"'"
+            os.system("adb push " + location + " /sdcard/")
 
         file_path = location.split('/')
         file_name = file_path[len(file_path) - 1]
@@ -773,13 +815,22 @@ def open_audio():
 
 def open_video():
     location = input(
-        f"\n{color.YELLOW}Enter file path to upload Video{color.WHITE} > ")
+        f"\n{color.YELLOW}Enter location in computer{color.WHITE} > ")
 
     if location == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
-        os.system("adb push " + location + " /sdcard/")
+        location = location.replace("'", "")
+        location = location.replace('"', '')
+        if not os.path.isfile(location):
+            print(
+                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
+            return
+        else:
+            location = "'"+location+"'"
+            os.system("adb push " + location + " /sdcard/")
 
         file_path = location.split('/')
         file_name = file_path[len(file_path) - 1]
@@ -851,6 +902,7 @@ def send_sms():
     if number == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
         message = input(
             f'{color.YELLOW}\nEnter your message {color.WHITE}> ')
@@ -940,6 +992,7 @@ def extract_apk():
     if package_name == '':
         print(
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
     else:
 
         global pull_location
