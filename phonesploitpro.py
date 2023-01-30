@@ -288,17 +288,9 @@ def push_file():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
-        location = location.replace("'", "")
-        location = location.replace('"', '')
-        if not os.path.isfile(location):
-            print(
-                f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
-            return
-        else:
-            location = "'"+location+"'"
-            destination = input(
-                f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
-            os.system("adb push " + location + " /sdcard/" + destination)
+        destination = input(
+            f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
+        os.system("adb push " + location + " /sdcard/" + destination)
 
 
 def stop_adb():
@@ -322,7 +314,7 @@ def install_app():
                 f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
             return
         else:
-            file_location = "'"+file_location+"'"
+            file_location = "'" + file_location + "'"
             os.system("adb install " + file_location)
         print("\n")
 
@@ -749,7 +741,7 @@ def open_photo():
                 f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
             return
         else:
-            location = "'"+location+"'"
+            location = '"' + location + '"'
             os.system("adb push " + location + " /sdcard/")
 
         file_path = location.split('/')
@@ -762,6 +754,7 @@ def open_photo():
             file_name = file_path[len(file_path) - 1]
 
         file_name = file_name.replace("'", '')
+        file_name = file_name.replace('"', "")
         file_name = "'" + file_name + "'"
         print(file_name)
         print(f'\n{color.YELLOW}Opening Photo on device        \n{color.WHITE}')
@@ -786,7 +779,7 @@ def open_audio():
                 f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
             return
         else:
-            location = "'"+location+"'"
+            location = '"' + location + '"'
             os.system("adb push " + location + " /sdcard/")
 
         file_path = location.split('/')
@@ -799,6 +792,8 @@ def open_audio():
             file_name = file_path[len(file_path) - 1]
 
         file_name = file_name.replace("'", '')
+        file_name = file_name.replace('"', "")
+
         file_name = "'" + file_name + "'"
         print(file_name)
         print(f'\n{color.YELLOW}Playing Audio on device        \n{color.WHITE}')
@@ -815,7 +810,7 @@ def open_audio():
 
 def open_video():
     location = input(
-        f"\n{color.YELLOW}Enter location in computer{color.WHITE} > ")
+        f"\n{color.YELLOW}Enter Video location in computer{color.WHITE} > ")
 
     if location == '':
         print(
@@ -829,7 +824,7 @@ def open_video():
                 f"{color.RED}\n[Error]{color.GREEN} This file does not exist {color.GREEN}")
             return
         else:
-            location = "'"+location+"'"
+            location = '"' + location + '"'
             os.system("adb push " + location + " /sdcard/")
 
         file_path = location.split('/')
@@ -842,6 +837,7 @@ def open_video():
             file_name = file_path[len(file_path) - 1]
 
         file_name = file_name.replace("'", '')
+        file_name = file_name.replace('"', "")
         file_name = "'" + file_name + "'"
         print(file_name)
         print(f'\n{color.YELLOW}Playing Video on device        \n{color.WHITE}')
