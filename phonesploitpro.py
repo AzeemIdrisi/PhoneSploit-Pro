@@ -307,6 +307,8 @@ def install_app():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
+        if location[len(location)-1] == ' ':
+            location = location.removesuffix(' ')
         file_location = file_location.replace("'", "")
         file_location = file_location.replace('"', '')
         if not os.path.isfile(file_location):
@@ -734,6 +736,8 @@ def open_photo():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
+        if location[len(location)-1] == ' ':
+            location = location.removesuffix(' ')
         location = location.replace("'", "")
         location = location.replace('"', '')
         if not os.path.isfile(location):
@@ -772,6 +776,8 @@ def open_audio():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
+        if location[len(location)-1] == ' ':
+            location = location.removesuffix(' ')
         location = location.replace("'", "")
         location = location.replace('"', '')
         if not os.path.isfile(location):
@@ -817,6 +823,8 @@ def open_video():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
+        if location[len(location)-1] == ' ':
+            location = location.removesuffix(' ')
         location = location.replace("'", "")
         location = location.replace('"', '')
         if not os.path.isfile(location):
