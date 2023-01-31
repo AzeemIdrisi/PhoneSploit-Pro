@@ -296,7 +296,12 @@ def push_file():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
-        if os.system(f'test -e {location}') == 0:
+        if operating_system == 'Windows':
+            file_status = int(os.popen(
+                f'if exist {location} (echo 0) ELSE (echo 1)').read())
+        else:
+            file_status = os.system(f'test -e {location}')
+        if file_status == 0:
             pass
         else:
             print(
