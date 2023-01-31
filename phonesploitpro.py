@@ -246,6 +246,14 @@ def pull_file():
     global pull_location
     print(f"\n{color.CYAN}Enter file path           {color.YELLOW}Example : /sdcard/Download/sample.jpg{color.WHITE}")
     location = input("\n> /sdcard/")
+# Checking if specified file or folder exists in Android
+    if os.system(f'adb shell test -d /sdcard/{location}') == 0:
+        pass
+    else:
+        print(
+            f"{color.RED}\n[Error]{color.GREEN} Specified location does not exist {color.GREEN}")
+        return
+
     if pull_location == '':
         print(
             f"\n{color.YELLOW}Enter location to save all files, Press 'Enter' for default{color.WHITE}")
@@ -508,15 +516,19 @@ def copy_whatsapp():
     else:
         print(f"\n{color.PURPLE}Saving data to {pull_location}\n{color.WHITE}")
 
-    location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
-    # 'test -d' checks if directory exist or not
-    folder_status = os.system(f'adb shell test -d {location}')
+    # folder_status = os.system(
+    #     'adb shell test -d "/sdcard/Android/media/com.whatsapp/WhatsApp"')
 
+    # 'test -d' checks if directory exist or not
     # If WhatsApp exists in Android
-    if folder_status == 0:
+    if os.system('adb shell test -d "/sdcard/Android/media/com.whatsapp/WhatsApp"') == 0:
         location = '/sdcard/Android/media/com.whatsapp/WhatsApp'
-    else:
+    elif os.system('adb shell test -d "/sdcard/WhatsApp"') == 0:
         location = '/sdcard/WhatsApp'
+    else:
+        print(
+            f"{color.RED}\n[Error]{color.GREEN} WhatsApp folder does not exist {color.GREEN}")
+        return
 
     os.system(f"adb pull {location} {pull_location}")
     print('\n')
@@ -537,7 +549,17 @@ def copy_screenshots():
         print(
             f"\n{color.PURPLE}Saving Screenshots to {pull_location}\n{color.WHITE}")
 
-    location = '/sdcard/Pictures/Screenshots'
+# Checking if folder exists
+    if os.system('adb shell test -d "/sdcard/Pictures/Screenshots"') == 0:
+        location = '/sdcard/Pictures/Screenshots'
+    elif os.system('adb shell test -d "/sdcard/DCIM/Screenshots"') == 0:
+        location = '/sdcard/DCIM/Screenshots'
+    elif os.system('adb shell test -d "/sdcard/Screenshots"') == 0:
+        location = '/sdcard/Screenshots'
+    else:
+        print(
+            f"{color.RED}\n[Error]{color.GREEN} Screenshots folder does not exist {color.GREEN}")
+        return
     os.system(f"adb pull {location} {pull_location}")
     print('\n')
 
@@ -555,7 +577,13 @@ def copy_camera():
     else:
         print(f"\n{color.PURPLE}Saving Photos to {pull_location}\n{color.WHITE}")
 
-    location = '/sdcard/DCIM/Camera'
+    # Checking if folder exists
+    if os.system('adb shell test -d "/sdcard/DCIM/Camera"') == 0:
+        location = '/sdcard/DCIM/Camera'
+    else:
+        print(
+            f"{color.RED}\n[Error]{color.GREEN} Camera folder does not exist {color.GREEN}")
+        return
     os.system(f"adb pull {location} {pull_location}")
     print('\n')
 

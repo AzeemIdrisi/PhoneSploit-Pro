@@ -147,6 +147,8 @@ sudo dnf install adb
 sudo pacman -Sy android-tools
 ```
 
+For other Linux Distributions : [Visit this Link](https://developer.android.com/studio/releases/platform-tools#downloads)
+
 #### ADB on macOS :
 
 Open terminal and paste the following command :
