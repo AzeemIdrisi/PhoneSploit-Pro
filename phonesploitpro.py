@@ -247,7 +247,7 @@ def pull_file():
     print(f"\n{color.CYAN}Enter file path           {color.YELLOW}Example : /sdcard/Download/sample.jpg{color.WHITE}")
     location = input("\n> /sdcard/")
 # Checking if specified file or folder exists in Android
-    if os.system(f'adb shell test -d /sdcard/{location}') == 0:
+    if os.system(f'adb shell test -e /sdcard/{location}') == 0:
         pass
     else:
         print(
@@ -296,6 +296,12 @@ def push_file():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
+        if os.system(f'test -e {location}') == 0:
+            pass
+        else:
+            print(
+                f"{color.RED}\n[Error]{color.GREEN} Specified location does not exist {color.GREEN}")
+            return
         destination = input(
             f"\n{color.CYAN}Enter destination path              {color.YELLOW}Example : /sdcard/Documents{color.WHITE}\n> /sdcard/")
         os.system("adb push " + location + " /sdcard/" + destination)
