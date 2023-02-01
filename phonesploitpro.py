@@ -326,8 +326,8 @@ def install_app():
             f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
         return
     else:
-        if location[len(location)-1] == ' ':
-            location = location.removesuffix(' ')
+        if file_location[len(file_location)-1] == ' ':
+            file_location = file_location.removesuffix(' ')
         file_location = file_location.replace("'", "")
         file_location = file_location.replace('"', '')
         if not os.path.isfile(file_location):
