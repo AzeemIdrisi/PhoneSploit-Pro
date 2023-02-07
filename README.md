@@ -134,6 +134,9 @@ Open terminal and paste the following commands :
 
 * __Debian / Ubuntu__
 ```
+sudo apt update
+```
+```
 sudo apt install adb
 ```
 
@@ -164,6 +167,9 @@ or Visit this link : [Click Here](https://developer.android.com/studio/releases/
 Visit this link : [Click Here](https://developer.android.com/studio/releases/platform-tools.html#downloads)
 
 #### ADB on Termux :
+```
+pkg update
+```
 ```
 pkg install android-tools
 ```
