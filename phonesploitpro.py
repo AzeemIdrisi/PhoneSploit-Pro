@@ -618,7 +618,7 @@ def anonymous_screenshot():
 
     os.system(f"adb pull /sdcard/{file_name} {screenshot_location}")
 
-    print(f'\n{color.YELLOW}Deleting screenshot from Target\'s device\n{color.WHITE}')
+    print(f'\n{color.YELLOW}Deleting screenshot from Target device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
 
     # Asking to open file
@@ -662,7 +662,7 @@ def anonymous_screenrecord():
 
     os.system(f"adb pull /sdcard/{file_name} {screenrecord_location}")
 
-    print(f'\n{color.YELLOW}Deleting video from Target\'s device\n{color.WHITE}')
+    print(f'\n{color.YELLOW}Deleting video from Target device\n{color.WHITE}')
     os.system(f"adb shell rm /sdcard/{file_name}")
     # Asking to open file
     choice = input(
@@ -1099,7 +1099,7 @@ def main():
     # taking selection input from user
     print(f"\n {color.CYAN}99 : Clear Screen                0 : Exit")
     option = input(
-        f"{color.RED}\n[Main Menu] {color.WHITE}Enter selection > ").lower()
+        f"\n{color.RED}[Main Menu] {color.WHITE}Enter selection > ").lower()
 
     match option:
         case 'p':
