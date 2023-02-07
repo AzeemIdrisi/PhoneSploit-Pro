@@ -1062,12 +1062,12 @@ def extract_apk():
 
 def mirror():
     print(f'''
-    {color.WHITE}1.{color.GREEN} Default Mode
-    {color.WHITE}2.{color.GREEN} Fast Mode {color.YELLOW}(Low quality but high performance)
-    {color.WHITE}3.{color.GREEN} Custom Mode {color.YELLOW}(Tweak settings to increase performance)
+    {color.WHITE}1.{color.GREEN} Default Mode   {color.YELLOW}(Best quality)
+    {color.WHITE}2.{color.GREEN} Fast Mode      {color.YELLOW}(Low quality but high performance)
+    {color.WHITE}3.{color.GREEN} Custom Mode    {color.YELLOW}(Tweak settings to increase performance)
     {color.WHITE}''')
     mode = input("> ")
-    if mode == '1' or mode == '':
+    if mode == '1':
         os.system('scrcpy')
     elif mode == '2':
         os.system('scrcpy -m 1024 -b 1M')
