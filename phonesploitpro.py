@@ -40,56 +40,27 @@ def windows_config():
 
 def check_packages():
     adb_status = subprocess.call(['which', 'adb'])
-    if adb_status != 0:
-        print(f'\n{color.RED}ERROR : ADB is NOT installed!\n')
-        print(f'\n{color.CYAN}Please install Android-Tools (adb){color.WHITE}\n')
-
-        choice = input(
-            '\nDo you still want to continue to PhoneSploit Pro?     Y / N > ').lower()
-        if choice == 'y' or choice == '':
-            return
-        elif choice == 'n':
-            exit_phonesploit_pro()
-            return
-        else:
-            while choice != 'y' and choice != 'n' and choice != '':
-                choice = input(
-                    '\nInvalid choice!, Press Y or N > ').lower()
-                if choice == 'y' or choice == '':
-                    return
-                elif choice == 'n':
-                    exit_phonesploit_pro()
-                    return
-
-    metasploit_status = subprocess.call(['which', 'msfconsole'])
-    if metasploit_status != 0:
-        print(f'\n{color.RED}ERROR : Metasploit-Framework is NOT installed!\n')
-        print(f'\n{color.CYAN}Please install Metasploit-Framework{color.WHITE}\n')
-
-        choice = input(
-            '\nDo you still want to continue to PhoneSploit Pro?     Y / N > ').lower()
-        if choice == 'y' or choice == '':
-            return
-        elif choice == 'n':
-            exit_phonesploit_pro()
-            return
-        else:
-            while choice != 'y' and choice != 'n' and choice != '':
-                choice = input(
-                    '\nInvalid choice!, Press Y or N > ').lower()
-                if choice == 'y' or choice == '':
-                    return
-                elif choice == 'n':
-                    exit_phonesploit_pro()
-                    return
-
     scrcpy_status = subprocess.call(['which', 'scrcpy'])
-    if scrcpy_status != 0:
-        print(f'\n{color.RED}ERROR : scrcpy is NOT installed!\n')
-        print(f'\n{color.CYAN}Please install scrcpy{color.WHITE}\n')
+    metasploit_status = subprocess.call(['which', 'msfconsole'])
+
+    if adb_status != 0 or metasploit_status != 0 or scrcpy_status != 0:
+        print(
+            f'\n{color.RED}ERROR : The following required software are NOT installed!\n')
+
+        if adb_status != 0:
+            print(f'{color.YELLOW}ADB{color.WHITE}')
+
+        if metasploit_status != 0:
+            print(f'{color.YELLOW}Metasploit-Framework{color.WHITE}')
+
+        if scrcpy_status != 0:
+            print(f'{color.YELLOW}scrcpy{color.WHITE}')
+
+        print(
+            f'\n{color.CYAN}Please install the above listed software.{color.WHITE}\n')
 
         choice = input(
-            '\nDo you still want to continue to PhoneSploit Pro?     Y / N > ').lower()
+            f'\n{color.GREEN}Do you still want to continue to PhoneSploit Pro?{color.WHITE}     Y / N > ').lower()
         if choice == 'y' or choice == '':
             return
         elif choice == 'n':
