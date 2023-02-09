@@ -47,14 +47,19 @@ def check_packages():
         print(
             f'\n{color.RED}ERROR : The following required software are NOT installed!\n')
 
+        count = 0  # Count variable for indexing
+
         if adb_status != 0:
-            print(f'{color.YELLOW}ADB{color.WHITE}')
+            count = count + 1
+            print(f'{color.YELLOW}{count}. {color.YELLOW}ADB{color.WHITE}')
 
         if metasploit_status != 0:
-            print(f'{color.YELLOW}Metasploit-Framework{color.WHITE}')
+            count = count + 1
+            print(f'{color.YELLOW}{count}. Metasploit-Framework{color.WHITE}')
 
         if scrcpy_status != 0:
-            print(f'{color.YELLOW}scrcpy{color.WHITE}')
+            count = count + 1
+            print(f'{color.YELLOW}{count}. Scrcpy{color.WHITE}')
 
         print(
             f'\n{color.CYAN}Please install the above listed software.{color.WHITE}\n')
