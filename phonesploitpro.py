@@ -115,9 +115,13 @@ def connect():
         return
     else:
         # Restart ADB on new connection.
-        os.system(
-            'adb kill-server > hidden.txt 2>&1&&adb start-server > hidden.txt 2>&1')
-        os.system("adb connect " + ip + ":5555")
+        if ip.count('.') == 3:
+            os.system(
+                'adb kill-server > hidden.txt 2>&1&&adb start-server > hidden.txt 2>&1')
+            os.system("adb connect " + ip + ":5555")
+        else:
+            print(
+                f'\n{color.RED} Invalid IP Address\n{color.GREEN} Going back to Main Menu{color.WHITE}')
 
 
 def list_devices():
@@ -1073,6 +1077,25 @@ def mirror():
     print('\n')
 
 
+def power_off():
+    print(
+        f'\n{color.RED}[Warning]{color.YELLOW} Powering off device will disconnect the device{color.WHITE}')
+    choice = input('\nDo you want to continue?     Y / N > ').lower()
+    if choice == 'y' or choice == '':
+        pass
+    elif choice == 'n':
+        return
+    else:
+        while choice != 'y' and choice != 'n' and choice != '':
+            choice = input('\nInvalid choice!, Press Y or N > ').lower()
+            if choice == 'y' or choice == '':
+                pass
+            elif choice == 'n':
+                return
+    os.system(f'adb shell reboot -p')
+    print('\n')
+
+
 def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
@@ -1163,6 +1186,8 @@ def main():
             extract_apk()
         case '37':
             stop_adb()
+        case '38':
+            power_off()
         case other:
             print("\nInvalid selection!\n")
 

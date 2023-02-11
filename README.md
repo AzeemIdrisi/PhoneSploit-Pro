@@ -73,6 +73,10 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 * Mirror and Control the target device. 
 
+## v1.4
+
+* Power off the target device. 
+
 # Requirements  
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`

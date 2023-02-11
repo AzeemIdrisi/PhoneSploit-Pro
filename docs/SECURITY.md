@@ -7,6 +7,7 @@ currently being supported with security updates. -->
 
 | Version | Supported          |
 | ------- | ------------------ |
+| v1.4   | ✅ |
 | v1.3   | ✅ |
 | v1.2   | ✅ |
 | v1.1   | ✅ |
