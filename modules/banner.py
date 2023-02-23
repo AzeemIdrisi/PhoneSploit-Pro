@@ -72,7 +72,7 @@ banner2 = f'''
         ░█─── ▀──▀ ▀▀▀▀ ▀──▀ ▀▀▀ ░█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ──▀── 　 ░█─── ▀─▀▀ ▀▀▀▀
 
 
-            {color.RED}v1.4{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.41{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner3 = f'''
@@ -81,7 +81,7 @@ banner3 = f'''
         █▀▀ █▀█ █▄█ █░▀█ ██▄ ▄█ █▀▀ █▄▄ █▄█ █ ░█░   █▀▀ █▀▄ █▄█ 
 
 
-            {color.RED}v1.4{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.41{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner4 = f'''
@@ -93,7 +93,7 @@ banner4 = f'''
                   \/            \/     \/        \/|__|                                                      
 
 
-        {color.RED}v1.4{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
+        {color.RED}v1.41{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
 '''
 banner5 = f'''
        ___  __                 ____     __     _ __     ___         
@@ -102,7 +102,7 @@ banner5 = f'''
     /_/  /_//_/\___/_//_/\__/___/ .__/_/\___/_/\__/  /_/  /_/  \___/
                                /_/                                                                                                      
 
-        {color.RED}v1.4{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
+        {color.RED}v1.41{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner6 = f'''
@@ -113,7 +113,7 @@ banner6 = f'''
     /_/   /_/ /_/\____/_/ /_/\___/____/ .___/_/\____/_/\__/    /_/   /_/   \____/
                                      /_/                                                                                                       
     
-           {color.RED}v1.4{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
+           {color.RED}v1.41{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -128,7 +128,7 @@ banner10 = f'''
                                                          \ \_\                                                       
                                                           \/_/                                              
 
-            {color.RED}v1.4{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.41{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -141,7 +141,7 @@ banner11 = f'''
                                             /_/                                                      
 
 
-            {color.RED}v1.4{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.41{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -152,7 +152,7 @@ banner12 = f'''
         ▒█░░░ ▀░░▀ ▀▀▀▀ ▀░░▀ ▀▀▀ ▒█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ░░▀░░ 　 ▒█░░░ ▀░▀▀ ▀▀▀▀   
 
 
-            {color.RED}v1.4{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.41{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 banner_list = [banner2, banner3, banner4, banner5,
