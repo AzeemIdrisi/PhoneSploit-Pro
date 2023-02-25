@@ -33,8 +33,8 @@ menu3 = f'''
     {color.WHITE}31. {color.GREEN}Unlock Device               {color.WHITE}36. {color.GREEN}Extract APK from Installed App      {color.WHITE}    {color.GREEN}
     {color.WHITE}32. {color.GREEN}Lock Device                 {color.WHITE}37. {color.GREEN}Stop ADB Server                     {color.WHITE}    {color.GREEN}
     {color.WHITE}33. {color.GREEN}Dump All SMS                {color.WHITE}38. {color.GREEN}Power Off Device                    {color.WHITE}    {color.GREEN}
-    {color.WHITE}34. {color.GREEN}Dump All Contacts           {color.WHITE}    {color.GREEN}                                    {color.WHITE}    {color.GREEN}
-    {color.WHITE}35. {color.GREEN}Dump Call Logs              {color.WHITE}    {color.GREEN}                                    {color.WHITE}    {color.GREEN}
+    {color.WHITE}34. {color.GREEN}Dump All Contacts           {color.WHITE}39. {color.GREEN}Update PhoneSploit-Pro              {color.WHITE}    {color.GREEN}
+    {color.WHITE}35. {color.GREEN}Dump Call Logs              {color.WHITE}40. {color.GREEN}Visit PhoneSploit-Pro on GitHub     {color.WHITE}    {color.GREEN}
 
 
    {color.YELLOW} 
@@ -72,7 +72,7 @@ banner2 = f'''
         ░█─── ▀──▀ ▀▀▀▀ ▀──▀ ▀▀▀ ░█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ──▀── 　 ░█─── ▀─▀▀ ▀▀▀▀
 
 
-            {color.RED}v1.41{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.42{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner3 = f'''
@@ -81,7 +81,7 @@ banner3 = f'''
         █▀▀ █▀█ █▄█ █░▀█ ██▄ ▄█ █▀▀ █▄▄ █▄█ █ ░█░   █▀▀ █▀▄ █▄█ 
 
 
-            {color.RED}v1.41{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.42{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner4 = f'''
@@ -93,7 +93,7 @@ banner4 = f'''
                   \/            \/     \/        \/|__|                                                      
 
 
-        {color.RED}v1.41{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
+        {color.RED}v1.42{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
 '''
 banner5 = f'''
        ___  __                 ____     __     _ __     ___         
@@ -102,7 +102,7 @@ banner5 = f'''
     /_/  /_//_/\___/_//_/\__/___/ .__/_/\___/_/\__/  /_/  /_/  \___/
                                /_/                                                                                                      
 
-        {color.RED}v1.41{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
+        {color.RED}v1.42{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
 '''
 
 banner6 = f'''
@@ -113,7 +113,7 @@ banner6 = f'''
     /_/   /_/ /_/\____/_/ /_/\___/____/ .___/_/\____/_/\__/    /_/   /_/   \____/
                                      /_/                                                                                                       
     
-           {color.RED}v1.41{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
+           {color.RED}v1.42{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -128,7 +128,7 @@ banner10 = f'''
                                                          \ \_\                                                       
                                                           \/_/                                              
 
-            {color.RED}v1.41{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.42{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -141,7 +141,7 @@ banner11 = f'''
                                             /_/                                                      
 
 
-            {color.RED}v1.41{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.42{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 
@@ -152,7 +152,7 @@ banner12 = f'''
         ▒█░░░ ▀░░▀ ▀▀▀▀ ▀░░▀ ▀▀▀ ▒█▄▄▄█ █▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀ ░░▀░░ 　 ▒█░░░ ▀░▀▀ ▀▀▀▀   
 
 
-            {color.RED}v1.41{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
+            {color.RED}v1.42{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
 '''
 banner_list = [banner2, banner3, banner4, banner5,

@@ -1109,6 +1109,21 @@ def power_off():
     print('\n')
 
 
+def update_me():
+    print(f'{color.GREEN}\nUpdating PhoneSploit-Pro\n{color.WHITE}')
+    print(f'{color.GREEN}\nFetching latest updates from GitHub\n{color.WHITE}')
+    os.system('git fetch')
+    print(f'{color.GREEN}\nApplying changes\n{color.WHITE}')
+    os.system('git rebase')
+    print(f'{color.CYAN}\nPlease restart PhoneSploit-Pro\n{color.WHITE}')
+    exit_phonesploit_pro()
+
+
+def visit_me():
+    os.system(f'{opener} "https://github.com/AzeemIdrisi/PhoneSploit-Pro"')
+    print("\n")
+
+
 def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
@@ -1201,6 +1216,10 @@ def main():
             stop_adb()
         case '38':
             power_off()
+        case '39':
+            update_me()
+        case '40':
+            visit_me()
         case other:
             print("\nInvalid selection!\n")
 
