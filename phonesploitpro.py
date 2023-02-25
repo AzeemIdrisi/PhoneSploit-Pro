@@ -1110,12 +1110,12 @@ def power_off():
 
 
 def update_me():
-    print(f'{color.GREEN}\nUpdating PhoneSploit-Pro\n{color.WHITE}')
-    print(f'{color.GREEN}\nFetching latest updates from GitHub\n{color.WHITE}')
+    print(f'{color.YELLOW}\nUpdating PhoneSploit-Pro\n{color.WHITE}')
+    print(f'{color.GREEN}Fetching latest updates from GitHub\n{color.WHITE}')
     os.system('git fetch')
     print(f'{color.GREEN}\nApplying changes\n{color.WHITE}')
     os.system('git rebase')
-    print(f'{color.CYAN}\nPlease restart PhoneSploit-Pro\n{color.WHITE}')
+    print(f'{color.CYAN}\nPlease restart PhoneSploit-Pro{color.WHITE}')
     exit_phonesploit_pro()
 
 
