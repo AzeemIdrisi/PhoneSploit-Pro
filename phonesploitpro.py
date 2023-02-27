@@ -1120,7 +1120,7 @@ def update_me():
 
 
 def visit_me():
-    os.system(f'{opener} "https://github.com/AzeemIdrisi/PhoneSploit-Pro"')
+    os.system(f'{opener} https://github.com/AzeemIdrisi/PhoneSploit-Pro')
     print("\n")
 
 
