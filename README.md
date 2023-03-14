@@ -205,7 +205,8 @@ Visit the `scrcpy` GitHub page for latest installation instructions : [Click Her
 
 **On Windows** : Copy all the files from the extracted **scrcpy** folder to **PhoneSploit-Pro** folder.
 
-If `scrcpy` is not available for your Linux distro like **Kali Linux**, then you can build it with a few simple steps : [Build Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/build.md#build-scrcpy)
+If `scrcpy` is not available for your Linux distro like **Kali Linux**, then you can either manually install it : [Manual Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md),
+or build it with a few simple steps : [Build Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/build.md#build-scrcpy)
 
 # Tutorial
 
