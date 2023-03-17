@@ -15,27 +15,34 @@ from modules import color
 
 
 def start():
+    # Creating Downloaded-Files folder if it does not exist
+    try:
+        # Creates a folder to store pulled files
+        os.mkdir("Downloaded-Files")
+    except:
+        pass
+
     # Checking OS
-    global operating_system
+    global operating_system, opener
     operating_system = platform.system()
     if operating_system == 'Windows':
         # Windows specific configuration
         windows_config()
     else:
-        # On Linux / macOS
+        # macOS only
+        if operating_system == 'Darwin':
+            opener = 'open'
+
+        # On Linux and macOS both
         import readline  # Arrow Key
-        # Creates a folder to store pulled files
-        os.system('mkdir -p Downloaded-Files')
         check_packages()  # Checking for required packages
 
 
 def windows_config():
-    global clear, opener, move
+    global clear, opener  # , move
     clear = 'cls'
     opener = 'start'
-    move = 'move'
-    # Creates a folder to store pulled files
-    os.system('if not exist Downloaded-Files mkdir Downloaded-Files')
+    # move = 'move'
 
 
 def check_packages():
@@ -117,7 +124,7 @@ def connect():
         # Restart ADB on new connection.
         if ip.count('.') == 3:
             os.system(
-                'adb kill-server > hidden.txt 2>&1&&adb start-server > hidden.txt 2>&1')
+                'adb kill-server > docs/hidden.txt 2>&1&&adb start-server > docs/hidden.txt 2>&1')
             os.system("adb connect " + ip + ":5555")
         else:
             print(
@@ -1048,7 +1055,8 @@ def extract_apk():
         path = path.replace('package:', '')
         os.system(f'adb pull {path}')
         file_name = package_name.replace('.', '_')
-        os.system(f'{move} base.apk {pull_location}/{file_name}.apk')
+        # os.system(f'{move} base.apk {pull_location}/{file_name}.apk')
+        os.rename("base.apk", f"{pull_location}/{file_name}.apk")
 
         print("\n")
 
@@ -1231,7 +1239,7 @@ run_phonesploit_pro = True
 operating_system = ''
 clear = 'clear'
 opener = 'xdg-open'
-move = 'mv'
+# move = 'mv'
 page_number = 0
 page = banner.menu[page_number]
 
