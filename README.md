@@ -82,7 +82,7 @@ The goal of this project is to make penetration testing on Android devices easy.
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
-* [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy (Screen Copy)
+* [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy
 
 # Run PhoneSploit Pro 
 
@@ -130,6 +130,67 @@ python phonesploitpro.py
 ![Screenshot Page 3](docs/Screenshot-3.png)
 
 
+
+# Tutorial
+
+
+## Setting up Android Phone for the first time
+
+* __Enabling the Developer Options__
+
+1. Open `Settings`.
+2. Go to `About Phone`.
+3. Find `Build Number`.
+4. Tap on `Build Number` 7 times.
+5. Enter your pattern, PIN or password to enable the `Developer options` menu.
+6. The `Developer options` menu will now appear in your Settings menu.
+
+* __Enabling USB Debugging__
+
+1. Open `Settings`.
+2. Go to `System` > `Developer options`.
+3. Scroll down and Enable `USB debugging`.
+
+* __Connecting with Computer__
+
+1. Connect your Android device and `adb` host computer to a common Wi-Fi network.
+2. Connect the device to the host computer with a USB cable.
+3. Open terminal in the computer and enter the following command :
+```
+adb devices
+```
+4. A pop-up will appear in the Android phone when you connect your phone to a new PC for the first time : `Allow USB debugging?`.
+5. Click on `Always allow from this computer` check-box and then click `Allow`.
+6. Then enter the following command :
+```
+adb tcpip 5555
+```
+7. Now you can connect the Android Phone over Wi-Fi.
+8. Disconnect the USB cable.
+9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
+10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
+
+
+
+## Connecting the Android phone for the next time
+
+1. Connect your Android device and host computer to a common Wi-Fi network.
+2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
+
+
+# This tool is tested on
+
+-  ✅ Ubuntu
+-  ✅ Linux Mint
+-  ✅ Kali Linux
+-  ✅ Fedora
+-  ✅ Arch Linux
+-  ✅ Parrot Security OS
+-  ✅ Windows 11
+-  ✅ Termux (Android)
+
+All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
+Some features might not work properly on Windows.
 
 # Installing ADB 
 
@@ -207,67 +268,6 @@ Visit the `scrcpy` GitHub page for latest installation instructions : [Click Her
 
 If `scrcpy` is not available for your Linux distro like **Kali Linux**, then you can either manually install it : [Manual Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md),
 or build it with a few simple steps : [Build Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/build.md#build-scrcpy)
-
-# Tutorial
-
-
-## Setting up Android Phone for the first time
-
-* __Enabling the Developer Options__
-
-1. Open `Settings`.
-2. Go to `About Phone`.
-3. Find `Build Number`.
-4. Tap on `Build Number` 7 times.
-5. Enter your pattern, PIN or password to enable the `Developer options` menu.
-6. The `Developer options` menu will now appear in your Settings menu.
-
-* __Enabling USB Debugging__
-
-1. Open `Settings`.
-2. Go to `System` > `Developer options`.
-3. Scroll down and Enable `USB debugging`.
-
-* __Connecting with Computer__
-
-1. Connect your Android device and `adb` host computer to a common Wi-Fi network.
-2. Connect the device to the host computer with a USB cable.
-3. Open terminal in the computer and enter the following command :
-```
-adb devices
-```
-4. A pop-up will appear in the Android phone when you connect your phone to a new PC for the first time : `Allow USB debugging?`.
-5. Click on `Always allow from this computer` check-box and then click `Allow`.
-6. Then enter the following command :
-```
-adb tcpip 5555
-```
-7. Now you can connect the Android Phone over Wi-Fi.
-8. Disconnect the USB cable.
-9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
-10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
-
-
-
-## Connecting the Android phone for the next time
-
-1. Connect your Android device and host computer to a common Wi-Fi network.
-2. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
-
-
-# This tool is tested on
-
--  ✅ Ubuntu
--  ✅ Linux Mint
--  ✅ Kali Linux
--  ✅ Fedora
--  ✅ Arch Linux
--  ✅ Parrot Security OS
--  ✅ Windows 11
--  ✅ Termux (Android)
-
-All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
-Some features might not work properly on Windows.
 
 
 # Disclaimer
