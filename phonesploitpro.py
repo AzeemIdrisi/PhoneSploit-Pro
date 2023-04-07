@@ -12,6 +12,7 @@ import platform
 import datetime
 from modules import banner
 from modules import color
+from modules import nmap
 
 
 def start():
@@ -1132,6 +1133,36 @@ def visit_me():
     print("\n")
 
 
+def scan_network():
+    print(f"\n{color.GREEN}Scanning network for connected devices...{color.WHITE}\n")
+    ip = get_ip_address()
+    ip += '/24'
+
+    scanner = nmap.PortScanner()
+    scanner.scan(hosts=ip, arguments='-sn')
+    for host in scanner.all_hosts():
+        if scanner[host]['status']['state'] == 'up':
+            try:
+                if len(scanner[host]['vendor']) == 0:
+                    try:
+                        print(
+                            f"[{color.GREEN}+{color.WHITE}] {host}      \t {socket.gethostbyaddr(host)[0]}")
+                    except:
+                        print(f"[{color.GREEN}+{color.WHITE}] {host}")
+                else:
+                    try:
+                        print(
+                            f"[{color.GREEN}+{color.WHITE}] {host}      \t {scanner[host]['vendor']}      \t {socket.gethostbyaddr(host)[0]}")
+                    except:
+                        print(
+                            f"[{color.GREEN}+{color.WHITE}] {host}      \t {scanner[host]['vendor']}")
+            except:
+                print(
+                    f"[{color.GREEN}+{color.WHITE}] {host}      \t {scanner[host]['vendor']}")
+
+    print("\n")
+
+
 def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
@@ -1155,7 +1186,7 @@ def main():
         case '3':
             disconnect()
         case '4':
-            get_shell()
+            scan_network()
         case '5':
             mirror()
         case '6':
@@ -1175,13 +1206,13 @@ def main():
         case '13':
             list_apps()
         case '14':
-            reboot('system')
+            get_shell()
         case '15':
             hack()
         case '16':
             list_files()
         case '17':
-            reboot('advanced')
+            send_sms()
         case '18':
             copy_whatsapp()
         case '19':
@@ -1205,9 +1236,9 @@ def main():
         case '28':
             battery_info()
         case '29':
-            use_keycode()
+            reboot('system')
         case '30':
-            send_sms()
+            reboot('advanced')
         case '31':
             unlock_device()
         case '32':
@@ -1225,8 +1256,10 @@ def main():
         case '38':
             power_off()
         case '39':
-            update_me()
+            use_keycode()
         case '40':
+            update_me()
+        case '41':
             visit_me()
         case other:
             print("\nInvalid selection!\n")

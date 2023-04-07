@@ -78,11 +78,16 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 * Power off the target device. 
 
+## v1.5
+
+* Scan local network for connected devices to get Target IP Address. 
+
 # Requirements  
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
 * [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy
+* [`nmap`](https://nmap.org/) : Nmap
 
 # Run PhoneSploit Pro 
 
@@ -268,6 +273,55 @@ Visit the `scrcpy` GitHub page for latest installation instructions : [Click Her
 
 If `scrcpy` is not available for your Linux distro like **Kali Linux**, then you can either manually install it : [Manual Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md),
 or build it with a few simple steps : [Build Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/build.md#build-scrcpy)
+
+# Installing Nmap
+
+#### Nmap on Linux :
+
+Open terminal and paste the following commands :
+
+* __Debian / Ubuntu__
+```
+sudo apt update
+```
+```
+sudo apt install nmap
+```
+
+* __Fedora__
+```
+sudo dnf install nmap
+```
+
+* __Arch Linux / Manjaro__
+```
+sudo pacman -Sy nmap
+```
+
+For other Linux Distributions : [Visit this Link](https://nmap.org/download.html)
+
+#### Nmap on macOS :
+
+Open terminal and paste the following command :
+
+```
+brew install nmap
+```
+
+or Visit this link : [Visit this Link](https://nmap.org/download.html)
+
+#### Nmap on Windows :
+
+Download and install the latest stable release : [Click Here](https://nmap.org/download.html#windows)
+
+#### Nmap on Termux :
+```
+pkg update
+```
+```
+pkg install nmap
+```
+
 
 
 # Disclaimer
