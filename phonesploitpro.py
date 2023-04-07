@@ -50,8 +50,9 @@ def check_packages():
     adb_status = subprocess.call(['which', 'adb'])
     scrcpy_status = subprocess.call(['which', 'scrcpy'])
     metasploit_status = subprocess.call(['which', 'msfconsole'])
+    nmap_status = subprocess.call(['which', 'nmap'])
 
-    if adb_status != 0 or metasploit_status != 0 or scrcpy_status != 0:
+    if adb_status != 0 or metasploit_status != 0 or scrcpy_status != 0 or nmap_status != 0:
         print(
             f'\n{color.RED}ERROR : The following required software are NOT installed!\n')
 
@@ -68,6 +69,10 @@ def check_packages():
         if scrcpy_status != 0:
             count = count + 1
             print(f'{color.YELLOW}{count}. Scrcpy{color.WHITE}')
+
+        if nmap_status != 0:
+            count = count + 1
+            print(f'{color.YELLOW}{count}. Nmap{color.WHITE}')
 
         print(
             f'\n{color.CYAN}Please install the above listed software.{color.WHITE}\n')
