@@ -160,17 +160,17 @@ python phonesploitpro.py
 
 1. Connect your Android device and `adb` host computer to a common Wi-Fi network.
 2. Connect the device to the host computer with a USB cable.
-3. Open terminal in the computer and enter the following command :
+3. Open a terminal in the computer and enter the following command :
 ```
 adb devices
 ```
 4. A pop-up will appear in the Android phone when you connect your phone to a new PC for the first time : `Allow USB debugging?`.
 5. Click on `Always allow from this computer` check-box and then click `Allow`.
-6. Then enter the following command :
+6. Then in the terminal enter the following command :
 ```
 adb tcpip 5555
 ```
-7. Now you can connect the Android Phone over Wi-Fi.
+7. Now you can connect the Android Phone with the computer over Wi-Fi using `adb`.
 8. Disconnect the USB cable.
 9. Go to `Settings` >  `About Phone` > `Status` > `IP address` and note the phone's `IP Address`.
 10. Run __PhoneSploit Pro__ and select `Connect a device` and enter the target's `IP Address` to connect over Wi-Fi.
