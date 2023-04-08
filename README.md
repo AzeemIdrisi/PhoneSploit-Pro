@@ -93,6 +93,8 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
 
+> **PhoneSploit Pro** requires Python version 3.10 or above. Please update Python before running the program to meet the requirement.
+
 #### On Linux / macOS :
 
 Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requirements) software are installed.
