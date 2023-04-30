@@ -5,7 +5,7 @@ Author : Mohd Azeem (github.com/AzeemIdrisi)
 
 from modules import color
 
-version = 'v1.5'
+version = 'v1.51'
 
 menu1 = f'''
 

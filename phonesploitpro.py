@@ -334,16 +334,58 @@ def install_app():
 
 
 def uninstall_app():
-    print(
-        f"\n{color.CYAN}Enter package name     {color.WHITE}Example : com.spotify.music ")
-    package_name = input("> ")
+    print(f'''
+    {color.WHITE}1.{color.GREEN} Select from App List
+    {color.WHITE}2.{color.GREEN} Enter Package Name Manually
+    {color.WHITE}''')
 
-    if package_name == '':
-        print(
-            f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
-    else:
-        os.system("adb uninstall " + package_name)
+    mode = (input("> "))
+    if mode == '1':
+
+        # Listing third party apps
+        list = os.popen("adb shell pm list packages -3").read().split("\n")
+        list.remove('')
+        i = 0
         print("\n")
+        for app in list:
+            i += 1
+            app = app.replace("package:", "")
+            print(f"{color.GREEN}{i:02d}.{color.WHITE} {app}")
+
+        # Selection of app
+        app = input("\nEnter Selection > ")
+        if (app.isdigit()):
+            if int(app) <= len(list) and int(app) > 0:
+                package = list[int(app)-1].replace("package:", "")
+                print(
+                    f"\n{color.RED}Uninstalling {color.YELLOW}{package}{color.WHITE}")
+                os.system("adb uninstall " + package)
+            else:
+                print(
+                    f'\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+                return
+        else:
+            print(
+                f'\n{color.RED} Expected an Integer Value\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+            return
+
+    elif mode == '2':
+
+        print(
+            f"\n{color.CYAN}Enter package name     {color.WHITE}Example : com.spotify.music ")
+        package_name = input("> ")
+
+        if package_name == '':
+            print(
+                f'\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        else:
+            os.system("adb uninstall " + package_name)
+    else:
+        print(
+            f'\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}')
+        return
+
+    print("\n")
 
 
 def launch_app():
@@ -1180,6 +1222,8 @@ def main():
             change_page('p')
         case 'n':
             change_page('n')
+        case 'release':
+            from modules import release
         case '0':
             exit_phonesploit_pro()
         case '99':
