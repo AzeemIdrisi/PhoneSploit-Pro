@@ -14,7 +14,7 @@ An all-in-one hacking tool written in `Python` to remotely exploit Android devic
 
 #### Complete Automation to get a Meterpreter session in One Click
 
-This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click.
+This tool can automatically __Create__, __Install__, and __Run__ payload on the target device using __Metasploit-Framework__ and __ADB__ to completely hack the Android Device in one click if the device has open ADB port `TCP 5555`.
 
 The goal of this project is to make penetration testing on Android devices easy. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
 
