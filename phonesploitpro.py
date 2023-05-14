@@ -420,18 +420,55 @@ def uninstall_app():
 
 def launch_app():
     print(
-        f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music "
+        f"""
+    {color.WHITE}1.{color.GREEN} Select from App List
+    {color.WHITE}2.{color.GREEN} Enter Package Name Manually
+    {color.WHITE}"""
     )
-    package_name = input("> ")
 
-    if package_name == "":
-        print(
-            f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
-        )
-        return
-    else:
-        os.system("adb shell monkey -p " + package_name + " 1")
+    mode = input("> ")
+    if mode == "1":
+        # Listing third party apps
+        list = os.popen("adb shell pm list packages -3").read().split("\n")
+        list.remove("")
+        i = 0
         print("\n")
+        for app in list:
+            i += 1
+            app = app.replace("package:", "")
+            print(f"{color.GREEN}{i}.{color.WHITE} {app}")
+
+        # Selection of app
+        app = input("\nEnter Selection > ")
+        if app.isdigit():
+            if int(app) <= len(list) and int(app) > 0:
+                package_name = list[int(app) - 1].replace("package:", "")
+            else:
+                print(
+                    f"\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+                )
+                return
+        else:
+            print(
+                f"\n{color.RED} Expected an Integer Value\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+            )
+            return
+
+    elif mode == "2":
+        ## Old
+        print(
+            f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music "
+        )
+        package_name = input("> ")
+
+        if package_name == "":
+            print(
+                f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+            )
+            return
+
+    os.system("adb shell monkey -p " + package_name + " 1")
+    print("\n")
 
 
 def list_apps():
