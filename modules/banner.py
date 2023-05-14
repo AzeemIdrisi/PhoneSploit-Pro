@@ -5,9 +5,9 @@ Author : Mohd Azeem (github.com/AzeemIdrisi)
 
 from modules import color
 
-version = 'v1.51'
+version = "v1.52"
 
-menu1 = f'''
+menu1 = f"""
 
     {color.WHITE}1. {color.GREEN}Connect a Device             {color.WHITE}6. {color.GREEN}Get Screenshot                       {color.WHITE}11. {color.GREEN}Install an APK  
     {color.WHITE}2. {color.GREEN}List Connected Devices       {color.WHITE}7. {color.GREEN}Screen Record                        {color.WHITE}12. {color.GREEN}Uninstall an App
@@ -17,9 +17,9 @@ menu1 = f'''
 
 
    {color.YELLOW} 
-  N : Next Page                                      (Page : 1 / 3)'''
+  N : Next Page                                      (Page : 1 / 3)"""
 
-menu2 = f'''
+menu2 = f"""
 
     {color.WHITE}16. {color.GREEN}List All Folders/Files      {color.WHITE}21. {color.GREEN}Anonymous Screenshot                {color.WHITE}26. {color.GREEN}Play a Video on Device
     {color.WHITE}17. {color.GREEN}Send SMS                    {color.WHITE}22. {color.GREEN}Anonymous Screen Record             {color.WHITE}27. {color.GREEN}Get Device Information
@@ -29,9 +29,9 @@ menu2 = f'''
 
 
    {color.YELLOW} 
-  P : Previous Page         N : Next Page            (Page : 2 / 3)'''
+  P : Previous Page         N : Next Page            (Page : 2 / 3)"""
 
-menu3 = f'''
+menu3 = f"""
 
     {color.WHITE}31. {color.GREEN}Unlock Device               {color.WHITE}36. {color.GREEN}Extract APK from Installed App      {color.WHITE}41. {color.GREEN}Visit PhoneSploit-Pro on GitHub
     {color.WHITE}32. {color.GREEN}Lock Device                 {color.WHITE}37. {color.GREEN}Stop ADB Server                     {color.WHITE}    {color.GREEN}
@@ -41,11 +41,11 @@ menu3 = f'''
 
 
    {color.YELLOW} 
-  P : Previous Page                                  (Page : 3 / 3)'''
+  P : Previous Page                                  (Page : 3 / 3)"""
 
 menu = [menu1, menu2, menu3]
 
-instruction = f'''
+instruction = f"""
 
 This attack will launch Metasploit-Framework    (msfconsole)
 
@@ -66,9 +66,9 @@ Use 'Ctrl + C' to stop at any point
     {color.GREEN}msf6 > {color.YELLOW}exit -y       {color.WHITE}
      
 {color.RED}[PhoneSploit Pro]   {color.WHITE}Press 'Enter' to continue attack / '0' to Go Back to Main Menu
-    '''
+    """
 
-banner2 = f'''
+banner2 = f"""
 
         ░█▀▀█ █──█ █▀▀█ █▀▀▄ █▀▀ ░█▀▀▀█ █▀▀█ █── █▀▀█ ─▀─ ▀▀█▀▀ 　 ░█▀▀█ █▀▀█ █▀▀█ 
         ░█▄▄█ █▀▀█ █──█ █──█ █▀▀ ─▀▀▀▄▄ █──█ █── █──█ ▀█▀ ──█── 　 ░█▄▄█ █▄▄▀ █──█ 
@@ -76,18 +76,18 @@ banner2 = f'''
 
 
             {color.RED}{version}{color.WHITE}            {color.WHITE}By github.com/AzeemIdrisi
-'''
+"""
 
-banner3 = f'''
+banner3 = f"""
 
         █▀█ █░█ █▀█ █▄░█ █▀▀ █▀ █▀█ █░░ █▀█ █ ▀█▀   █▀█ █▀█ █▀█
         █▀▀ █▀█ █▄█ █░▀█ ██▄ ▄█ █▀▀ █▄▄ █▄█ █ ░█░   █▀▀ █▀▄ █▄█ 
 
 
             {color.RED}{version}{color.WHITE}             {color.WHITE}By github.com/AzeemIdrisi
-'''
+"""
 
-banner4 = f'''
+banner4 = f"""
     _________.__                           _________      .__         .__  __    __________                 
     \______  \\  |__   ____   ____   ____  /   _____/_____ |  |   ____ |__|/  |_  \______   \_______  ____   
     |     ___/  |  \ /  _ \ /    \_/ __ \ \_____  \\\____ \|  |  /  _ \|  \   __\  |     ___/\_  __ \/  _ \  
@@ -97,8 +97,8 @@ banner4 = f'''
 
 
         {color.RED}{version}{color.WHITE}                             {color.WHITE}By github.com/AzeemIdrisi
-'''
-banner5 = f'''
+"""
+banner5 = f"""
        ___  __                 ____     __     _ __     ___         
       / _ \/ /  ___  ___  ___ / __/__  / /__  (_) /_   / _ \_______ 
      / ___/ _ \/ _ \/ _ \/ -_)\ \/ _ \/ / _ \/ / __/  / ___/ __/ _ \\
@@ -106,9 +106,9 @@ banner5 = f'''
                                /_/                                                                                                      
 
         {color.RED}{version}{color.WHITE}        {color.WHITE}By github.com/AzeemIdrisi
-'''
+"""
 
-banner6 = f'''
+banner6 = f"""
         ____  __                    _____       __      _ __       ____           
        / __ \/ /_  ____  ____  ___ / ___/____  / /___  (_) /_     / __ \_________ 
       / /_/ / __ \/ __ \/ __ \/ _ \\\__ \/ __ \/ / __ \/ / __/    / /_/ / ___/ __ \\
@@ -118,9 +118,9 @@ banner6 = f'''
     
            {color.RED}{version}{color.WHITE}               {color.WHITE}By github.com/AzeemIdrisi
 
-'''
+"""
 
-banner10 = f'''
+banner10 = f"""
      ____    __                              ____            ___               __        ____                        
     /\  _`\ /\ \                            /\  _`\         /\_ \           __/\ \__    /\  _`\                      
     \ \ \L\ \ \ \___     ___     ___      __\ \,\L\_\  _____\//\ \     ___ /\_\ \ ,_\   \ \ \L\ \_ __   ___          
@@ -133,9 +133,9 @@ banner10 = f'''
 
             {color.RED}{version}{color.WHITE}                                {color.WHITE}By github.com/AzeemIdrisi
 
-'''
+"""
 
-banner11 = f'''
+banner11 = f"""
     _____________                   ________       ______     __________       ________              
     ___  __ \__  /_____________________  ___/__________  /________(_)_  /_      ___  __ \____________ 
     __  /_/ /_  __ \  __ \_  __ \  _ \____ \___  __ \_  /_  __ \_  /_  __/      __  /_/ /_  ___/  __ \\
@@ -146,9 +146,9 @@ banner11 = f'''
 
             {color.RED}{version}{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
-'''
+"""
 
-banner12 = f'''
+banner12 = f"""
 
         ▒█▀▀█ █░░█ █▀▀█ █▀▀▄ █▀▀ ▒█▀▀▀█ █▀▀█ █░░ █▀▀█ ░▀░ ▀▀█▀▀ 　 ▒█▀▀█ █▀▀█ █▀▀█ 
         ▒█▄▄█ █▀▀█ █░░█ █░░█ █▀▀ ░▀▀▀▄▄ █░░█ █░░ █░░█ ▀█▀ ░░█░░ 　 ▒█▄▄█ █▄▄▀ █░░█ 
@@ -157,27 +157,35 @@ banner12 = f'''
 
             {color.RED}{version}{color.WHITE}                            {color.WHITE}By github.com/AzeemIdrisi
 
-'''
-banner_list = [banner2, banner3, banner4, banner5,
-               banner6, banner10, banner11, banner12]
+"""
+banner_list = [
+    banner2,
+    banner3,
+    banner4,
+    banner5,
+    banner6,
+    banner10,
+    banner11,
+    banner12,
+]
 
-instructions_banner = f'''{color.CYAN}
+instructions_banner = f"""{color.CYAN}
         ____           __                  __  _                 
        /  _/___  _____/ /________  _______/ /_(_)___  ____  _____
        / // __ \/ ___/ __/ ___/ / / / ___/ __/ / __ \/ __ \/ ___/
      _/ // / / (__  ) /_/ /  / /_/ / /__/ /_/ / /_/ / / / (__  ) 
     /___/_/ /_/____/\__/_/   \__,_/\___/\__/_/\____/_/ /_/____/  
         {color.WHITE}                                                        
-'''
+"""
 
-hacking_banner = f'''{color.GREEN}
+hacking_banner = f"""{color.GREEN}
     
     █░█ ▄▀█ █▀▀ █▄▀ █ █▄░█ █▀▀ ░ ░ ░
     █▀█ █▀█ █▄▄ █░█ █ █░▀█ █▄█ ▄ ▄ ▄
     {color.WHITE}
-'''
+"""
 
-keycode_menu = f'''
+keycode_menu = f"""
     {color.WHITE}1. {color.GREEN}Keyboard Text Input                {color.WHITE}11. {color.GREEN}Enter
     {color.WHITE}2. {color.GREEN}Home                               {color.WHITE}12. {color.GREEN}Volume Up
     {color.WHITE}3. {color.GREEN}Back                               {color.WHITE}13. {color.GREEN}Volume Down          
@@ -188,4 +196,4 @@ keycode_menu = f'''
     {color.WHITE}8. {color.GREEN}DPAD Left           
     {color.WHITE}9. {color.GREEN}DPAD Right
    {color.WHITE}10. {color.GREEN}Delete/Backspace
-'''
+"""
