@@ -1189,30 +1189,76 @@ def dump_call_logs():
 
 def extract_apk():
     print(
-        f"\n{color.CYAN}Enter package name     {color.WHITE}Example : com.spotify.music "
+        f"""
+    {color.WHITE}1.{color.GREEN} Select from App List
+    {color.WHITE}2.{color.GREEN} Enter Package Name Manually
+    {color.WHITE}"""
     )
-    package_name = input("> ")
 
-    if package_name == "":
-        print(
-            f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
-        )
-        return
-    else:
-        global pull_location
-        if pull_location == "":
-            print(
-                f"\n{color.YELLOW}Enter location to save APK file, Press 'Enter' for default{color.WHITE}"
-            )
-            pull_location = input("> ")
-        if pull_location == "":
-            pull_location = "Downloaded-Files"
-            print(
-                f"\n{color.PURPLE}Saving APK file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}"
-            )
+    mode = input("> ")
+    if mode == "1":
+        # Listing third party apps
+        list = os.popen("adb shell pm list packages -3").read().split("\n")
+        list.remove("")
+        i = 0
+        print("\n")
+        for app in list:
+            i += 1
+            app = app.replace("package:", "")
+            print(f"{color.GREEN}{i}.{color.WHITE} {app}")
+
+        # Selection of app
+        app = input("\nEnter Selection > ")
+        if app.isdigit():
+            if int(app) <= len(list) and int(app) > 0:
+                package_name = list[int(app) - 1].replace("package:", "")
+                print(
+                    f"\n{color.RED}Extracting {color.YELLOW}{package_name}{color.WHITE}"
+                )
+
+            else:
+                print(
+                    f"\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+                )
+                return
         else:
-            print(f"\n{color.PURPLE}Saving APK file to {pull_location}\n{color.WHITE}")
-        print(f"{color.GREEN}\nExtracting APK...{color.WHITE}")
+            print(
+                f"\n{color.RED} Expected an Integer Value\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+            )
+            return
+
+    elif mode == "2":
+        ## OLD
+        print(
+            f"\n{color.CYAN}Enter package name     {color.WHITE}Example : com.spotify.music "
+        )
+        package_name = input("> ")
+
+        if package_name == "":
+            print(
+                f"\n{color.RED} Null Input\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+            )
+            return
+        print(f"\n{color.RED}Extracting {color.YELLOW}{package_name}{color.WHITE}")
+
+    # If not returned then continue extraction
+    global pull_location
+    if pull_location == "":
+        print(
+            f"\n{color.YELLOW}Enter location to save APK file, Press 'Enter' for default{color.WHITE}"
+        )
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = "Downloaded-Files"
+        print(
+            f"\n{color.PURPLE}Saving APK file to PhoneSploit-Pro/{pull_location}\n{color.WHITE}"
+        )
+    else:
+        print(f"\n{color.PURPLE}Saving APK file to {pull_location}\n{color.WHITE}")
+
+    print(f"{color.GREEN}\nExtracting APK...{color.WHITE}")
+
+    try:
         path = os.popen(f"adb shell pm path {package_name}").read()
         path = path.replace("package:", "")
         os.system(f"adb pull {path}")
@@ -1220,7 +1266,14 @@ def extract_apk():
         # os.system(f'{move} base.apk {pull_location}/{file_name}.apk')
         os.rename("base.apk", f"{pull_location}/{file_name}.apk")
 
-        print("\n")
+    except FileNotFoundError:
+        print(f"\n\n{color.RED} Error : {color.GREEN}App Not Found {color.WHITE}\n")
+
+    except FileExistsError:
+        print(
+            f"\n\n{color.RED} Error : {color.GREEN}APK already exists in {pull_location} {color.WHITE}\n"
+        )
+    print("\n")
 
 
 def mirror():
