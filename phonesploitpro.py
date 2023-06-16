@@ -457,7 +457,7 @@ def launch_app():
     elif mode == "2":
         ## Old
         print(
-            f"\n{color.CYAN}Enter package name.     {color.WHITE}Example : com.spotify.music "
+            f"\n{color.CYAN}Enter package name :     {color.WHITE}Example : com.spotify.music "
         )
         package_name = input("> ")
 
