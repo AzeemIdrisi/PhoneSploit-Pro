@@ -174,7 +174,8 @@ def get_shell():
 def get_screenshot():
     global screenshot_location
     # Getting a temporary file name to store time specific results
-    file_name = f"screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png"
+    instant = datetime.datetime.now()
+    file_name = f"screenshot-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.png"
     os.system(f"adb shell screencap -p /sdcard/{file_name}")
     if screenshot_location == "":
         print(
@@ -212,7 +213,8 @@ def get_screenshot():
 def screenrecord():
     global screenrecord_location
     # Getting a temporary file name to store time specific results
-    file_name = f"vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4"
+    instant = datetime.datetime.now()
+    file_name = f"vid-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.mp4"
 
     duration = input(
         f"\n{color.CYAN}Enter the recording duration (in seconds) > {color.WHITE}"
@@ -758,7 +760,8 @@ def copy_camera():
 def anonymous_screenshot():
     global screenshot_location
     # Getting a temporary file name to store time specific results
-    file_name = f"screenshot-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.png"
+    instant = datetime.datetime.now()
+    file_name = f"screenshot-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.png"
     os.system(f"adb shell screencap -p /sdcard/{file_name}")
     if screenshot_location == "":
         print(
@@ -799,7 +802,8 @@ def anonymous_screenshot():
 def anonymous_screenrecord():
     global screenrecord_location
     # Getting a temporary file name to store time specific results
-    file_name = f"vid-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.mp4"
+    instant = datetime.datetime.now()
+    file_name = f"vid-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.mp4"
 
     duration = input(
         f"\n{color.CYAN}Enter the recording duration (in seconds) > {color.WHITE}"
@@ -1174,7 +1178,9 @@ def dump_sms():
     else:
         print(f"\n{color.PURPLE}Saving SMS file to {pull_location}\n{color.WHITE}")
     print(f"{color.GREEN}\nExtracting all SMS{color.WHITE}")
-    file_name = f"sms_dump-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.txt"
+
+    instant = datetime.datetime.now()
+    file_name = f"sms_dump-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.txt"
     os.system(
         f"adb shell content query --uri content://sms/ --projection address:date:body > {pull_location}/{file_name}"
     )
@@ -1195,7 +1201,9 @@ def dump_contacts():
     else:
         print(f"\n{color.PURPLE}Saving Contacts file to {pull_location}\n{color.WHITE}")
     print(f"{color.GREEN}\nExtracting all Contacts{color.WHITE}")
-    file_name = f"contacts_dump-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.txt"
+
+    instant = datetime.datetime.now()
+    file_name = f"contacts_dump-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.txt"
     os.system(
         f"adb shell content query --uri content://contacts/phones/  --projection display_name:number > {pull_location}/{file_name}"
     )
@@ -1218,7 +1226,9 @@ def dump_call_logs():
             f"\n{color.PURPLE}Saving Call Logs file to {pull_location}\n{color.WHITE}"
         )
     print(f"{color.GREEN}\nExtracting all Call Logs{color.WHITE}")
-    file_name = f"call_logs_dump-{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}-{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}.txt"
+
+    instant = datetime.datetime.now()
+    file_name = f"call_logs_dump-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.txt"
     os.system(
         f"adb shell content query --uri content://call_log/calls --projection name:number:duration:date > {pull_location}/{file_name}"
     )
@@ -1422,6 +1432,128 @@ def scan_network():
     print("\n")
 
 
+def record_audio(mode):
+    global pull_location
+    if pull_location == "":
+        print(
+            f"\n{color.YELLOW}Enter location to save Recordings, Press 'Enter' for default{color.WHITE}"
+        )
+        pull_location = input("> ")
+    if pull_location == "":
+        pull_location = "Downloaded-Files"
+        print(
+            f"\n{color.PURPLE}Saving recordings to PhoneSploit-Pro/{pull_location}\n{color.WHITE}"
+        )
+    else:
+        print(f"\n{color.PURPLE}Saving recordings to {pull_location}\n{color.WHITE}")
+
+    match mode:
+        case "mic":
+            instant = datetime.datetime.now()
+            file_name = f"mic-audio-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.opus"
+            print(
+                f"""
+            {color.WHITE}1.{color.GREEN} Stream & Record   {color.YELLOW}
+            {color.WHITE}2.{color.GREEN} Record Only     {color.YELLOW}(Fast)
+            {color.WHITE}"""
+            )
+            choice = input("> ")
+            if choice == "1":
+                print(
+                    f"\n{color.GREEN}Recording Microphone Audio \n\n{color.RED}Press Ctrl+C to Stop.\n{color.WHITE}"
+                )
+                os.system(
+                    f"scrcpy --no-video --audio-source=mic --record={pull_location}/{file_name}"
+                )
+            elif choice == "2":
+                print(
+                    f"\n{color.GREEN}Recording Microphone Audio \n\n{color.RED}Press Ctrl+C to Stop.\n{color.WHITE}"
+                )
+                os.system(
+                    f"scrcpy --no-video --audio-source=mic --no-playback --record={pull_location}/{file_name}"
+                )
+            else:
+                print(
+                    f"\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+                )
+                return
+
+        case "device":
+            instant = datetime.datetime.now()
+            file_name = f"device-audio-{instant.year}-{instant.month}-{instant.day}-{instant.hour}-{instant.minute}-{instant.second}.opus"
+            print(
+                f"""
+            {color.WHITE}1.{color.GREEN} Stream & Record   {color.YELLOW}
+            {color.WHITE}2.{color.GREEN} Record Only     {color.YELLOW}(Fast)
+            {color.WHITE}"""
+            )
+            choice = input("> ")
+
+            if choice == "1":
+                print(
+                    f"\n{color.GREEN}Recording Device Audio \n\n{color.RED}Press Ctrl+C to Stop.\n{color.WHITE}"
+                )
+                os.system(f"scrcpy --no-video --record={pull_location}/{file_name}")
+
+                # Asking to open file
+                choice = input(
+                    f"\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> "
+                ).lower()
+                if choice == "y" or choice == "":
+                    os.system(f"{opener} {pull_location}/{file_name}")
+
+                elif not choice == "n":
+                    while choice != "y" and choice != "n" and choice != "":
+                        choice = input("\nInvalid choice!, Press Y or N > ").lower()
+                        if choice == "y" or choice == "":
+                            os.system(f"{opener} {pull_location}/{file_name}")
+
+            elif choice == "2":
+                print(
+                    f"\n{color.GREEN}Recording Device Audio \n\n{color.RED}Press Ctrl+C to Stop.\n{color.WHITE}"
+                )
+                os.system(
+                    f"scrcpy --no-video --no-playback --record={pull_location}/{file_name}"
+                )
+
+                # Asking to open file
+                choice = input(
+                    f"\n{color.GREEN}Do you want to Open the file?     Y / N {color.WHITE}> "
+                ).lower()
+                if choice == "y" or choice == "":
+                    os.system(f"{opener} {pull_location}/{file_name}")
+
+                elif not choice == "n":
+                    while choice != "y" and choice != "n" and choice != "":
+                        choice = input("\nInvalid choice!, Press Y or N > ").lower()
+                        if choice == "y" or choice == "":
+                            os.system(f"{opener} {pull_location}/{file_name}")
+
+            else:
+                print(
+                    f"\n{color.RED} Invalid selection\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+                )
+                return
+    print("\n")
+
+
+def stream_audio(mode):
+    match mode:
+        case "mic":
+            print(
+                f"\n{color.GREEN}Streaming Microphone Audio \n\n{color.RED}Press Ctrl+C to Stop.\n{color.WHITE}"
+            )
+            os.system("scrcpy --no-video --audio-source=mic")
+
+        case "device":
+            print(
+                f"\n{color.GREEN}Streaming Device Audio \n\n{color.RED}Press Ctrl+C to Stop.\n{color.WHITE}"
+            )
+            os.system("scrcpy --no-video")
+
+    print("\n")
+
+
 def main():
     # Clearing the screen and presenting the menu
     # taking selection input from user
@@ -1518,8 +1650,16 @@ def main():
         case "39":
             use_keycode()
         case "40":
-            update_me()
+            stream_audio("mic")
         case "41":
+            record_audio("mic")
+        case "42":
+            stream_audio("device")
+        case "43":
+            record_audio("device")
+        case "44":
+            update_me()
+        case "45":
             visit_me()
         case other:
             print("\nInvalid selection!\n")

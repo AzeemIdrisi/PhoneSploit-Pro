@@ -82,6 +82,13 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 * Scan local network for connected devices to get Target IP Address. 
 
+## v1.6
+
+* Record Microphone Audio
+* Stream Microphone Audio
+* Record Device Audio
+* Stream Device Audio
+
 # Requirements  
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
