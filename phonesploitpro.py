@@ -1433,6 +1433,10 @@ def scan_network():
 
 
 def record_audio(mode):
+    print(
+        f"\n{color.RED}[Warning] {color.CYAN}This feature is currently available for devices running on Android 11 or higher only.{color.WHITE}"
+    )
+
     global pull_location
     if pull_location == "":
         print(
@@ -1538,6 +1542,9 @@ def record_audio(mode):
 
 
 def stream_audio(mode):
+    print(
+        f"\n{color.RED}[Warning] {color.CYAN}This feature is currently available for devices running on Android 11 or higher only.{color.WHITE}"
+    )
     match mode:
         case "mic":
             print(
