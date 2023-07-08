@@ -347,4 +347,4 @@ pkg install nmap
  
 
 # Support Me
-<a href="https://www.buymeacoffee.com/AzeemIdrisi" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href="https://www.buymeacoffee.com/AzeemIdrisi" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
