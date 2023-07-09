@@ -975,8 +975,8 @@ def open_photo():
         print(file_name)
         print(f"\n{color.YELLOW}Opening Photo on device        \n{color.WHITE}")
         os.system(
-            f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t image/jpeg'
-        )  # -a android.intent.action.VIEW
+            f'adb shell am start -a android.intent.action.VIEW -d "file:///sdcard/{file_name}" -t image/jpeg'
+        )  # -n com.android.chrome/com.google.android.apps.chrome.Main
         print("\n")
 
 
@@ -1018,17 +1018,20 @@ def open_audio():
 
         file_name = "'" + file_name + "'"
         print(file_name)
+
         print(f"\n{color.YELLOW}Playing Audio on device        \n{color.WHITE}")
         os.system(
-            f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t audio/mp3'
+            f'adb shell am start -a android.intent.action.VIEW -d "file:///sdcard/{file_name}" -t audio/mp3'
         )
 
-        print(
-            f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}"
-        )
-        time.sleep(5)
-        # To play the file using Chrome
-        os.system("adb shell input keyevent 126")
+        # -n com.android.chrome/com.google.android.apps.chrome.Main
+
+        # print(
+        #     f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}"
+        # )
+        # time.sleep(5)
+        # # To play the file using Chrome
+        # os.system("adb shell input keyevent 126")
         print("\n")
 
 
@@ -1069,17 +1072,20 @@ def open_video():
         file_name = file_name.replace('"', "")
         file_name = "'" + file_name + "'"
         print(file_name)
+
         print(f"\n{color.YELLOW}Playing Video on device        \n{color.WHITE}")
         os.system(
-            f'adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -d "file:///sdcard/{file_name}" -t video/mp4'
+            f'adb shell am start -a android.intent.action.VIEW -d "file:///sdcard/{file_name}" -t video/mp4'
         )
 
-        print(
-            f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}"
-        )
-        time.sleep(5)
-        # To play the file using Chrome
-        os.system("adb shell input keyevent 126")
+        # -n com.android.chrome/com.google.android.apps.chrome.Main
+
+        # print(
+        #     f"\n{color.YELLOW}Waiting for 5 seconds before playing file.\n{color.WHITE}"
+        # )
+        # time.sleep(5)
+        # # To play the file using Chrome
+        # os.system("adb shell input keyevent 126")
         print("\n")
 
 
