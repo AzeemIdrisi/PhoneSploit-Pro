@@ -91,6 +91,7 @@ The goal of this project is to make penetration testing on Android devices easy.
 
 # Requirements  
 * [`python3`](https://www.python.org/) : Python 3.10 or Newer
+* [`pip`](https://pip.pypa.io/en/stable/installation/) : Package installer for Python
 * [`adb`](https://developer.android.com/studio/command-line/adb) : Android Debug Bridge (ADB) from `Android SDK Platform Tools`
 * [`metasploit-framework`](https://www.metasploit.com/) : Metasploit-Framework (`msfvenom` and `msfconsole`)
 * [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy
@@ -111,6 +112,9 @@ Open terminal and paste the following commands :
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 ```
 ```
+pip install python-nmap
+```
+```
 cd PhoneSploit-Pro/
 ```
 ```
@@ -124,6 +128,9 @@ Make sure all the [required](https://github.com/AzeemIdrisi/PhoneSploit-Pro#requ
 Open terminal and paste the following commands : 
 ```
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
+```
+```
+pip install python-nmap
 ```
 ```
 cd PhoneSploit-Pro/

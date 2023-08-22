@@ -10,9 +10,9 @@ import time
 import subprocess
 import platform
 import datetime
+import nmap
 from modules import banner
 from modules import color
-from modules import nmap
 
 
 def start():
