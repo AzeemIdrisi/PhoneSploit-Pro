@@ -1440,8 +1440,21 @@ def scan_network():
 
 def record_audio(mode):
     print(
-        f"\n{color.RED}[Warning] {color.CYAN}This feature is currently available for devices running on Android 11 or higher only.{color.WHITE}"
+        f"\n{color.RED}[Notice] {color.CYAN}This feature is currently available for devices running on Android 11 or higher only.{color.WHITE}"
     )
+    try:
+        androidVersion = os.popen("adb shell getprop ro.build.version.release").read()
+        android_os = int(androidVersion.split(".")[0])
+        print(f"\n{color.GREEN}Detected Android Version : {androidVersion}")
+    except ValueError:
+        print(
+            f"\n{color.RED} No connected device found\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+        )
+        return
+    
+    if android_os<11:
+        print(f"{color.RED}Going back to Main Menu{color.WHITE}")
+        return
 
     global pull_location
     if pull_location == "":
@@ -1549,8 +1562,22 @@ def record_audio(mode):
 
 def stream_audio(mode):
     print(
-        f"\n{color.RED}[Warning] {color.CYAN}This feature is currently available for devices running on Android 11 or higher only.{color.WHITE}"
+        f"\n{color.RED}[Notice] {color.CYAN}This feature is currently available for devices running on Android 11 or higher only.{color.WHITE}"
     )
+    try:
+        androidVersion = os.popen("adb shell getprop ro.build.version.release").read()
+        android_os = int(androidVersion.split(".")[0])
+        print(f"\n{color.GREEN}Detected Android Version : {androidVersion}")
+    except ValueError:
+        print(
+            f"\n{color.RED} No connected device found\n{color.GREEN} Going back to Main Menu{color.WHITE}"
+        )
+        return
+    
+    if android_os<11:
+        print(f"{color.RED}Going back to Main Menu{color.WHITE}")
+        return
+
     match mode:
         case "mic":
             print(
