@@ -1,7 +1,10 @@
+<div align="center">
+  
 # PhoneSploit Pro
+  
 ### PhoneSploit with Metasploit Integration.
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/AzeemIdrisi/PhoneSploit-Pro)
-[![CodeFactor](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro/badge)](https://www.codefactor.io/repository/github/azeemidrisi/phonesploit-pro)
 ![Python](https://img.shields.io/badge/python-v3.10%2B-blue)
 ![GitHub Release Date](https://img.shields.io/github/release-date/AzeemIdrisi/PhoneSploit-Pro?logo=github)
 ![GitHub last commit](https://img.shields.io/github/last-commit/AzeemIdrisi/PhoneSploit-Pro?logo=github)
@@ -11,6 +14,7 @@
 
 An all-in-one hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
 
+</div>
 
 #### Complete Automation to get a Meterpreter session in One Click
 
