@@ -115,7 +115,7 @@ Open terminal and paste the following commands :
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 ```
 ```
-pip install python-nmap
+pip install -r requirements.txt
 ```
 ```
 cd PhoneSploit-Pro/
@@ -133,7 +133,7 @@ Open terminal and paste the following commands :
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 ```
 ```
-pip install python-nmap
+pip install -r requirements.txt
 ```
 ```
 cd PhoneSploit-Pro/
