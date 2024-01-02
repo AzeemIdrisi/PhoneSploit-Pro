@@ -115,10 +115,10 @@ Open terminal and paste the following commands :
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 ```
 ```
-pip install -r requirements.txt
-```
-```
 cd PhoneSploit-Pro/
+```
+```
+pip install -r requirements.txt
 ```
 ```
 python3 phonesploitpro.py
@@ -133,10 +133,10 @@ Open terminal and paste the following commands :
 git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git
 ```
 ```
-pip install -r requirements.txt
-```
-```
 cd PhoneSploit-Pro/
+```
+```
+pip install -r requirements.txt
 ```
 1. Download and extract latest `platform-tools` from [here](https://developer.android.com/studio/releases/platform-tools.html#downloads).
 
