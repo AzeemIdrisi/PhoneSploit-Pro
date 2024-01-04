@@ -163,7 +163,7 @@ def connect():
             os.system(
                 "adb kill-server > docs/hidden.txt 2>&1&&adb start-server > docs/hidden.txt 2>&1"
             )
-            os.system("adb connect " + ip + ":5555")
+            os.system("adb connect " + ip )
         else:
             print(
                 f"\n{color.RED} Invalid IP Address\n{color.GREEN} Going back to Main Menu{color.WHITE}"
