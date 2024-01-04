@@ -148,8 +148,7 @@ def change_page(name):
 
 def connect():
     # Connect only 1 device at a time
-    print(
-        f"\n{color.CYAN}Enter target phone's IP Address       {color.YELLOW}Example : 192.168.1.23{color.WHITE}"
+    print(
         f"\n{color.CYAN}Enter target phone's IP Address with Specific Port Number\n{color.YELLOW}Example : 192.168.1.23:5555{color.WHITE}"
     )
     ip = input("> ")
