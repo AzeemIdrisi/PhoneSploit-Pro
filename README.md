@@ -21,6 +21,7 @@ This tool can automatically __Create__, __Install__, and __Run__ payload on the 
 
 The goal of this project is to make penetration testing on Android devices easy. Now you don't have to learn commands and arguments, PhoneSploit Pro does it for you. Using this tool, you can test the security of your Android devices easily.
 
+> [!TIP]
 > __PhoneSploit Pro__ can also be used as a complete ADB Toolkit to perform various operations on Android devices over Wi-Fi as well as USB. 
 
 # Features 
@@ -100,11 +101,13 @@ The goal of this project is to make penetration testing on Android devices easy.
 * [`scrcpy`](https://github.com/Genymobile/scrcpy) : Scrcpy
 * [`nmap`](https://nmap.org/) : Nmap
 
+
 # Run PhoneSploit Pro 
 
 __PhoneSploit Pro__ does not need any installation and runs directly using `python3`
 
-> **PhoneSploit Pro** requires Python version 3.10 or above. Please update Python before running the program to meet the requirement.
+> [!IMPORTANT]
+> **PhoneSploit Pro** requires Python version __3.10 or higher__. Please update Python before running the program.
 
 #### On Linux / macOS :
 
@@ -213,7 +216,8 @@ adb tcpip 5555
 -  ✅ Windows 11
 -  ✅ Termux (Android)
 
-All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
+> [!NOTE]
+> All the new features are primarily tested on **Linux**, thus **Linux** is recommended for running PhoneSploit Pro.
 Some features might not work properly on Windows.
 
 # Installing ADB 
@@ -290,7 +294,8 @@ Visit the `scrcpy` GitHub page for latest installation instructions : [Click Her
 
 **On Windows** : Copy all the files from the extracted **scrcpy** folder to **PhoneSploit-Pro** folder.
 
-If `scrcpy` is not available for your Linux distro like **Kali Linux**, then you can either manually install it : [Manual Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md),
+> [!IMPORTANT]  
+> If `scrcpy` is not available for your Linux distro like **Kali Linux**, then you can either manually install it : [Manual Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md),
 or build it with a few simple steps : [Build Guide](https://github.com/Genymobile/scrcpy/blob/master/doc/build.md#build-scrcpy)
 
 # Installing Nmap
@@ -372,5 +377,6 @@ If you like my work you can support me via :
         src="https://github.com/AzeemIdrisi/AzeemIdrisi/blob/main/docs/paypal-button-blue.png" alt="PayPal"
         width="147"></a> <a href="https://www.buymeacoffee.com/AzeemIdrisi" target="_blank"> <kbd> <img src="https://github.com/AzeemIdrisi/AzeemIdrisi/blob/main/docs/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
 
+<hr>
 
-Copyright © 2023 Mohd Azeem (github.com/AzeemIdrisi)
+Copyright © 2024 Mohd Azeem (github.com/AzeemIdrisi)
