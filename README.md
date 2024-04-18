@@ -24,6 +24,12 @@ The goal of this project is to make penetration testing on Android devices easy.
 > [!TIP]
 > __PhoneSploit Pro__ can also be used as a complete ADB Toolkit to perform various operations on Android devices over Wi-Fi as well as USB. 
 
+# Screenshots
+
+![Screenshot Page 1](docs/Screenshot-1.png)
+![Screenshot Page 2](docs/Screenshot-2.png)
+![Screenshot Page 3](docs/Screenshot-3.png)
+
 # Features 
 ## v1.0
 
@@ -148,15 +154,6 @@ pip install -r requirements.txt
 ```
 python phonesploitpro.py
 ```
-
-
-# Screenshots
-
-![Screenshot Page 1](docs/Screenshot-1.png)
-![Screenshot Page 2](docs/Screenshot-2.png)
-![Screenshot Page 3](docs/Screenshot-3.png)
-
-
 
 # Tutorial
 
