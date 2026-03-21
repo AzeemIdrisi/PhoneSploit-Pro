@@ -11,12 +11,17 @@ from modules.console import (
     submenu_row,
     adb,
     adb_output,
+    get_adb_executable,
 )
 
 
 def get_shell(config: AppConfig) -> None:
     console.print("[cyan]Opening interactive ADB shell…[/cyan] [dim](exit shell to return)[/dim]")
-    subprocess.run(["adb", "shell"])
+    exe = get_adb_executable()
+    if not exe:
+        print_error("ADB not available.")
+        return
+    subprocess.run([exe, "shell"])
 
 
 def get_device_info(config: AppConfig) -> None:

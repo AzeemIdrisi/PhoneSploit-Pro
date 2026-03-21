@@ -14,6 +14,7 @@ from modules.console import (
     task_status,
     adb,
     adb_output,
+    get_adb_executable,
 )
 
 
@@ -42,7 +43,10 @@ def is_valid_ipv4(address: str) -> bool:
 
 def _list_ready_device_serials() -> list[str]:
     """Serial numbers of devices in the `device` state (authorized, ready)."""
-    result = subprocess.run(["adb", "devices"], capture_output=True, text=True)
+    exe = get_adb_executable()
+    if not exe:
+        return []
+    result = subprocess.run([exe, "devices"], capture_output=True, text=True)
     serials: list[str] = []
     for line in result.stdout.splitlines()[1:]:
         line = line.strip()
@@ -56,11 +60,15 @@ def _list_ready_device_serials() -> list[str]:
     return serials
 
 
-def prompt_select_device_if_multiple() -> None:
+def prompt_select_device_if_multiple(config: AppConfig) -> None:
     """
     Set ANDROID_SERIAL for this process when multiple USB/network devices are connected.
     adb honors ANDROID_SERIAL as the default target (see Android platform-tools docs).
     """
+    if not config.adb_path:
+        os.environ.pop("ANDROID_SERIAL", None)
+        return
+
     serials = _list_ready_device_serials()
     if not serials:
         os.environ.pop("ANDROID_SERIAL", None)
@@ -112,13 +120,18 @@ def connect(config: AppConfig) -> None:
     ):
         return
 
+    adb_exe = get_adb_executable()
+    if not adb_exe:
+        print_error("ADB executable not available.")
+        return
+
     with task_status("[info]Restarting ADB server…[/info]"):
         subprocess.run(
-            ["adb", "kill-server"],
+            [adb_exe, "kill-server"],
             capture_output=True,
         )
         subprocess.run(
-            ["adb", "start-server"],
+            [adb_exe, "start-server"],
             capture_output=True,
         )
 
@@ -128,7 +141,7 @@ def connect(config: AppConfig) -> None:
     output = result.stdout.strip()
     if "connected" in output.lower():
         print_success(output)
-        prompt_select_device_if_multiple()
+        prompt_select_device_if_multiple(config)
     else:
         print_error(output or result.stderr.strip())
 

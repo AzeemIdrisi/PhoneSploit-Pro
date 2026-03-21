@@ -97,13 +97,34 @@ def open_file_prompt(opener: str, path: str) -> None:
         subprocess.run([opener, path], check=False)
 
 
+_adb_executable: str | None = None
+
+
+def set_adb_executable(path: str | None) -> None:
+    """Set after tools.resolve_external_tools; None means ADB was not found."""
+    global _adb_executable
+    _adb_executable = path
+
+
+def get_adb_executable() -> str | None:
+    """Resolved adb path from startup, or None if not available."""
+    return _adb_executable
+
+
 def adb(args: list[str], capture: bool = True) -> subprocess.CompletedProcess:
     """
     Run an adb command.
     - capture=True  → stdout/stderr captured, returned (use for data queries)
     - capture=False → output streams to terminal (use for interactive commands)
     """
-    cmd = ["adb"] + args
+    if _adb_executable is None:
+        return subprocess.CompletedProcess(
+            args=[],
+            returncode=127,
+            stdout="",
+            stderr="adb not available",
+        )
+    cmd = [_adb_executable] + args
     if capture:
         return subprocess.run(cmd, capture_output=True, text=True)
     return subprocess.run(cmd)

@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import datetime
 
 from modules.config import AppConfig
+from modules.tools import scrcpy_argv
 from modules.console import (
     console,
     print_error,
@@ -15,6 +16,7 @@ from modules.console import (
     ensure_config_dir,
     adb,
     adb_output,
+    get_adb_executable,
 )
 
 
@@ -81,9 +83,14 @@ def screenrecord(config: AppConfig) -> None:
     duration = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
     out_dir = ensure_config_dir(config, "screenrecord_location")
 
+    adb_exe = get_adb_executable()
+    if not adb_exe:
+        print_error("ADB not available.")
+        return
+
     with task_status(f"[info]Recording {duration}s (no live log)…[/info]"):
         subprocess.run(
-            ["adb", "shell", "screenrecord", "--time-limit", duration, remote],
+            [adb_exe, "shell", "screenrecord", "--time-limit", duration, remote],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
@@ -114,9 +121,14 @@ def anonymous_screenrecord(config: AppConfig) -> None:
     duration = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
     out_dir = ensure_config_dir(config, "screenrecord_location")
 
+    adb_exe = get_adb_executable()
+    if not adb_exe:
+        print_error("ADB not available.")
+        return
+
     with task_status(f"[info]Recording {duration}s (no live log)…[/info]"):
         subprocess.run(
-            ["adb", "shell", "screenrecord", "--time-limit", duration, remote],
+            [adb_exe, "shell", "screenrecord", "--time-limit", duration, remote],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
@@ -232,13 +244,13 @@ def record_audio(config: AppConfig, mode: str) -> None:
 
     if choice == "1":
         console.print("[dim]Ctrl+C to stop.[/dim]")
-        cmd = ["scrcpy", "--no-video", f"--record={save_path}"]
+        cmd = scrcpy_argv(config, ["--no-video", f"--record={save_path}"])
         if audio_flag:
             cmd.append(audio_flag)
         subprocess.run(cmd)
     elif choice == "2":
         console.print("[dim]Ctrl+C to stop.[/dim]")
-        cmd = ["scrcpy", "--no-video", "--no-playback", f"--record={save_path}"]
+        cmd = scrcpy_argv(config, ["--no-video", "--no-playback", f"--record={save_path}"])
         if audio_flag:
             cmd.append(audio_flag)
         subprocess.run(cmd)
@@ -255,22 +267,22 @@ def mirror(config: AppConfig) -> None:
     mode = console.input("[prompt]> [/prompt]")
 
     if mode == "1":
-        subprocess.run(["scrcpy"])
+        subprocess.run(scrcpy_argv(config, []))
     elif mode == "2":
-        subprocess.run(["scrcpy", "-m", "1024", "-b", "1M"])
+        subprocess.run(scrcpy_argv(config, ["-m", "1024", "-b", "1M"]))
     elif mode == "3":
         size_in = console.input("[cyan]Size limit[/cyan] [dim](e.g. 1024)[/dim]> ").strip()
         bitrate_in = console.input("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 2)[/dim]> ").strip()
         fps_in = console.input("[cyan]Max FPS[/cyan] [dim](e.g. 15)[/dim]> ").strip()
 
-        cmd = ["scrcpy"]
+        extra: list[str] = []
         if size_in:
-            cmd += ["-m", size_in]
+            extra += ["-m", size_in]
         if bitrate_in:
-            cmd += ["-b", f"{bitrate_in}M"]
+            extra += ["-b", f"{bitrate_in}M"]
         if fps_in:
-            cmd += [f"--max-fps={fps_in}"]
-        subprocess.run(cmd)
+            extra += [f"--max-fps={fps_in}"]
+        subprocess.run(scrcpy_argv(config, extra))
     else:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
@@ -291,6 +303,6 @@ def stream_audio(config: AppConfig, mode: str) -> None:
 
     console.print(f"[dim]Android {android_ver} · Ctrl+C to stop[/dim]")
     if mode == "mic":
-        subprocess.run(["scrcpy", "--no-video", "--audio-source=mic"])
+        subprocess.run(scrcpy_argv(config, ["--no-video", "--audio-source=mic"]))
     else:
-        subprocess.run(["scrcpy", "--no-video"])
+        subprocess.run(scrcpy_argv(config, ["--no-video"]))
