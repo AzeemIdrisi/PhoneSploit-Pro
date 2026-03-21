@@ -376,4 +376,4 @@ If you like my work you can support me via :
 
 <hr>
 
-Copyright © 2024 Mohd Azeem (github.com/AzeemIdrisi)
+Copyright © 2026 Azeem Idrisi (github.com/AzeemIdrisi)
