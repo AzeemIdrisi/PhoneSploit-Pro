@@ -1,4 +1,3 @@
-import subprocess
 from pathlib import Path
 from rich.table import Table
 
@@ -10,18 +9,20 @@ from modules.console import (
     print_null_input,
     open_file_prompt,
     confirm,
+    task_status,
+    ensure_config_dir,
     adb,
     adb_output,
 )
 
 
 def list_files(config: AppConfig) -> None:
-    with console.status("[info]Listing /sdcard/ contents...[/info]"):
+    with task_status("[info]Listing /sdcard/…[/info]"):
         raw = adb_output(["shell", "ls", "-a", "/sdcard/"])
 
     entries = [e.strip() for e in raw.splitlines() if e.strip()]
     if not entries:
-        console.print("\n[yellow]No files found.[/yellow]\n")
+        console.print("[yellow]No files found.[/yellow]")
         return
 
     table = Table(title="/sdcard/ Contents", show_header=True, header_style="bold cyan")
@@ -31,20 +32,18 @@ def list_files(config: AppConfig) -> None:
     for i, entry in enumerate(entries, 1):
         table.add_row(str(i), entry)
 
-    console.print()
     console.print(table)
-    console.print()
 
 
 def pull_file(config: AppConfig) -> None:
     console.print(
-        f"\n[cyan]Enter file path           [yellow]Example : Download/sample.jpg[/yellow][/cyan]"
+        "[cyan]Path under /sdcard/[/cyan] [dim](e.g. Download/sample.jpg)[/dim]"
     )
-    location = console.input("\n[prompt]> /sdcard/[/prompt]")
+    location = console.input("[prompt]> /sdcard/[/prompt]").strip()
 
     full_path = f"/sdcard/{location}"
 
-    with console.status(f"[info]Checking if {full_path} exists...[/info]"):
+    with task_status(f"[info]Checking {full_path}…[/info]"):
         check = adb(["shell", "test", "-e", full_path])
 
     if check.returncode != 0:
@@ -52,39 +51,30 @@ def pull_file(config: AppConfig) -> None:
         return
 
     if not confirm(
-        f"Download [cyan]{full_path}[/cyan] from the device to your computer? "
+        f"Download [cyan]{full_path}[/cyan] from the device? "
         "A local file with the same name may be overwritten."
     ):
         return
 
-    if not config.pull_location:
-        console.print("\n[yellow]Enter location to save all files, Press 'Enter' for default[/yellow]")
-        config.pull_location = console.input("[prompt]> [/prompt]")
-    if not config.pull_location:
-        config.pull_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving file to PhoneSploit-Pro/{config.pull_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving file to {config.pull_location}[/purple]\n")
+    out_dir = ensure_config_dir(config, "pull_location")
 
-    Path(config.pull_location).mkdir(parents=True, exist_ok=True)
-
-    with console.status(f"[info]Pulling {full_path}...[/info]"):
-        result = adb(["pull", full_path, config.pull_location])
+    with task_status(f"[info]Pulling {full_path}…[/info]"):
+        result = adb(["pull", full_path, str(out_dir)])
 
     output = (result.stdout + result.stderr).strip()
     if result.returncode == 0:
-        print_success(f"Saved to: {config.pull_location}")
+        print_success(f"Saved under: {out_dir}")
     else:
-        print_error(f"Pull failed:\n{output}")
+        print_error(f"Pull failed: {output}")
         return
 
     file_name = Path(location).name
-    local_path = str(Path(config.pull_location) / file_name)
+    local_path = str(out_dir / file_name)
     open_file_prompt(config.opener, local_path)
 
 
 def push_file(config: AppConfig) -> None:
-    location = console.input(f"\n[cyan]Enter file path in computer[/cyan] > ").strip()
+    location = console.input("[cyan]File path on computer[/cyan] > ").strip()
 
     if not location:
         print_null_input()
@@ -104,45 +94,34 @@ def push_file(config: AppConfig) -> None:
         return
 
     destination = console.input(
-        f"\n[cyan]Enter destination path              [yellow]Example : Documents[/yellow][/cyan]\n[prompt]> /sdcard/[/prompt]"
-    )
+        "[cyan]Destination under /sdcard/[/cyan] [dim](e.g. Documents)[/dim]> "
+    ).strip()
 
-    with console.status(f"[info]Pushing {file_path.name}...[/info]"):
+    with task_status(f"[info]Pushing {file_path.name}…[/info]"):
         result = adb(["push", str(file_path), f"/sdcard/{destination}"])
 
     output = (result.stdout + result.stderr).strip()
     if result.returncode == 0:
         print_success(f"Pushed to /sdcard/{destination}")
     else:
-        print_error(f"Push failed:\n{output}")
-    console.print()
+        print_error(f"Push failed: {output}")
 
 
 def _pull_directory(config: AppConfig, remote_path: str, label: str) -> None:
     """Generic helper to pull a directory from the device."""
-    if not config.pull_location:
-        console.print(f"\n[yellow]Enter location to save {label}, Press 'Enter' for default[/yellow]")
-        config.pull_location = console.input("[prompt]> [/prompt]")
-    if not config.pull_location:
-        config.pull_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving {label} to PhoneSploit-Pro/{config.pull_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving {label} to {config.pull_location}[/purple]\n")
+    out_dir = ensure_config_dir(config, "pull_location")
 
-    Path(config.pull_location).mkdir(parents=True, exist_ok=True)
-
-    with console.status(f"[info]Pulling {label}...[/info]"):
-        result = adb(["pull", remote_path, config.pull_location])
+    with task_status(f"[info]Pulling {label}…[/info]"):
+        result = adb(["pull", remote_path, str(out_dir)])
 
     if result.returncode == 0:
-        print_success(f"{label} saved to: {config.pull_location}")
+        print_success(f"{label} saved to: {out_dir}")
     else:
         print_error((result.stdout + result.stderr).strip())
-    console.print()
 
 
 def copy_whatsapp(config: AppConfig) -> None:
-    with console.status("[info]Locating WhatsApp folder...[/info]"):
+    with task_status("[info]Locating WhatsApp folder…[/info]"):
         new_path_check = adb(["shell", "test", "-d", "/sdcard/Android/media/com.whatsapp/WhatsApp"])
         old_path_check = adb(["shell", "test", "-d", "/sdcard/WhatsApp"])
 
@@ -169,7 +148,7 @@ def copy_screenshots(config: AppConfig) -> None:
         "/sdcard/Screenshots",
     ]
     location = None
-    with console.status("[info]Locating Screenshots folder...[/info]"):
+    with task_status("[info]Locating Screenshots folder…[/info]"):
         for p in paths:
             if adb(["shell", "test", "-d", p]).returncode == 0:
                 location = p
@@ -188,7 +167,7 @@ def copy_screenshots(config: AppConfig) -> None:
 
 
 def copy_camera(config: AppConfig) -> None:
-    with console.status("[info]Locating Camera folder...[/info]"):
+    with task_status("[info]Locating Camera folder…[/info]"):
         check = adb(["shell", "test", "-d", "/sdcard/DCIM/Camera"])
 
     if check.returncode != 0:

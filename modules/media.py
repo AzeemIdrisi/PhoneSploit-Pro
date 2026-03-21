@@ -10,6 +10,9 @@ from modules.console import (
     print_null_input,
     open_file_prompt,
     confirm,
+    task_status,
+    submenu_row,
+    ensure_config_dir,
     adb,
     adb_output,
 )
@@ -20,41 +23,18 @@ def _timestamp() -> str:
     return f"{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-{now.second}"
 
 
-def _ensure_location(config: AppConfig, label: str) -> str:
-    """Prompt for save location if not set, returns the resolved path."""
-    if not config.pull_location:
-        console.print(f"\n[yellow]Enter location to save {label}, Press 'Enter' for default[/yellow]")
-        config.pull_location = console.input("[prompt]> [/prompt]")
-    if not config.pull_location:
-        config.pull_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving {label} to PhoneSploit-Pro/{config.pull_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving {label} to {config.pull_location}[/purple]\n")
-    Path(config.pull_location).mkdir(parents=True, exist_ok=True)
-    return config.pull_location
-
-
 def get_screenshot(config: AppConfig) -> None:
     file_name = f"screenshot-{_timestamp()}.png"
     remote = f"/sdcard/{file_name}"
+    out_dir = ensure_config_dir(config, "screenshot_location")
 
-    with console.status("[info]Capturing screenshot...[/info]"):
+    with task_status("[info]Capturing screenshot…[/info]"):
         adb(["shell", "screencap", "-p", remote])
 
-    if not config.screenshot_location:
-        console.print("\n[yellow]Enter location to save all screenshots, Press 'Enter' for default[/yellow]")
-        config.screenshot_location = console.input("[prompt]> [/prompt]")
-    if not config.screenshot_location:
-        config.screenshot_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving screenshot to PhoneSploit-Pro/{config.screenshot_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving screenshot to {config.screenshot_location}[/purple]\n")
-    Path(config.screenshot_location).mkdir(parents=True, exist_ok=True)
+    with task_status("[info]Pulling screenshot…[/info]"):
+        result = adb(["pull", remote, str(out_dir)])
 
-    with console.status("[info]Pulling screenshot...[/info]"):
-        result = adb(["pull", remote, config.screenshot_location])
-
-    local_path = str(Path(config.screenshot_location) / file_name)
+    local_path = str(out_dir / file_name)
     if result.returncode == 0:
         print_success(f"Saved to: {local_path}")
     else:
@@ -62,7 +42,6 @@ def get_screenshot(config: AppConfig) -> None:
         return
 
     open_file_prompt(config.opener, local_path)
-    console.print()
 
 
 def anonymous_screenshot(config: AppConfig) -> None:
@@ -74,28 +53,18 @@ def anonymous_screenshot(config: AppConfig) -> None:
 
     file_name = f"screenshot-{_timestamp()}.png"
     remote = f"/sdcard/{file_name}"
+    out_dir = ensure_config_dir(config, "screenshot_location")
 
-    with console.status("[info]Capturing screenshot...[/info]"):
+    with task_status("[info]Capturing screenshot…[/info]"):
         adb(["shell", "screencap", "-p", remote])
 
-    if not config.screenshot_location:
-        console.print("\n[yellow]Enter location to save all screenshots, Press 'Enter' for default[/yellow]")
-        config.screenshot_location = console.input("[prompt]> [/prompt]")
-    if not config.screenshot_location:
-        config.screenshot_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving screenshot to PhoneSploit-Pro/{config.screenshot_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving screenshot to {config.screenshot_location}[/purple]\n")
-    Path(config.screenshot_location).mkdir(parents=True, exist_ok=True)
+    with task_status("[info]Pulling screenshot…[/info]"):
+        result = adb(["pull", remote, str(out_dir)])
 
-    with console.status("[info]Pulling screenshot...[/info]"):
-        result = adb(["pull", remote, config.screenshot_location])
-
-    console.print("[yellow]Deleting screenshot from target device...[/yellow]")
-    with console.status("[info]Removing remote file...[/info]"):
+    with task_status("[info]Removing file from device…[/info]"):
         adb(["shell", "rm", remote])
 
-    local_path = str(Path(config.screenshot_location) / file_name)
+    local_path = str(out_dir / file_name)
     if result.returncode == 0:
         print_success(f"Saved to: {local_path}")
     else:
@@ -103,34 +72,26 @@ def anonymous_screenshot(config: AppConfig) -> None:
         return
 
     open_file_prompt(config.opener, local_path)
-    console.print()
 
 
 def screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration = console.input(f"\n[cyan]Enter the recording duration (in seconds) > [/cyan]")
-    console.print(f"\n[yellow]Starting Screen Recording...[/yellow]\n")
+    duration = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    out_dir = ensure_config_dir(config, "screenrecord_location")
 
-    subprocess.run(
-        ["adb", "shell", "screenrecord", "--verbose", "--time-limit", duration, remote]
-    )
+    with task_status(f"[info]Recording {duration}s (no live log)…[/info]"):
+        subprocess.run(
+            ["adb", "shell", "screenrecord", "--time-limit", duration, remote],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
 
-    if not config.screenrecord_location:
-        console.print("\n[yellow]Enter location to save all videos, Press 'Enter' for default[/yellow]")
-        config.screenrecord_location = console.input("[prompt]> [/prompt]")
-    if not config.screenrecord_location:
-        config.screenrecord_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving video to PhoneSploit-Pro/{config.screenrecord_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving video to {config.screenrecord_location}[/purple]\n")
-    Path(config.screenrecord_location).mkdir(parents=True, exist_ok=True)
+    with task_status("[info]Pulling video…[/info]"):
+        result = adb(["pull", remote, str(out_dir)])
 
-    with console.status("[info]Pulling video...[/info]"):
-        result = adb(["pull", remote, config.screenrecord_location])
-
-    local_path = str(Path(config.screenrecord_location) / file_name)
+    local_path = str(out_dir / file_name)
     if result.returncode == 0:
         print_success(f"Saved to: {local_path}")
     else:
@@ -138,7 +99,6 @@ def screenrecord(config: AppConfig) -> None:
         return
 
     open_file_prompt(config.opener, local_path)
-    console.print()
 
 
 def anonymous_screenrecord(config: AppConfig) -> None:
@@ -151,31 +111,23 @@ def anonymous_screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration = console.input(f"\n[cyan]Enter the recording duration (in seconds) > [/cyan]")
-    console.print(f"\n[yellow]Starting Screen Recording...[/yellow]\n")
+    duration = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    out_dir = ensure_config_dir(config, "screenrecord_location")
 
-    subprocess.run(
-        ["adb", "shell", "screenrecord", "--verbose", "--time-limit", duration, remote]
-    )
+    with task_status(f"[info]Recording {duration}s (no live log)…[/info]"):
+        subprocess.run(
+            ["adb", "shell", "screenrecord", "--time-limit", duration, remote],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
 
-    if not config.screenrecord_location:
-        console.print("\n[yellow]Enter location to save all videos, Press 'Enter' for default[/yellow]")
-        config.screenrecord_location = console.input("[prompt]> [/prompt]")
-    if not config.screenrecord_location:
-        config.screenrecord_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving video to PhoneSploit-Pro/{config.screenrecord_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving video to {config.screenrecord_location}[/purple]\n")
-    Path(config.screenrecord_location).mkdir(parents=True, exist_ok=True)
+    with task_status("[info]Pulling video…[/info]"):
+        result = adb(["pull", remote, str(out_dir)])
 
-    with console.status("[info]Pulling video...[/info]"):
-        result = adb(["pull", remote, config.screenrecord_location])
-
-    console.print("[yellow]Deleting video from target device...[/yellow]")
-    with console.status("[info]Removing remote file...[/info]"):
+    with task_status("[info]Removing file from device…[/info]"):
         adb(["shell", "rm", remote])
 
-    local_path = str(Path(config.screenrecord_location) / file_name)
+    local_path = str(out_dir / file_name)
     if result.returncode == 0:
         print_success(f"Saved to: {local_path}")
     else:
@@ -183,74 +135,62 @@ def anonymous_screenrecord(config: AppConfig) -> None:
         return
 
     open_file_prompt(config.opener, local_path)
-    console.print()
 
 
-def _push_and_open_media(config: AppConfig, label: str, mime: str) -> str | None:
-    """Push a local media file to /sdcard/ and return the remote filename."""
-    location = console.input(f"\n[yellow]Enter {label} location in computer[/yellow] > ").strip()
+def _push_and_open_media(config: AppConfig, label: str, intent_type: str) -> None:
+    location = console.input(f"[yellow]{label} path on computer[/yellow]> ").strip()
 
     if not location:
         print_null_input()
-        return None
+        return
 
     location = location.rstrip().strip("'\"")
     file_path = Path(location)
 
     if not file_path.is_file():
         print_error("This file does not exist.")
-        return None
+        return
 
     if not confirm(
-        f"Copy [cyan]{file_path.name}[/cyan] to the device at /sdcard/? "
+        f"Copy [cyan]{file_path.name}[/cyan] to /sdcard/? "
         "An existing file with the same name may be overwritten."
     ):
-        return None
+        return
 
-    with console.status(f"[info]Pushing {file_path.name} to device...[/info]"):
+    with task_status(f"[info]Pushing {file_path.name}…[/info]"):
         adb(["push", str(file_path), "/sdcard/"])
 
-    return file_path.name
+    fn = file_path.name
+    with task_status(f"[info]Opening on device…[/info]"):
+        adb(
+            [
+                "shell",
+                "am",
+                "start",
+                "-a",
+                "android.intent.action.VIEW",
+                "-d",
+                f"file:///sdcard/{fn}",
+                "-t",
+                intent_type,
+            ]
+        )
+    print_success(f"Opened: {fn}")
 
 
 def open_photo(config: AppConfig) -> None:
-    file_name = _push_and_open_media(config, "Photo", "image/jpeg")
-    if not file_name:
-        return
-    console.print(f"\n[yellow]Opening photo on device...[/yellow]\n")
-    adb([
-        "shell", "am", "start", "-a", "android.intent.action.VIEW",
-        "-d", f"file:///sdcard/{file_name}", "-t", "image/jpeg",
-    ])
-    console.print()
+    _push_and_open_media(config, "Photo", "image/jpeg")
 
 
 def open_audio(config: AppConfig) -> None:
-    file_name = _push_and_open_media(config, "Audio", "audio/mp3")
-    if not file_name:
-        return
-    console.print(f"\n[yellow]Playing audio on device...[/yellow]\n")
-    adb([
-        "shell", "am", "start", "-a", "android.intent.action.VIEW",
-        "-d", f"file:///sdcard/{file_name}", "-t", "audio/mp3",
-    ])
-    console.print()
+    _push_and_open_media(config, "Audio", "audio/mp3")
 
 
 def open_video(config: AppConfig) -> None:
-    file_name = _push_and_open_media(config, "Video", "video/mp4")
-    if not file_name:
-        return
-    console.print(f"\n[yellow]Playing video on device...[/yellow]\n")
-    adb([
-        "shell", "am", "start", "-a", "android.intent.action.VIEW",
-        "-d", f"file:///sdcard/{file_name}", "-t", "video/mp4",
-    ])
-    console.print()
+    _push_and_open_media(config, "Video", "video/mp4")
 
 
 def _check_android_version() -> int | None:
-    """Return Android major version integer, or None if undetectable."""
     raw = adb_output(["shell", "getprop", "ro.build.version.release"])
     try:
         return int(raw.split(".")[0])
@@ -260,22 +200,21 @@ def _check_android_version() -> int | None:
 
 def record_audio(config: AppConfig, mode: str) -> None:
     console.print(
-        "\n[red]\\[Notice][/red] [cyan]This feature requires Android 11 or higher.[/cyan]"
+        "[red]\\[Notice][/red] [cyan]Requires Android 11+[/cyan]"
     )
-    with console.status("[info]Detecting Android version...[/info]"):
+    with task_status("[info]Detecting Android version…[/info]"):
         android_ver = _check_android_version()
 
     if android_ver is None:
         print_error("No connected device found.\n[green] Going back to Main Menu[/green]")
         return
 
-    console.print(f"\n[green]Detected Android Version: {android_ver}[/green]")
-
     if android_ver < 11:
         print_error("Android version too old. Going back to Main Menu.")
         return
 
-    save_dir = _ensure_location(config, "Recordings")
+    console.print(f"[dim]Android {android_ver}[/dim]")
+    save_dir = ensure_config_dir(config, "pull_location")
 
     if mode == "mic":
         file_name = f"mic-audio-{_timestamp()}.opus"
@@ -286,22 +225,19 @@ def record_audio(config: AppConfig, mode: str) -> None:
         audio_flag = ""
         label = "Device Audio"
 
-    console.print(
-        f"\n    [white]1. [green]Stream & Record\n"
-        f"    [white]2. [green]Record Only     [yellow](Fast)[/yellow][/green]\n"
-    )
+    submenu_row("Stream & record", "Record only (fast)")
     choice = console.input("[prompt]> [/prompt]")
 
     save_path = str(Path(save_dir) / file_name)
 
     if choice == "1":
-        console.print(f"\n[green]Recording {label}\n\n[red]Press Ctrl+C to Stop.[/red][/green]\n")
+        console.print("[dim]Ctrl+C to stop.[/dim]")
         cmd = ["scrcpy", "--no-video", f"--record={save_path}"]
         if audio_flag:
             cmd.append(audio_flag)
         subprocess.run(cmd)
     elif choice == "2":
-        console.print(f"\n[green]Recording {label}\n\n[red]Press Ctrl+C to Stop.[/red][/green]\n")
+        console.print("[dim]Ctrl+C to stop.[/dim]")
         cmd = ["scrcpy", "--no-video", "--no-playback", f"--record={save_path}"]
         if audio_flag:
             cmd.append(audio_flag)
@@ -312,15 +248,10 @@ def record_audio(config: AppConfig, mode: str) -> None:
 
     if mode == "device":
         open_file_prompt(config.opener, save_path)
-    console.print()
 
 
 def mirror(config: AppConfig) -> None:
-    console.print(
-        "\n    [white]1. [green]Default Mode   [yellow](Best quality)[/yellow]\n"
-        "    [white]2. [green]Fast Mode      [yellow](Low quality but high performance)[/yellow]\n"
-        "    [white]3. [green]Custom Mode    [yellow](Tweak settings to increase performance)[/yellow][/green]\n"
-    )
+    submenu_row("Default (best quality)", "Fast (low bitrate)", "Custom")
     mode = console.input("[prompt]> [/prompt]")
 
     if mode == "1":
@@ -328,9 +259,9 @@ def mirror(config: AppConfig) -> None:
     elif mode == "2":
         subprocess.run(["scrcpy", "-m", "1024", "-b", "1M"])
     elif mode == "3":
-        size_in = console.input(f"\n[cyan]Enter size limit [yellow](e.g. 1024)[/yellow][/cyan] > ")
-        bitrate_in = console.input(f"\n[cyan]Enter bit-rate [yellow](e.g. 2)[/yellow]   (Default : 8 Mbps)[/cyan] > ")
-        fps_in = console.input(f"\n[cyan]Enter frame-rate [yellow](e.g. 15)[/yellow][/cyan] > ")
+        size_in = console.input("[cyan]Size limit[/cyan] [dim](e.g. 1024)[/dim]> ").strip()
+        bitrate_in = console.input("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 2)[/dim]> ").strip()
+        fps_in = console.input("[cyan]Max FPS[/cyan] [dim](e.g. 15)[/dim]> ").strip()
 
         cmd = ["scrcpy"]
         if size_in:
@@ -343,31 +274,23 @@ def mirror(config: AppConfig) -> None:
     else:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
-    console.print()
 
 
 def stream_audio(config: AppConfig, mode: str) -> None:
-    console.print(
-        "\n[red]\\[Notice][/red] [cyan]This feature requires Android 11 or higher.[/cyan]"
-    )
-    with console.status("[info]Detecting Android version...[/info]"):
+    console.print("[red]\\[Notice][/red] [cyan]Requires Android 11+[/cyan]")
+    with task_status("[info]Detecting Android version…[/info]"):
         android_ver = _check_android_version()
 
     if android_ver is None:
         print_error("No connected device found.\n[green] Going back to Main Menu[/green]")
         return
 
-    console.print(f"\n[green]Detected Android Version: {android_ver}[/green]")
-
     if android_ver < 11:
         print_error("Android version too old. Going back to Main Menu.")
         return
 
+    console.print(f"[dim]Android {android_ver} · Ctrl+C to stop[/dim]")
     if mode == "mic":
-        console.print("\n[green]Streaming Microphone Audio\n\n[red]Press Ctrl+C to Stop.[/red][/green]\n")
         subprocess.run(["scrcpy", "--no-video", "--audio-source=mic"])
     else:
-        console.print("\n[green]Streaming Device Audio\n\n[red]Press Ctrl+C to Stop.[/red][/green]\n")
         subprocess.run(["scrcpy", "--no-video"])
-
-    console.print()

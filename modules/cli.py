@@ -1,6 +1,7 @@
 import os
 import platform
 import random
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from rich.panel import Panel
 
 from modules import banner
 from modules.config import AppConfig
-from modules.console import console, print_success, confirm
+from modules.console import console, confirm
 
 
 # ---------------------------------------------------------------------------
@@ -36,10 +37,7 @@ def check_packages() -> None:
         "Nmap":                 "nmap",
     }
 
-    missing = [
-        name for name, cmd in tools.items()
-        if subprocess.call(["which", cmd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0
-    ]
+    missing = [name for name, cmd in tools.items() if shutil.which(cmd) is None]
 
     if not missing:
         return
@@ -68,8 +66,7 @@ def check_packages() -> None:
 def start(config: AppConfig) -> None:
     Path("Downloaded-Files").mkdir(exist_ok=True)
     _detect_platform(config)
-    if config.operating_system != "Windows":
-        check_packages()
+    check_packages()
 
 
 # ---------------------------------------------------------------------------
@@ -80,10 +77,7 @@ _selected_banner: str = ""
 
 
 def _pick_banner() -> str:
-    colors = ["[red]", "[green]", "[yellow]", "[purple]", "[cyan]", "[white]"]
-    color = random.choice(colors)
-    art = random.choice(banner.banner_list)
-    return f"{color}{art}[/{color.strip('[').rstrip(']')}]"
+    return random.choice(banner.banner_list)
 
 
 def display_menu(config: AppConfig) -> None:
@@ -139,8 +133,8 @@ def main(config: AppConfig) -> None:
         media, data_extraction, communication, security, input_control,
     )
 
-    console.print(f"\n [cyan]99: Clear Screen                0: Exit[/cyan]")
-    option = console.input(f"\n[red]\\[Main Menu][/red] [white]Enter selection > [/white]").lower()
+    console.print("[dim]99[/dim] Clear   [dim]0[/dim] Exit")
+    option = console.input("[red]\\[Main Menu][/red]> ").lower()
 
     match option:
         case "p":
@@ -252,10 +246,13 @@ def main(config: AppConfig) -> None:
 
 def run() -> None:
     global _selected_banner
+    from modules import connection
+
     config = AppConfig()
     start(config)
 
     _selected_banner = _pick_banner()
+    connection.prompt_select_device_if_multiple()
     clear_screen(config)
 
     while config.run:

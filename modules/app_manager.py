@@ -1,9 +1,19 @@
-import subprocess
 from pathlib import Path
 from rich.table import Table
 
 from modules.config import AppConfig
-from modules.console import console, print_error, print_success, print_null_input, confirm, adb, adb_output
+from modules.console import (
+    console,
+    print_error,
+    print_success,
+    print_null_input,
+    confirm,
+    task_status,
+    submenu_row,
+    ensure_config_dir,
+    adb,
+    adb_output,
+)
 
 
 def _list_third_party_apps() -> list[str]:
@@ -16,7 +26,7 @@ def _select_app_from_list() -> str | None:
     """Display numbered app list, return selected package name or None."""
     app_list = _list_third_party_apps()
     if not app_list:
-        console.print("\n[yellow]No third-party apps found.[/yellow]\n")
+        console.print("[yellow]No third-party apps found.[/yellow]")
         return None
 
     table = Table(title="Installed Third-Party Apps", show_header=True, header_style="bold cyan")
@@ -26,10 +36,8 @@ def _select_app_from_list() -> str | None:
     for i, pkg in enumerate(app_list, 1):
         table.add_row(str(i), pkg)
 
-    console.print()
     console.print(table)
-
-    selection = console.input("\n[prompt]Enter Selection > [/prompt]")
+    selection = console.input("[prompt]Enter Selection > [/prompt]")
     if not selection.isdigit():
         print_error("Expected an Integer Value\n[green] Going back to Main Menu[/green]")
         return None
@@ -41,7 +49,7 @@ def _select_app_from_list() -> str | None:
 
 
 def install_app(config: AppConfig) -> None:
-    file_location = console.input(f"\n[cyan]Enter APK path in computer[/cyan] > ").strip()
+    file_location = console.input("[cyan]APK path on computer[/cyan] > ").strip()
 
     if not file_location:
         print_null_input()
@@ -60,26 +68,18 @@ def install_app(config: AppConfig) -> None:
     ):
         return
 
-    with console.status(f"[info]Installing {apk_path.name}...[/info]"):
-        result = subprocess.run(
-            ["adb", "install", str(apk_path)],
-            capture_output=True,
-            text=True,
-        )
+    with task_status(f"[info]Installing {apk_path.name}…[/info]"):
+        result = adb(["install", str(apk_path)])
 
     output = (result.stdout + result.stderr).strip()
     if "Success" in output:
         print_success(f"Installed: {apk_path.name}")
     else:
-        print_error(f"Installation failed:\n{output}")
-    console.print()
+        print_error(f"Installation failed: {output}")
 
 
 def uninstall_app(config: AppConfig) -> None:
-    console.print(
-        "\n    [white]1. [green]Select from App List\n"
-        "    [white]2. [green]Enter Package Name Manually[/green]\n"
-    )
+    submenu_row("Select from app list", "Enter package name manually")
     mode = console.input("[prompt]> [/prompt]")
 
     if mode == "1":
@@ -87,8 +87,9 @@ def uninstall_app(config: AppConfig) -> None:
         if not package_name:
             return
     elif mode == "2":
-        console.print(f"\n[cyan]Enter package name     [white]Example : com.spotify.music [/white][/cyan]")
-        package_name = console.input("[prompt]> [/prompt]")
+        package_name = console.input(
+            "[cyan]Package name[/cyan] [dim](e.g. com.spotify.music)[/dim]> "
+        ).strip()
         if not package_name:
             print_null_input()
             return
@@ -102,23 +103,18 @@ def uninstall_app(config: AppConfig) -> None:
     ):
         return
 
-    console.print(f"\n[red]Uninstalling [yellow]{package_name}[/yellow]...[/red]")
-    with console.status(f"[info]Uninstalling {package_name}...[/info]"):
+    with task_status(f"[info]Uninstalling {package_name}…[/info]"):
         result = adb(["uninstall", package_name])
 
     output = (result.stdout + result.stderr).strip()
     if "Success" in output:
         print_success(f"Uninstalled: {package_name}")
     else:
-        print_error(f"Uninstall failed:\n{output}")
-    console.print()
+        print_error(f"Uninstall failed: {output}")
 
 
 def launch_app(config: AppConfig) -> None:
-    console.print(
-        "\n    [white]1. [green]Select from App List\n"
-        "    [white]2. [green]Enter Package Name Manually[/green]\n"
-    )
+    submenu_row("Select from app list", "Enter package name manually")
     mode = console.input("[prompt]> [/prompt]")
 
     if mode == "1":
@@ -126,8 +122,9 @@ def launch_app(config: AppConfig) -> None:
         if not package_name:
             return
     elif mode == "2":
-        console.print(f"\n[cyan]Enter package name     [white]Example : com.spotify.music [/white][/cyan]")
-        package_name = console.input("[prompt]> [/prompt]")
+        package_name = console.input(
+            "[cyan]Package name[/cyan] [dim](e.g. com.spotify.music)[/dim]> "
+        ).strip()
         if not package_name:
             print_null_input()
             return
@@ -135,25 +132,21 @@ def launch_app(config: AppConfig) -> None:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
 
-    with console.status(f"[info]Launching {package_name}...[/info]"):
+    with task_status(f"[info]Launching {package_name}…[/info]"):
         adb(["shell", "monkey", "-p", package_name, "1"])
     print_success(f"Launched: {package_name}")
-    console.print()
 
 
 def list_apps(config: AppConfig) -> None:
-    console.print(
-        "\n    [white]1. [green]List third party packages\n"
-        "    [white]2. [green]List all packages[/green]\n"
-    )
+    submenu_row("Third-party packages only", "All packages")
     mode = console.input("[prompt]> [/prompt]")
 
     if mode == "1":
-        with console.status("[info]Fetching third-party packages...[/info]"):
+        with task_status("[info]Fetching third-party packages…[/info]"):
             app_list = _list_third_party_apps()
         title = "Third-Party Apps"
     elif mode == "2":
-        with console.status("[info]Fetching all packages...[/info]"):
+        with task_status("[info]Fetching all packages…[/info]"):
             raw = adb_output(["shell", "pm", "list", "packages"])
             app_list = [line.replace("package:", "").strip() for line in raw.splitlines() if line.strip()]
         title = "All Installed Packages"
@@ -168,30 +161,24 @@ def list_apps(config: AppConfig) -> None:
     for i, pkg in enumerate(app_list, 1):
         table.add_row(str(i), pkg)
 
-    console.print()
     console.print(table)
-    console.print()
 
 
 def extract_apk(config: AppConfig) -> None:
-    console.print(
-        "\n    [white]1. [green]Select from App List\n"
-        "    [white]2. [green]Enter Package Name Manually[/green]\n"
-    )
+    submenu_row("Select from app list", "Enter package name manually")
     mode = console.input("[prompt]> [/prompt]")
 
     if mode == "1":
         package_name = _select_app_from_list()
         if not package_name:
             return
-        console.print(f"\n[red]Extracting [yellow]{package_name}[/yellow]...[/red]")
     elif mode == "2":
-        console.print(f"\n[cyan]Enter package name     [white]Example : com.spotify.music [/white][/cyan]")
-        package_name = console.input("[prompt]> [/prompt]")
+        package_name = console.input(
+            "[cyan]Package name[/cyan] [dim](e.g. com.spotify.music)[/dim]> "
+        ).strip()
         if not package_name:
             print_null_input()
             return
-        console.print(f"\n[red]Extracting [yellow]{package_name}[/yellow]...[/red]")
     else:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
@@ -202,35 +189,50 @@ def extract_apk(config: AppConfig) -> None:
     ):
         return
 
-    if not config.pull_location:
-        console.print("\n[yellow]Enter location to save APK file, Press 'Enter' for default[/yellow]")
-        config.pull_location = console.input("[prompt]> [/prompt]")
-    if not config.pull_location:
-        config.pull_location = "Downloaded-Files"
-        console.print(f"\n[purple]Saving APK to PhoneSploit-Pro/{config.pull_location}[/purple]\n")
-    else:
-        console.print(f"\n[purple]Saving APK to {config.pull_location}[/purple]\n")
-
-    save_dir = Path(config.pull_location)
-    save_dir.mkdir(parents=True, exist_ok=True)
-
-    with console.status(f"[info]Extracting APK for {package_name}...[/info]"):
-        path_output = adb_output(["shell", "pm", "path", package_name])
-        apk_path = path_output.replace("package:", "").strip()
-
-        if not apk_path:
-            print_error(f"App not found: {package_name}")
-            return
-
-        pull_result = adb(["pull", apk_path])
-
+    save_dir = ensure_config_dir(config, "pull_location")
     file_name = package_name.replace(".", "_") + ".apk"
     dest = save_dir / file_name
-    try:
-        Path("base.apk").rename(dest)
+
+    with task_status(f"[info]Querying APK path for {package_name}…[/info]"):
+        path_output = adb_output(["shell", "pm", "path", package_name])
+
+    lines = [l.strip() for l in path_output.splitlines() if l.strip().startswith("package:")]
+    paths = [l.replace("package:", "").strip() for l in lines]
+    if not paths:
+        print_error(f"App not found: {package_name}")
+        return
+
+    apk_path = None
+    for p in paths:
+        if p.endswith("base.apk") or "/base.apk" in p:
+            apk_path = p
+            break
+    if apk_path is None:
+        apk_path = paths[0]
+
+    with task_status(f"[info]Pulling {Path(apk_path).name}…[/info]"):
+        pull_result = adb(["pull", apk_path])
+
+    if pull_result.returncode != 0:
+        print_error((pull_result.stdout + pull_result.stderr).strip() or "adb pull failed.")
+        return
+
+    pulled_name = Path(apk_path).name
+    src = Path(pulled_name)
+    if not src.is_file() and Path("base.apk").is_file():
+        src = Path("base.apk")
+
+    ok = False
+    with task_status("[info]Moving into output folder…[/info]"):
+        try:
+            if src.is_file():
+                src.rename(dest)
+                ok = dest.is_file()
+            else:
+                print_error("Pulled APK not found in current directory after adb pull.")
+        except FileExistsError:
+            print_error(f"APK already exists at {dest}")
+        except OSError as e:
+            print_error(str(e))
+    if ok:
         print_success(f"Saved to: {dest}")
-    except FileNotFoundError:
-        print_error("APK file not found after pull.")
-    except FileExistsError:
-        print_error(f"APK already exists at {dest}")
-    console.print()

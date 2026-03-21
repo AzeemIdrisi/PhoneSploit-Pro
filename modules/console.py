@@ -1,7 +1,11 @@
 import subprocess
-from contextlib import contextmanager
+from pathlib import Path
+from typing import Literal
+
 from rich.console import Console
 from rich.theme import Theme
+
+from modules.config import AppConfig
 
 _theme = Theme(
     {
@@ -16,6 +20,42 @@ _theme = Theme(
 )
 
 console = Console(theme=_theme, highlight=False)
+
+STATUS_SPINNER = "dots"
+
+
+def task_status(message: str):
+    """Transient operation line — Rich updates in place until the block exits."""
+    return console.status(message, spinner=STATUS_SPINNER)
+
+
+def submenu_row(*labels: str) -> None:
+    """Compact one-line submenu: 1) …  2) …"""
+    parts = [f"[dim]{i}[/dim] {text}" for i, text in enumerate(labels, 1)]
+    console.print("  " + "   ".join(parts))
+
+
+_ConfigDirAttr = Literal["pull_location", "screenshot_location", "screenrecord_location"]
+
+
+def ensure_config_dir(
+    config: AppConfig,
+    field: _ConfigDirAttr,
+    default: str = "Downloaded-Files",
+) -> Path:
+    """If config field empty, one-line prompt; mkdir; return Path."""
+    val = getattr(config, field)
+    if not val:
+        val = (
+            console.input(
+                f"[yellow]Output folder[/yellow] [dim](Enter={default})[/dim]> "
+            ).strip()
+            or default
+        )
+        setattr(config, field, val)
+    p = Path(val)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
 
 
 def print_error(msg: str) -> None:
@@ -35,7 +75,7 @@ def print_info(msg: str) -> None:
 
 
 def print_null_input() -> None:
-    console.print("\n[error] Null Input[/error]\n[success] Going back to Main Menu[/success]")
+    console.print("[error]Null input[/error]. [green]Returning to menu.[/green]")
 
 
 def ask(prompt: str) -> str:

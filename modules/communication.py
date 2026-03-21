@@ -1,29 +1,27 @@
 from modules.config import AppConfig
-from modules.console import console, print_error, print_success, print_null_input, confirm, adb
+from modules.console import console, print_error, print_success, print_null_input, confirm, task_status, adb
 
 
 def send_sms(config: AppConfig) -> None:
     console.print(
-        "\n[red]\\[Warning][/red] [cyan]This feature is currently in BETA, Tested on Android 12 only.[/cyan]"
+        "[red]\\[Warning][/red] [cyan]BETA — tested on Android 12 only.[/cyan]"
     )
     number = console.input(
-        "[yellow]Enter Phone number with country code[/yellow] (e.g. +91XXXXXXXXXX) > "
-    )
+        "[yellow]Phone + country code[/yellow] [dim](e.g. +91…)[/dim]> "
+    ).strip()
 
     if not number:
         print_null_input()
         return
 
-    message = console.input("[yellow]Enter your message[/yellow] > ")
+    message = console.input("[yellow]Message[/yellow]> ").strip()
 
     if not confirm(
-        f"Send this SMS to [cyan]{number}[/cyan]? This may incur charges on the device account."
+        f"Send SMS to [cyan]{number}[/cyan]? May incur charges."
     ):
         return
 
-    console.print(f"[cyan]Sending SMS to {number}...[/cyan]")
-
-    with console.status(f"[info]Sending SMS to {number}...[/info]"):
+    with task_status(f"[info]Sending SMS…[/info]"):
         adb([
             "shell", "service", "call", "isms", "5",
             "i32", "0",
@@ -39,24 +37,20 @@ def send_sms(config: AppConfig) -> None:
         ])
 
     print_success(f"SMS sent to {number}.")
-    console.print()
 
 
 def open_link(config: AppConfig) -> None:
-    console.print(
-        "\n[yellow]Enter URL              [cyan]Example : https://github.com[/cyan][/yellow]"
-    )
-    url = console.input("[prompt]> [/prompt]")
+    url = console.input(
+        "[yellow]URL[/yellow] [dim](e.g. https://github.com)[/dim]> "
+    ).strip()
 
     if not url:
         print_null_input()
         return
 
-    if not confirm(f'Open this URL on the device browser?\n[cyan]{url}[/cyan]'):
+    if not confirm(f"Open on device? [cyan]{url}[/cyan]"):
         return
 
-    console.print(f'\n[yellow]Opening "[white]{url}[/white]" on device...[/yellow]\n')
-    with console.status(f"[info]Opening {url}...[/info]"):
+    with task_status(f"[info]Opening URL…[/info]"):
         adb(["shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", url])
     print_success(f"Opened: {url}")
-    console.print()
