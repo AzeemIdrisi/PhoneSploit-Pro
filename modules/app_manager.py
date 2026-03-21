@@ -22,6 +22,11 @@ def _list_third_party_apps() -> list[str]:
     return [line.replace("package:", "").strip() for line in raw.splitlines() if line.strip()]
 
 
+def select_package_from_list() -> str | None:
+    """Display numbered third-party app list; return package name or None."""
+    return _select_app_from_list()
+
+
 def _select_app_from_list() -> str | None:
     """Display numbered app list, return selected package name or None."""
     app_list = _list_third_party_apps()
