@@ -9,7 +9,7 @@ def use_keycode(config: AppConfig) -> None:
     console.print(banner.keycode_menu)
 
     while True:
-        console.print("[dim]99[/dim] Clear   [dim]0[/dim] Menu")
+        console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Menu")
         option = console.input(
             "[red]\\[KEYCODE][/red] [white]>[/white] "
         ).lower()

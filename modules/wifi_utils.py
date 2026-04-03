@@ -252,7 +252,7 @@ def wlan_ip(config: AppConfig) -> None:
 
 
 def wifi_toggle(config: AppConfig) -> None:
-    if not confirm("[yellow]Toggle WiFi radio via svc wifi?[/yellow] May fail on some OEMs."):
+    if not confirm("[yellow]Toggle WiFi radio via svc wifi?[/yellow]"):
         return
     mode = console.input("[cyan]Type[/cyan] [dim]enable[/dim] or [dim]disable[/dim]> ").strip().lower()
     if mode not in ("enable", "disable"):

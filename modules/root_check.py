@@ -69,9 +69,6 @@ def root_heuristics(config: AppConfig) -> None:
             border_style="cyan",
         )
     )
-    console.print(
-        "\n[dim]Heuristic only—not proof. Use on devices you own for authorized testing.[/dim]"
-    )
 
 
 def _verdict(

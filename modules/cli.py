@@ -103,7 +103,7 @@ def clear_screen(config: AppConfig) -> None:
 def change_page(config: AppConfig, direction: str) -> None:
     if direction == "p" and config.page_number > 0:
         config.page_number -= 1
-    elif direction == "n" and config.page_number < 3:
+    elif direction == "n" and config.page_number < 4:
         config.page_number += 1
     clear_screen(config)
 
@@ -127,11 +127,6 @@ def update_me(config: AppConfig) -> None:
     config.run = False
 
 
-def visit_github(config: AppConfig) -> None:
-    subprocess.run([config.opener, "https://github.com/AzeemIdrisi/PhoneSploit-Pro"])
-    console.print()
-
-
 # ---------------------------------------------------------------------------
 # Main dispatch loop
 # ---------------------------------------------------------------------------
@@ -143,8 +138,9 @@ def main(config: AppConfig) -> None:
         extras, port_forward, wifi_utils, root_check,
     )
 
-    console.print("[dim]99[/dim] Clear   [dim]0[/dim] Exit")
-    option = console.input("[red]\\[Main Menu][/red]> ").lower()
+    console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Exit")
+    console.print("[red]\\[Main Menu][/red] > ", end="")
+    option = input().strip().lower()
 
     match option:
         case "p":
@@ -331,81 +327,79 @@ def main(config: AppConfig) -> None:
                 return
             media.record_audio(config, "device")
         case "44":
-            update_me(config)
-        case "45":
-            visit_github(config)
-        case "46":
             if not require_adb(config):
                 return
             port_forward.port_forward_menu(config)
-        case "47":
+        case "45":
             if not require_adb(config):
                 return
             extras.force_stop_app(config)
-        case "48":
+        case "46":
             if not require_adb(config):
                 return
             extras.clear_app_data(config)
-        case "49":
+        case "47":
             if not require_adb(config):
                 return
             extras.save_logcat_snippet(config)
-        case "50":
+        case "48":
             if not require_adb(config):
                 return
             extras.grant_revoke_permission(config)
-        case "51":
+        case "49":
             if not require_adb(config):
                 return
             extras.restart_app(config)
-        case "52":
+        case "50":
             if not require_adb(config):
                 return
             extras.live_logcat(config)
-        case "53":
+        case "51":
             if not require_adb(config):
                 return
             extras.network_snapshot(config)
-        case "54":
+        case "52":
             if not require_adb(config):
                 return
             extras.install_split_apks(config)
-        case "55":
+        case "53":
             if not require_adb(config):
                 return
             extras.developer_settings(config)
-        case "56":
+        case "54":
             if not require_adb(config):
                 return
             extras.locale_read(config)
-        case "57":
+        case "55":
             if not require_adb(config):
                 return
             extras.screen_stay_on(config)
-        case "58":
+        case "56":
             if not require_adb(config):
                 return
             wifi_utils.wifi_status_dump(config)
-        case "59":
+        case "57":
             if not require_adb(config):
                 return
             wifi_utils.wlan_ip(config)
-        case "60":
+        case "58":
             if not require_adb(config):
                 return
             wifi_utils.wifi_toggle(config)
-        case "61":
+        case "59":
             if not require_adb(config):
                 return
             wifi_utils.ping_connectivity(config)
-        case "62":
+        case "60":
             if not require_adb(config):
                 return
             wifi_utils.saved_wifi_networks(config)
-        case "63":
+        case "61":
             if not require_adb(config):
                 return
             root_check.root_heuristics(config)
+        case "62":
+            update_me(config)
         case _:
             console.print("\n[red]Invalid selection![/red]\n")
 

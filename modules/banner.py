@@ -34,7 +34,7 @@ menu1 = """
     [white]4. [green]Scan Network for Devices     [white]9. [green]Send File/Folder to Device           [white]14. [green]Access Device Shell
     [white]5. [green]Mirror & Control Device     [white]10. [green]Run an App                           [white]15. [green]Hack Device [red](Using Metasploit)[/red]
 
-  [yellow]N: Next Page                                      (Page : 1 / 4)[/yellow]"""
+  [yellow]N: Next Page                                      (Page : 1 / 5)[/yellow]"""
 
 menu2 = """
     [white]16. [green]List All Folders/Files      [white]21. [green]Anonymous Screenshot                [white]26. [green]Play a Video on Device
@@ -43,28 +43,32 @@ menu2 = """
     [white]19. [green]Copy All Screenshots        [white]24. [green]Display a Photo on Device           [white]29. [green]Restart Device
     [white]20. [green]Copy All Camera Photos      [white]25. [green]Play an Audio on Device             [white]30. [green]Advanced Reboot Options
 
-  [yellow]P: Previous Page         N: Next Page            (Page : 2 / 4)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 2 / 5)[/yellow]"""
 
 menu3 = """
     [white]31. [green]Unlock Device               [white]36. [green]Extract APK from Installed App      [white]41. [green]Record Mic Audio
     [white]32. [green]Lock Device                 [white]37. [green]Stop ADB Server                     [white]42. [green]Listen Device Audio
     [white]33. [green]Dump All SMS                [white]38. [green]Power Off Device                    [white]43. [green]Record Device Audio
-    [white]34. [green]Dump All Contacts           [white]39. [green]Use Keycodes (Control Device)       [white]44. [green]Update PhoneSploit-Pro
-    [white]35. [green]Dump Call Logs              [white]40. [green]Listen Mic Audio                    [white]45. [green]Visit PhoneSploit-Pro on GitHub
+    [white]34. [green]Dump All Contacts           [white]39. [green]Use Keycodes (Control Device)       [white]44. [green]TCP Port Forward / Reverse
+    [white]35. [green]Dump Call Logs              [white]40. [green]Listen Mic Audio                    [white]45. [green]Force Stop App
 
-  [yellow]P: Previous Page         N: Next Page            (Page : 3 / 4)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 3 / 5)[/yellow]"""
 
 menu4 = """
-    [white]46. [green]TCP Port Forward / Reverse   [white]52. [green]Live Logcat Stream               [white]58. [green]WiFi Status Dump
-    [white]47. [green]Force Stop App                 [white]53. [green]Network Snapshot                 [white]59. [green]WLAN IP Info
-    [white]48. [green]Clear App Data                 [white]54. [green]Install Split APKs             [white]60. [green]WiFi Radio Toggle
-    [white]49. [green]Save Logcat Snippet            [white]55. [green]Developer Settings             [white]61. [green]Ping Connectivity
-    [white]50. [green]Grant / Revoke Permission      [white]56. [green]Read Locale                    [white]62. [green]Saved WiFi Networks
-    [white]51. [green]Restart App                    [white]57. [green]Screen Stay-On                 [white]63. [green]Root Heuristics
+    [white]46. [green]Clear App Data                 [white]51. [green]Network Snapshot               [white]56. [green]WiFi Status Dump
+    [white]47. [green]Save Logcat Snippet            [white]52. [green]Install Split APKs             [white]57. [green]WLAN IP Info
+    [white]48. [green]Grant / Revoke Permission      [white]53. [green]Developer Settings             [white]58. [green]WiFi Radio Toggle
+    [white]49. [green]Restart App                    [white]54. [green]Read Locale                    [white]59. [green]Ping Connectivity
+    [white]50. [green]Live Logcat Stream             [white]55. [green]Screen Stay-On                 [white]60. [green]Saved WiFi Networks
 
-  [yellow]P: Previous Page                                  (Page : 4 / 4)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 4 / 5)[/yellow]"""
 
-menu = [menu1, menu2, menu3, menu4]
+menu5 = """
+    [white]61. [green]Root Heuristics                [white]62. [green]Update PhoneSploit-Pro
+
+  [yellow]P: Previous Page                                  (Page : 5 / 5)[/yellow]"""
+
+menu = [menu1, menu2, menu3, menu4, menu5]
 
 instruction = """
 This attack will launch Metasploit-Framework    (msfconsole)
