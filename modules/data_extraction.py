@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 from datetime import datetime
 
@@ -8,6 +9,27 @@ from modules.console import print_success, print_error, confirm, task_status, en
 def _timestamp() -> str:
     now = datetime.now()
     return f"{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-{now.second}"
+
+
+def _write_dump(dest: Path, result: subprocess.CompletedProcess[str]) -> None:
+    """Persist adb output: stdout only on success; on failure, record stderr in a sibling file."""
+    if result.returncode != 0:
+        err_msg = result.stderr.strip() or "(no stderr from adb)"
+        print_error(f"Dump failed: {err_msg}")
+        err_dest = dest.with_suffix(".error.txt")
+        detail = result.stderr.strip() or f"adb exited with code {result.returncode} (no stderr output)."
+        try:
+            err_dest.write_text(detail, encoding="utf-8")
+        except OSError as e:
+            print_error(f"Could not save error details to {err_dest}: {e}")
+        return
+    try:
+        dest.write_text(result.stdout, encoding="utf-8")
+    except OSError as e:
+        print_error(f"Could not write dump file {dest}: {e}")
+        return
+    lines = [l for l in result.stdout.splitlines() if l.strip()]
+    print_success(f"Saved {len(lines)} records to: {dest}")
 
 
 def dump_sms(config: AppConfig) -> None:
@@ -29,12 +51,7 @@ def dump_sms(config: AppConfig) -> None:
             ]
         )
 
-    dest.write_text(result.stdout, encoding="utf-8")
-    lines = [l for l in result.stdout.splitlines() if l.strip()]
-    if result.returncode == 0:
-        print_success(f"Saved {len(lines)} records to: {dest}")
-    else:
-        print_error(f"Dump failed: {result.stderr.strip()}")
+    _write_dump(dest, result)
 
 
 def dump_contacts(config: AppConfig) -> None:
@@ -56,12 +73,7 @@ def dump_contacts(config: AppConfig) -> None:
             ]
         )
 
-    dest.write_text(result.stdout, encoding="utf-8")
-    lines = [l for l in result.stdout.splitlines() if l.strip()]
-    if result.returncode == 0:
-        print_success(f"Saved {len(lines)} records to: {dest}")
-    else:
-        print_error(f"Dump failed: {result.stderr.strip()}")
+    _write_dump(dest, result)
 
 
 def dump_call_logs(config: AppConfig) -> None:
@@ -83,9 +95,4 @@ def dump_call_logs(config: AppConfig) -> None:
             ]
         )
 
-    dest.write_text(result.stdout, encoding="utf-8")
-    lines = [l for l in result.stdout.splitlines() if l.strip()]
-    if result.returncode == 0:
-        print_success(f"Saved {len(lines)} records to: {dest}")
-    else:
-        print_error(f"Dump failed: {result.stderr.strip()}")
+    _write_dump(dest, result)

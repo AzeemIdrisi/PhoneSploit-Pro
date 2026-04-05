@@ -25,6 +25,22 @@ def _timestamp() -> str:
     return f"{now.year}-{now.month}-{now.day}-{now.hour}-{now.minute}-{now.second}"
 
 
+def _parse_positive_duration_seconds(raw: str) -> int | None:
+    s = raw.strip()
+    if not s:
+        print_error("Duration is required (positive integer seconds).")
+        return None
+    try:
+        n = int(s, 10)
+    except ValueError:
+        print_error("Duration must be a positive integer (seconds).")
+        return None
+    if n < 1:
+        print_error("Duration must be at least 1 second.")
+        return None
+    return n
+
+
 def get_screenshot(config: AppConfig) -> None:
     file_name = f"screenshot-{_timestamp()}.png"
     remote = f"/sdcard/{file_name}"
@@ -80,7 +96,10 @@ def screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_raw = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_sec = _parse_positive_duration_seconds(duration_raw)
+    if duration_sec is None:
+        return
     out_dir = ensure_config_dir(config, "screenrecord_location")
 
     adb_exe = get_adb_executable()
@@ -88,12 +107,23 @@ def screenrecord(config: AppConfig) -> None:
         print_error("ADB not available.")
         return
 
-    with task_status(f"[info]Recording {duration}s (no live log)…[/info]"):
-        subprocess.run(
-            [adb_exe, "shell", "screenrecord", "--time-limit", duration, remote],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+    with task_status(f"[info]Recording {duration_sec}s…[/info]"):
+        rec = subprocess.run(
+            [
+                adb_exe,
+                "shell",
+                "screenrecord",
+                "--time-limit",
+                str(duration_sec),
+                remote,
+            ],
+            capture_output=True,
+            text=True,
         )
+    if rec.returncode != 0:
+        detail = (rec.stdout + rec.stderr).strip() or f"exit code {rec.returncode}"
+        print_error(f"screenrecord failed: {detail}")
+        return
 
     with task_status("[info]Pulling video…[/info]"):
         result = adb(["pull", remote, str(out_dir)])
@@ -118,7 +148,10 @@ def anonymous_screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_raw = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_sec = _parse_positive_duration_seconds(duration_raw)
+    if duration_sec is None:
+        return
     out_dir = ensure_config_dir(config, "screenrecord_location")
 
     adb_exe = get_adb_executable()
@@ -126,12 +159,23 @@ def anonymous_screenrecord(config: AppConfig) -> None:
         print_error("ADB not available.")
         return
 
-    with task_status(f"[info]Recording {duration}s (no live log)…[/info]"):
-        subprocess.run(
-            [adb_exe, "shell", "screenrecord", "--time-limit", duration, remote],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+    with task_status(f"[info]Recording {duration_sec}s…[/info]"):
+        rec = subprocess.run(
+            [
+                adb_exe,
+                "shell",
+                "screenrecord",
+                "--time-limit",
+                str(duration_sec),
+                remote,
+            ],
+            capture_output=True,
+            text=True,
         )
+    if rec.returncode != 0:
+        detail = (rec.stdout + rec.stderr).strip() or f"exit code {rec.returncode}"
+        print_error(f"screenrecord failed: {detail}")
+        return
 
     with task_status("[info]Pulling video…[/info]"):
         result = adb(["pull", remote, str(out_dir)])

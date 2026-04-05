@@ -8,7 +8,7 @@ from rich.panel import Panel
 
 from modules import banner, color
 from modules.config import AppConfig
-from modules.console import console, confirm, set_adb_executable
+from modules.console import console, confirm, print_error, set_adb_executable
 from modules.tools import (
     resolve_external_tools,
     require_adb,
@@ -121,9 +121,32 @@ def update_me(config: AppConfig) -> None:
         return
     console.print("[yellow]Updating PhoneSploit-Pro...[/yellow]")
     console.print("[green]Fetching latest updates from GitHub...[/green]")
-    subprocess.run(["git", "fetch"])
+    fetch = subprocess.run(
+        ["git", "fetch"],
+        capture_output=True,
+        text=True,
+    )
+    if fetch.returncode != 0:
+        detail = (fetch.stdout + fetch.stderr).strip() or f"exit code {fetch.returncode}"
+        print_error(f"git fetch failed: {detail}")
+        return
+
     console.print("[green]Applying changes...[/green]")
-    subprocess.run(["git", "rebase"])
+    rebase = subprocess.run(
+        ["git", "rebase"],
+        capture_output=True,
+        text=True,
+    )
+    if rebase.returncode != 0:
+        detail = (rebase.stdout + rebase.stderr).strip() or f"exit code {rebase.returncode}"
+        print_error(f"git rebase failed: {detail}")
+        console.print(
+            "[yellow]If rebase stopped with conflicts, fix the files, then run "
+            "[cyan]git rebase --continue[/cyan]. To give up and restore the previous state, run "
+            "[cyan]git rebase --abort[/cyan].[/yellow]"
+        )
+        return
+
     console.print("[cyan]Please restart PhoneSploit-Pro.[/cyan]")
     config.run = False
 

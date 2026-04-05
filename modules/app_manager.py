@@ -74,7 +74,7 @@ def install_app(config: AppConfig) -> None:
         return
 
     with task_status(f"[info]Installing {apk_path.name}…[/info]"):
-        result = adb(["install", str(apk_path)])
+        result = adb(["install","-r", str(apk_path)])
 
     output = (result.stdout + result.stderr).strip()
     if "Success" in output:

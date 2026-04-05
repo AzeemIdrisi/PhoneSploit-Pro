@@ -91,7 +91,18 @@ def hack(config: AppConfig) -> None:
 
     adb_exe = get_adb_executable()
     with task_status("[info]adb install payload…[/info]"):
-        subprocess.run([adb_exe or "adb", "install", "-r", str(apk_out)])
+        install = subprocess.run(
+            [adb_exe or "adb", "install", "-r", str(apk_out)],
+            capture_output=True,
+            text=True,
+        )
+    if install.returncode != 0:
+        detail = (install.stdout + install.stderr).strip() or f"exit code {install.returncode}"
+        console.print(f"[red]adb install failed:[/red] {detail}")
+        with task_status("[info]Restoring app verification…[/info]"):
+            adb(["shell", "settings", "put", "global", "package_verifier_enable", "1"])
+            adb(["shell", "settings", "put", "global", "verifier_verify_adb_installs", "1"])
+        return
 
     with task_status("[info]Launching payload…[/info]"):
         adb(["shell", "monkey", "-p", "com.metasploit.stage", "1"])
