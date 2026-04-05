@@ -6,7 +6,7 @@ from pathlib import Path
 
 from rich.panel import Panel
 
-from modules import banner
+from modules import banner, color
 from modules.config import AppConfig
 from modules.console import console, confirm, set_adb_executable
 from modules.tools import (
@@ -86,7 +86,8 @@ _selected_banner: str = ""
 
 
 def _pick_banner() -> str:
-    return random.choice(banner.banner_list)
+    c = random.choice(color.color_list)
+    return f"[bold {c}]{random.choice(banner.banner_list)}[/bold {c}]"
 
 
 def display_menu(config: AppConfig) -> None:
