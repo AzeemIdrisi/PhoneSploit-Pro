@@ -5,3 +5,4 @@ test.py
 .idea/
 hidden.txt
 .vscode/
+.cursor/
