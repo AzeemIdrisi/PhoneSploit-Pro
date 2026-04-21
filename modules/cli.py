@@ -1,6 +1,7 @@
 import os
 import platform
 import random
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -35,39 +36,108 @@ def _detect_platform(config: AppConfig) -> None:
         import readline  # noqa: F401  — enables arrow keys in input
 
 
-def check_packages(config: AppConfig) -> None:
-    missing: list[str] = []
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def _collect_missing_tools(config: AppConfig) -> list[tuple[str, str]]:
+    """Return list of (display name, installer component key)."""
+    missing: list[tuple[str, str]] = []
     if not config.adb_path:
-        missing.append("ADB")
+        missing.append(("ADB", "adb"))
     if not config.msfvenom_path or not config.msfconsole_path:
-        missing.append("Metasploit-Framework (msfvenom & msfconsole)")
+        missing.append(("Metasploit-Framework (msfvenom & msfconsole)", "metasploit"))
     if not config.scrcpy_path:
-        missing.append("Scrcpy")
+        missing.append(("Scrcpy", "scrcpy"))
     if not config.nmap_path:
-        missing.append("Nmap")
+        missing.append(("Nmap", "nmap"))
+    return missing
 
-    if not missing:
-        return
 
-    items = "\n".join(f"  [bold yellow]{i + 1}.[/bold yellow] [white]{name}[/white]"
-                      for i, name in enumerate(missing))
-    console.print(
-        Panel(
-            f"[red]The following required tools are NOT installed:[/red]\n\n{items}\n\n"
-            "[cyan]Please install the above listed software.[/cyan]",
-            title="[bold red]Missing Dependencies[/bold red]",
-            border_style="red",
+def _run_dependency_installer(config: AppConfig, component_keys: list[str]) -> None:
+    """Run install.sh (Unix) or install.ps1 (Windows) for the given component keys."""
+    root = _project_root()
+    keys = list(dict.fromkeys(component_keys + ["pip"]))
+    joined = ",".join(keys)
+
+    if config.operating_system == "Windows":
+        ps = shutil.which("pwsh") or shutil.which("powershell") or shutil.which("powershell.exe")
+        script = root / "install.ps1"
+        if not script.is_file():
+            print_error(f"Installer not found: {script}")
+            return
+        if not ps:
+            print_error("PowerShell not found on PATH. Install dependencies manually (see README).")
+            return
+        subprocess.run(
+            [
+                ps,
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                str(script),
+                "-Components",
+                joined,
+                "-NonInteractive",
+            ],
+            cwd=str(root),
         )
+    else:
+        script = root / "install.sh"
+        if not script.is_file():
+            print_error(f"Installer not found: {script}")
+            return
+        subprocess.run(
+            ["bash", str(script), "--yes", "--components", joined],
+            cwd=str(root),
+        )
+
+    console.print(
+        "[dim]If tools are still not detected, open a new terminal and run PhoneSploit Pro again "
+        "(PATH may need a refresh).[/dim]"
     )
 
-    choice = console.input(
-        "\n[green]Do you still want to continue to PhoneSploit Pro?[/green]     [bold]Y / N[/bold] > "
-    ).lower()
-    while choice not in ("y", "n", ""):
-        choice = console.input("[red]Invalid choice![/red] Press Y or N > ").lower()
 
-    if choice == "n":
-        raise SystemExit(0)
+def check_packages(config: AppConfig) -> None:
+    while True:
+        missing = _collect_missing_tools(config)
+        if not missing:
+            return
+
+        names = [name for name, _ in missing]
+        items = "\n".join(
+            f"  [bold yellow]{i + 1}.[/bold yellow] [white]{name}[/white]"
+            for i, name in enumerate(names)
+        )
+        console.print(
+            Panel(
+                f"[red]The following required tools are NOT installed:[/red]\n\n{items}\n\n"
+                "[cyan]Install them manually (see README) or use the automatic installer.[/cyan]",
+                title="[bold red]Missing Dependencies[/bold red]",
+                border_style="red",
+            )
+        )
+
+        prompt = (
+            "\n[yellow]Press [bold]I[/bold] to install missing tools automatically · "
+            "[bold]Y[/bold] continue anyway · [bold]N[/bold] exit[/yellow] > "
+        )
+        choice = console.input(prompt).strip().lower()
+
+        while choice not in ("i", "y", "n", "", "yes", "no"):
+            choice = console.input("[red]Invalid choice![/red] Press I, Y, or N > ").strip().lower()
+
+        if choice in ("n", "no"):
+            raise SystemExit(0)
+        if choice in ("i",):
+            keys = [k for _, k in missing]
+            _run_dependency_installer(config, keys)
+            resolve_external_tools(config)
+            set_adb_executable(config.adb_path)
+            continue
+        if choice in ("y", "", "yes"):
+            return
 
 
 def start(config: AppConfig) -> None:

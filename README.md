@@ -19,6 +19,7 @@ An all-in-one hacking tool written in `Python` to remotely exploit Android devic
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Requirements](#requirements)
+- [Automatic dependency installation](#automatic-dependency-installation)
 - [Getting started](#getting-started)
 - [Device setup tutorial](#device-setup-tutorial)
 - [Compatibility](#compatibility)
@@ -128,6 +129,54 @@ The goal of this project is to make penetration testing and vulnerability assess
 * [`metasploit-framework`](https://www.metasploit.com/) — Metasploit-Framework (`msfvenom` and `msfconsole`)
 * [`scrcpy`](https://github.com/Genymobile/scrcpy) — scrcpy
 * [`nmap`](https://nmap.org/) — Nmap
+
+---
+
+## Automatic dependency installation
+
+You can install **ADB**, **Metasploit-Framework**, **scrcpy**, **Nmap**, and **Python packages** (`pip install -r requirements.txt`) using the bundled installers. They detect your environment (e.g. Debian/Ubuntu, Fedora, Arch, Kali, Parrot, macOS, Termux, or Windows) and use the appropriate package manager.
+
+On **macOS**, Metasploit is installed with **`brew install --cask metasploit`** (official [Homebrew Cask](https://formulae.brew.sh/cask/metasploit)); ADB, Nmap, and scrcpy use regular Homebrew formulae.
+
+### Linux and macOS
+
+From the project directory:
+
+```
+chmod +x install.sh
+./install.sh
+```
+
+Non-interactive example (e.g. from a script):
+
+```
+./install.sh --yes --components adb,nmap,scrcpy,metasploit,pip
+```
+
+Options: `--yes` (assume yes), `--components` (comma-separated: `adb`, `metasploit`, `scrcpy`, `nmap`, `pip`), `--skip-pip` (skip `pip install -r requirements.txt`), `-h` / `--help`.
+
+### Windows
+
+Use **[Chocolatey](https://chocolatey.org/)** for `adb`, `nmap`, and `scrcpy`. **Metasploit Framework** is installed from Rapid7’s official Windows MSI (same source as the [Metasploit docs](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#installing-metasploit-on-windows)). Run PowerShell **as Administrator** when installing system-wide tools.
+
+From the project directory:
+
+```
+Set-ExecutionPolicy -Scope Process Bypass
+.\install.ps1
+```
+
+Non-interactive example:
+
+```
+.\install.ps1 -Components adb,nmap,scrcpy,metasploit,pip -NonInteractive
+```
+
+If Chocolatey is missing, the script can install it (interactive mode) or you can follow [Installing Chocolatey](https://chocolatey.org/install).
+
+### From PhoneSploit Pro
+
+If something from [Requirements](#requirements) is missing, the program shows a **Missing Dependencies** warning. Press **`I`** to run the automatic installer for the missing components (and refresh Python dependencies), **`Y`** to continue anyway, or **`N`** to exit.
 
 ---
 
@@ -267,7 +316,7 @@ sudo apt install adb
 
 * __Fedora__
 ```
-sudo dnf install adb
+sudo dnf install android-tools
 ```
 
 * __Arch Linux / Manjaro__
@@ -309,7 +358,13 @@ curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/t
   chmod 755 msfinstall && \
   ./msfinstall
  ```
- 
+
+* __macOS (Homebrew)__ — Metasploit is distributed as a [Homebrew Cask](https://formulae.brew.sh/cask/metasploit) (not `brew install` without `--cask`):
+
+```
+brew install --cask metasploit
+```
+
 Or follow: [Installing Metasploit on Linux / macOS](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#installing-metasploit-on-linux--macos)
 
 Or visit: [Metasploit download](https://www.metasploit.com/download)
