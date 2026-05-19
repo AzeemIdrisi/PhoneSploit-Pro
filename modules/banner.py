@@ -41,7 +41,8 @@ menu2 = """
     [white]17. [green]Send SMS                    [white]22. [green]Anonymous Screen Record             [white]27. [green]Get Device Information
     [white]18. [green]Copy WhatsApp Data          [white]23. [green]Open a Link on Device               [white]28. [green]Get Battery Information
     [white]19. [green]Copy All Screenshots        [white]24. [green]Display a Photo on Device           [white]29. [green]Restart Device
-    [white]20. [green]Copy All Camera Photos      [white]25. [green]Play an Audio on Device             [white]30. [green]Advanced Reboot Options
+    [white]20. [green]Copy All Camera Photos      [white]63. [green]Camera Live                         [white]25. [green]Play an Audio on Device
+                                                   [white]30. [green]Advanced Reboot Options
 
   [yellow]P: Previous Page         N: Next Page            (Page : 2 / 5)[/yellow]"""
 
@@ -65,6 +66,7 @@ menu4 = """
 
 menu5 = """
     [white]61. [green]Root Heuristics                [white]62. [green]Update PhoneSploit-Pro
+    [white]64. [green]Persistance WiFi
 
   [yellow]P: Previous Page                                  (Page : 5 / 5)[/yellow]"""
 

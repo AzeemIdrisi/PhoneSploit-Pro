@@ -254,6 +254,17 @@ def _check_android_version() -> int | None:
         return None
 
 
+def _select_camera_facing() -> str | None:
+    submenu_row("Front camera", "Back camera")
+    choice = console.input("[cyan]Camera[/cyan] [dim](Enter=front)[/dim]> ").strip()
+    if choice in ("", "1"):
+        return "front"
+    if choice == "2":
+        return "back"
+    print_error("Invalid camera choice.")
+    return None
+
+
 def record_audio(config: AppConfig, mode: str) -> None:
     console.print(
         "[red]\\[Notice][/red] [cyan]Requires Android 11+[/cyan]"
@@ -330,6 +341,75 @@ def mirror(config: AppConfig) -> None:
     else:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
+
+
+def camera_live(config: AppConfig) -> None:
+    console.print("[red]\\[Notice][/red] [cyan]Requires Android 12+ and scrcpy camera support[/cyan]")
+    with task_status("[info]Detecting Android version...[/info]"):
+        android_ver = _check_android_version()
+
+    if android_ver is None:
+        print_error("No connected device found.\n[green] Going back to Main Menu[/green]")
+        return
+
+    if android_ver < 12:
+        print_error("Android version too old. Camera Live requires Android 12+.")
+        return
+
+    facing = _select_camera_facing()
+    if facing is None:
+        return
+
+    submenu_row("Normal", "Rotate 90", "Rotate 180", "Rotate 270")
+    rotation_choice = console.input("[cyan]Rotation[/cyan] [dim](Enter=normal)[/dim]> ").strip()
+    rotation_map = {
+        "": "0",
+        "1": "0",
+        "2": "90",
+        "3": "180",
+        "4": "270",
+    }
+    orientation = rotation_map.get(rotation_choice)
+    if orientation is None:
+        print_error("Invalid rotation\n[green] Going back to Main Menu[/green]")
+        return
+
+    submenu_row("Default", "Fast (720p / 15 FPS)", "Custom")
+    mode = console.input("[prompt]> [/prompt]").strip()
+
+    cmd = scrcpy_argv(
+        config,
+        [
+            "--video-source=camera",
+            f"--camera-facing={facing}",
+            f"--capture-orientation={orientation}",
+            "--no-audio",
+            "--no-control",
+            f"--window-title=PhoneSploit Camera Live ({facing})",
+        ],
+    )
+
+    if mode in ("", "1"):
+        pass
+    elif mode == "2":
+        cmd += ["--camera-size=1280x720", "--camera-fps=15", "-b", "4M"]
+    elif mode == "3":
+        size_in = console.input("[cyan]Camera size[/cyan] [dim](e.g. 1280x720, Enter=default)[/dim]> ").strip()
+        fps_in = console.input("[cyan]Camera FPS[/cyan] [dim](e.g. 30, Enter=default)[/dim]> ").strip()
+        bitrate_in = console.input("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 4, Enter=default)[/dim]> ").strip()
+
+        if size_in:
+            cmd.append(f"--camera-size={size_in}")
+        if fps_in:
+            cmd.append(f"--camera-fps={fps_in}")
+        if bitrate_in:
+            cmd += ["-b", f"{bitrate_in}M"]
+    else:
+        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        return
+
+    console.print("\n[dim]Opening Camera Live window. Close the scrcpy window or press Ctrl+C to stop.[/dim]\n")
+    subprocess.run(cmd)
 
 
 def stream_audio(config: AppConfig, mode: str) -> None:

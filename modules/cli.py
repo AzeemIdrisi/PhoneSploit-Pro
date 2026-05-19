@@ -229,7 +229,7 @@ def main(config: AppConfig) -> None:
     from modules import (
         connection, device, app_manager, file_manager,
         media, data_extraction, communication, security, input_control,
-        extras, port_forward, wifi_utils, root_check,
+        extras, port_forward, wifi_utils, root_check, wifi_persistence,
     )
 
     console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Exit")
@@ -494,6 +494,16 @@ def main(config: AppConfig) -> None:
             root_check.root_heuristics(config)
         case "62":
             update_me(config)
+        case "63":
+            if not require_adb(config):
+                return
+            if not require_scrcpy(config):
+                return
+            media.camera_live(config)
+        case "64":
+            if not require_adb(config):
+                return
+            wifi_persistence.wifi_persistence(config)
         case _:
             console.print("\n[red]Invalid selection![/red]\n")
 
