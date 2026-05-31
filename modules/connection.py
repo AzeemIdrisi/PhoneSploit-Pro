@@ -1,8 +1,6 @@
-import ipaddress
+"""CLI adapters for connection — delegates to service layer."""
+
 import os
-import socket
-import subprocess
-import nmap
 from rich.table import Table
 
 from modules.config import AppConfig
@@ -13,102 +11,25 @@ from modules.console import (
     print_null_input,
     confirm,
     task_status,
-    adb,
-    adb_output,
     get_adb_executable,
 )
+from modules.services.adb import ADBService
+from modules.services import connection as conn_svc
+
+# Re-export for other modules
+get_ip_address = conn_svc.get_ip_address
+is_valid_ipv4 = conn_svc.is_valid_ipv4
 
 
-def get_ip_address() -> str | None:
-    """Best-effort LAN IP for LHOST / scanning. Returns None if offline or unreachable."""
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(3.0)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except OSError:
-        return None
-
-
-def _sort_ipv4(hosts: list[str]) -> list[str]:
-    return sorted(hosts, key=lambda h: int(ipaddress.IPv4Address(h)))
-
-
-def _adb_port_summary(host_data: dict) -> str:
-    """Describe open 5555/5554 and any -sV fingerprint (e.g. Android Debug Bridge)."""
-    tcp = host_data.get("tcp") or {}
-    lines: list[str] = []
-    for port in (5555, 5554):
-        pinfo = tcp.get(port)
-        if not pinfo or pinfo.get("state") != "open":
-            continue
-        product = (pinfo.get("product") or "").strip()
-        version = (pinfo.get("version") or "").strip()
-        extra = (pinfo.get("extrainfo") or "").strip()
-        name = (pinfo.get("name") or "").strip()
-        bits: list[str] = [f"{port}/tcp open"]
-        if product:
-            bits.append(product)
-        elif name and name != "unknown":
-            bits.append(name)
-        if version:
-            bits.append(version)
-        if extra and extra not in product:
-            bits.append(extra)
-        lines.append(" ".join(bits))
-    return " · ".join(lines) if lines else ""
-
-
-def _android_hint(adb_summary: str) -> str:
-    """Interpret ADB port probe only (no MAC/hostname/OUI)."""
-    if not adb_summary:
-        return ""
-    a = adb_summary.lower()
-    if "android debug bridge" in a or "free adb" in a:
-        return "Strong: ADB fingerprint"
-    if "5555/tcp open" in adb_summary or "5554/tcp open" in adb_summary:
-        return "Strong: ADB port open (wireless/emulator)"
-    if "adb" in a and "open" in a:
-        return "Likely: ADB-related port"
-    return ""
-
-
-def is_valid_ipv4(address: str) -> bool:
-    parts = address.strip().split(".")
-    if len(parts) != 4:
-        return False
-    try:
-        return all(0 <= int(p) <= 255 for p in parts)
-    except ValueError:
-        return False
+def _adb() -> ADBService:
+    return ADBService(get_adb_executable())
 
 
 def _list_ready_device_serials() -> list[str]:
-    """Serial numbers of devices in the `device` state (authorized, ready)."""
-    exe = get_adb_executable()
-    if not exe:
-        return []
-    result = subprocess.run([exe, "devices"], capture_output=True, text=True)
-    serials: list[str] = []
-    for line in result.stdout.splitlines()[1:]:
-        line = line.strip()
-        if not line or "\t" not in line:
-            continue
-        serial, _, rest = line.partition("\t")
-        serial = serial.strip()
-        state = rest.split()[0] if rest.split() else ""
-        if state == "device":
-            serials.append(serial)
-    return serials
+    return conn_svc.list_ready_serials(_adb())
 
 
 def prompt_select_device_if_multiple(config: AppConfig) -> None:
-    """
-    Set ANDROID_SERIAL for this process when multiple USB/network devices are connected.
-    adb honors ANDROID_SERIAL as the default target (see Android platform-tools docs).
-    """
     if not config.adb_path:
         os.environ.pop("ANDROID_SERIAL", None)
         return
@@ -146,9 +67,7 @@ def prompt_select_device_if_multiple(config: AppConfig) -> None:
 
 
 def connect(config: AppConfig) -> None:
-    console.print(
-        "[cyan]Target phone IP[/cyan] [dim](e.g. 192.168.1.23)[/dim]"
-    )
+    console.print("[cyan]Target phone IP[/cyan] [dim](e.g. 192.168.1.23)[/dim]")
     ip = console.input("[prompt]> [/prompt]").strip()
     if not ip:
         print_null_input()
@@ -164,38 +83,22 @@ def connect(config: AppConfig) -> None:
     ):
         return
 
-    adb_exe = get_adb_executable()
-    if not adb_exe:
-        print_error("ADB executable not available.")
-        return
-
-    with task_status("[info]Restarting ADB server…[/info]"):
-        subprocess.run(
-            [adb_exe, "kill-server"],
-            capture_output=True,
-        )
-        subprocess.run(
-            [adb_exe, "start-server"],
-            capture_output=True,
-        )
-
     with task_status(f"[info]Connecting to {ip}:5555…[/info]"):
-        result = adb(["connect", f"{ip}:5555"])
+        result = conn_svc.connect_device(_adb(), ip)
 
-    output = result.stdout.strip()
-    if "connected" in output.lower():
-        print_success(output)
+    if result.success:
+        print_success(result.message)
         prompt_select_device_if_multiple(config)
     else:
-        print_error(output or result.stderr.strip())
+        print_error(result.message or result.error or "Connection failed")
 
 
 def list_devices(config: AppConfig) -> None:
     with task_status("[info]Fetching connected devices…[/info]"):
-        result = adb(["devices", "-l"])
+        result = conn_svc.list_devices(_adb())
 
-    lines = result.stdout.strip().splitlines()
-    if len(lines) <= 1:
+    devices = result.data or []
+    if not devices:
         console.print("[yellow]No devices connected.[/yellow]")
         return
 
@@ -204,14 +107,8 @@ def list_devices(config: AppConfig) -> None:
     table.add_column("State", style="green")
     table.add_column("Info", style="dim white")
 
-    for line in lines[1:]:
-        if not line.strip():
-            continue
-        parts = line.split()
-        device = parts[0] if len(parts) > 0 else ""
-        state = parts[1] if len(parts) > 1 else ""
-        info = " ".join(parts[2:]) if len(parts) > 2 else ""
-        table.add_row(device, state, info)
+    for d in devices:
+        table.add_row(d.serial, d.state, d.info)
 
     console.print(table)
 
@@ -220,9 +117,8 @@ def disconnect(config: AppConfig) -> None:
     if not confirm("Disconnect [bold]all[/bold] ADB devices?"):
         return
     with task_status("[info]Disconnecting…[/info]"):
-        result = adb(["disconnect"])
-    os.environ.pop("ANDROID_SERIAL", None)
-    console.print(f"[green]{result.stdout.strip()}[/green]")
+        result = conn_svc.disconnect_all(_adb())
+    console.print(f"[green]{result.message}[/green]")
 
 
 def stop_adb(config: AppConfig) -> None:
@@ -231,69 +127,35 @@ def stop_adb(config: AppConfig) -> None:
     ):
         return
     with task_status("[info]Stopping ADB server…[/info]"):
-        adb(["kill-server"])
-    os.environ.pop("ANDROID_SERIAL", None)
-    print_success("ADB server stopped.")
-
-
-def _port_scanner(config: AppConfig) -> nmap.PortScanner:
-    """Use the same nmap binary as startup resolution when available."""
-    if config.nmap_path:
-        return nmap.PortScanner(nmap_search_path=(config.nmap_path,))
-    return nmap.PortScanner()
+        result = conn_svc.stop_adb_server(_adb())
+    if result.success:
+        print_success(result.message)
 
 
 def scan_network(config: AppConfig) -> None:
-    ip = get_ip_address()
-    if ip is None:
-        print_error(
-            "Could not detect a local IP address. Check your network connection and try again."
-        )
+    with task_status("[info]Scanning network…[/info]"):
+        result = conn_svc.scan_network(config)
+
+    if not result.success and not result.data:
+        print_error(result.message)
         return
-    subnet = ip + "/24"
 
-    discover = _port_scanner(config)
-    with task_status(f"[info]Discovering hosts on {subnet}…[/info]"):
-        discover.scan(hosts=subnet, arguments="-sn")
-
-    hosts = [
-        h
-        for h in discover.all_hosts()
-        if discover[h]["status"]["state"] == "up"
-    ]
-    hosts = _sort_ipv4(hosts)
-
+    hosts = result.data or []
     if not hosts:
         console.print("[yellow]No hosts found.[/yellow]")
         return
 
-    ports_scan = _port_scanner(config)
-    with task_status(
-        "[info]Probing ADB ports 5555/5554 (TCP + service probe) on live hosts…[/info]"
-    ):
-        try:
-            ports_scan.scan(
-                hosts=" ".join(hosts),
-                arguments="-p 5555,5554 -sT -sV --version-intensity 1 -T4",
-            )
-        except nmap.PortScannerError as e:
-            print_error(f"ADB port scan failed: {e}")
-            ports_scan = None
-
-    table = Table(title=f"Network Scan — {subnet}", show_header=True, header_style="bold cyan")
+    ip = get_ip_address() or "?"
+    table = Table(
+        title=f"Network Scan — {ip}/24",
+        show_header=True,
+        header_style="bold cyan",
+    )
     table.add_column("IP Address", style="bold green")
     table.add_column("ADB 5555 / 5554", style="cyan")
     table.add_column("Android?", style="yellow")
 
-    for host in hosts:
-        adb_summary = ""
-        if ports_scan and host in ports_scan.all_hosts():
-            adb_summary = _adb_port_summary(ports_scan[host])
-        hint = _android_hint(adb_summary)
-        table.add_row(
-            host,
-            adb_summary or "—",
-            hint or "—",
-        )
+    for h in hosts:
+        table.add_row(h.ip, h.adb_summary, h.android_hint)
 
     console.print(table)

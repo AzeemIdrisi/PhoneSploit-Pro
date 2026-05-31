@@ -3,6 +3,7 @@ import platform
 import random
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from rich.panel import Panel
@@ -183,42 +184,27 @@ def change_page(config: AppConfig, direction: str) -> None:
 # Misc actions
 # ---------------------------------------------------------------------------
 
-def update_me(config: AppConfig) -> None:
-    if not confirm(
-        "Run [cyan]git fetch[/cyan] and [cyan]git rebase[/cyan] to update PhoneSploit-Pro? "
-        "Uncommitted local changes may conflict or be lost."
-    ):
-        return
-    console.print("[yellow]Updating PhoneSploit-Pro...[/yellow]")
-    console.print("[green]Fetching latest updates from GitHub...[/green]")
-    fetch = subprocess.run(
-        ["git", "fetch"],
-        capture_output=True,
-        text=True,
-    )
-    if fetch.returncode != 0:
-        detail = (fetch.stdout + fetch.stderr).strip() or f"exit code {fetch.returncode}"
-        print_error(f"git fetch failed: {detail}")
+def launch_web(config: AppConfig) -> None:
+    from modules.constants import WEB_UI_HOST, WEB_UI_PORT
+
+    root = _project_root()
+    webapp = root / "webapp.py"
+    if not webapp.is_file():
+        print_error(f"Web UI entry not found: {webapp}")
         return
 
-    console.print("[green]Applying changes...[/green]")
-    rebase = subprocess.run(
-        ["git", "rebase"],
-        capture_output=True,
-        text=True,
-    )
-    if rebase.returncode != 0:
-        detail = (rebase.stdout + rebase.stderr).strip() or f"exit code {rebase.returncode}"
-        print_error(f"git rebase failed: {detail}")
-        console.print(
-            "[yellow]If rebase stopped with conflicts, fix the files, then run "
-            "[cyan]git rebase --continue[/cyan]. To give up and restore the previous state, run "
-            "[cyan]git rebase --abort[/cyan].[/yellow]"
-        )
+    url = f"http://{WEB_UI_HOST}:{WEB_UI_PORT}"
+    console.print(f"[cyan]Launching Web UI at[/cyan] [green]{url}[/green]")
+    console.print("[dim]Press Ctrl+C to stop the web server and return to the CLI.[/dim]\n")
+
+    try:
+        result = subprocess.run([sys.executable, str(webapp)], cwd=str(root))
+    except KeyboardInterrupt:
+        console.print("\n[cyan]Web UI stopped.[/cyan]")
         return
 
-    console.print("[cyan]Please restart PhoneSploit-Pro.[/cyan]")
-    config.run = False
+    if result.returncode in (0, 130):
+        console.print("[cyan]Web UI stopped.[/cyan]")
 
 
 # ---------------------------------------------------------------------------
@@ -498,8 +484,8 @@ def main(config: AppConfig) -> None:
             if not require_scrcpy(config):
                 return
             media.camera_live(config)
-        case "63": 
-             update_me(config)
+        case "63":
+            launch_web(config)
         case _:
             console.print("\n[red]Invalid selection![/red]\n")
 
