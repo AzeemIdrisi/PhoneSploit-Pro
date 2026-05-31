@@ -1,4 +1,5 @@
 __pycache__/
+.venv/
 Downloaded-Files/
 test.apk
 test.py

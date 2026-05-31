@@ -25,7 +25,9 @@
     For any queries, Contact me at : azeemidrisiofficial@gmail.com
 """
 
-version = "v2.1"
+from modules.constants import VERSION
+
+version = VERSION
 
 menu1 = """
     [white]1. [green]Connect a Device             [white]6. [green]Get Screenshot                       [white]11. [green]Install an APK
@@ -64,7 +66,7 @@ menu4 = """
   [yellow]P: Previous Page         N: Next Page            (Page : 4 / 5)[/yellow]"""
 
 menu5 = """
-    [white]61. [green]Root Heuristics                [white]62. [green]Camera Live         [white]63. [green]Update PhoneSploit-Pro
+    [white]61. [green]Root Heuristics                [white]62. [green]Camera Live         [white]63. [green]Launch Web UI
 
   [yellow]P: Previous Page                                  (Page : 5 / 5)[/yellow]"""
 

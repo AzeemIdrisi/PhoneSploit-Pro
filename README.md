@@ -118,6 +118,7 @@ The goal of this project is to make penetration testing and vulnerability assess
 | **Ping connectivity**                    | Run ping checks against a host to test connectivity.                                                                                                                                                                                                                                                                                                                         |
 | **Saved Wi‑Fi networks**                 | List saved Wi‑Fi networks known to the device.                                                                                                                                                                                                                                                                                                                               |
 | **Root heuristics**                      | Heuristic checks for common signs of root access.                                                                                                                                                                                                                                                                                                                            |
+| **Launch Web UI**                        | Open the local NiceGUI web interface in your browser (`http://127.0.0.1:8080`). Also available from CLI menu option **63** on page 5.                                                                                                                                                                                                                                      |
 
 ---
 
@@ -187,6 +188,26 @@ pip install -r requirements.txt
 ```
 python3 phonesploitpro.py
 ```
+
+### Web UI (local browser)
+
+PhoneSploit Pro **v2.2** includes a **NiceGUI web interface** alongside the CLI. The web UI mirrors the toolkit with file uploads, live device selection, background jobs, and a Console page for logcat/shell.
+
+**From the CLI:** go to menu page 5 and choose **63 — Launch Web UI**.
+
+**Directly:**
+
+```
+python3 webapp.py
+```
+
+Opens **http://127.0.0.1:8080** in your browser. The server binds to **localhost only** for security — do not expose it to your network without authentication.
+
+| Interface | Command |
+|-----------|---------|
+| CLI | `python3 phonesploitpro.py` |
+| Web (CLI menu) | Option **63** on page 5 |
+| Web (direct) | `python3 webapp.py` |
 
 > [!TIP]
 > You only need to activate the virtual environment (`source .venv/bin/activate`) each time you open a new terminal before running the program.
