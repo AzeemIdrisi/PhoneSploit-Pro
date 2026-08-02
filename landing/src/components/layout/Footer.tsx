@@ -161,9 +161,9 @@ export default function Footer() {
 function getIcon(name: string) {
   const icons: Record<string, React.ComponentType<{ className?: string }>> = {
     github: GitHubIcon,
-    twitter: XIcon,
     "message-square": MessageSquare,
-    gitlab: GitLabIcon,
+    gitlab: GitHubIcon,
   };
+  1;
   return icons[name] || GitHubIcon;
 }
