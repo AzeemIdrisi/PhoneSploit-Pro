@@ -12,6 +12,7 @@ from modules.console import (
     adb,
     adb_output,
     get_adb_executable,
+    ask,
 )
 
 
@@ -71,9 +72,9 @@ def battery_info(config: AppConfig) -> None:
 
 def reboot(config: AppConfig, key: str) -> None:
     print_warning("Restarting will disconnect the device.")
-    choice = console.input("[white]Continue? [bold]Y / N[/bold][/white] > ").lower()
+    choice = ask("[white]Continue? [bold]Y / N[/bold][/white] > ").lower()
     while choice not in ("y", "n", ""):
-        choice = console.input("[error]Invalid![/error] Y or N > ").lower()
+        choice = ask("[error]Invalid![/error] Y or N > ").lower()
     if choice == "n":
         return
 
@@ -82,7 +83,7 @@ def reboot(config: AppConfig, key: str) -> None:
             adb(["reboot"])
     else:
         submenu_row("Recovery", "Bootloader", "Fastboot")
-        mode = console.input("[prompt]> [/prompt]")
+        mode = ask("[prompt]> [/prompt]")
         cmd_map = {"1": "recovery", "2": "bootloader", "3": "fastboot"}
         if mode not in cmd_map:
             print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
@@ -93,9 +94,9 @@ def reboot(config: AppConfig, key: str) -> None:
 
 def power_off(config: AppConfig) -> None:
     print_warning("Powering off will disconnect the device.")
-    choice = console.input("[white]Continue? [bold]Y / N[/bold][/white] > ").lower()
+    choice = ask("[white]Continue? [bold]Y / N[/bold][/white] > ").lower()
     while choice not in ("y", "n", ""):
-        choice = console.input("[error]Invalid![/error] Y or N > ").lower()
+        choice = ask("[error]Invalid![/error] Y or N > ").lower()
     if choice == "n":
         return
     with task_status("[info]Powering off…[/info]"):
@@ -103,7 +104,7 @@ def power_off(config: AppConfig) -> None:
 
 
 def unlock_device(config: AppConfig) -> None:
-    password = console.input(
+    password = ask(
         "[yellow]Password or Enter for blank[/yellow]> "
     )
     with task_status("[info]Sending unlock sequence…[/info]"):

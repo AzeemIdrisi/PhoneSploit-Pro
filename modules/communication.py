@@ -1,12 +1,12 @@
 from modules.config import AppConfig
-from modules.console import console, print_error, print_success, print_null_input, confirm, task_status, adb
+from modules.console import console, print_error, print_success, print_null_input, confirm, task_status, adb, ask
 
 
 def send_sms(config: AppConfig) -> None:
     console.print(
         "[red]\\[Warning][/red] [cyan]BETA — tested on Android 12 only.[/cyan]"
     )
-    number = console.input(
+    number = ask(
         "[yellow]Phone + country code[/yellow] [dim](e.g. +91…)[/dim]> "
     ).strip()
 
@@ -14,7 +14,7 @@ def send_sms(config: AppConfig) -> None:
         print_null_input()
         return
 
-    message = console.input("[yellow]Message[/yellow]> ").strip()
+    message = ask("[yellow]Message[/yellow]> ").strip()
 
     if not confirm(
         f"Send SMS to [cyan]{number}[/cyan]? May incur charges."
@@ -40,7 +40,7 @@ def send_sms(config: AppConfig) -> None:
 
 
 def open_link(config: AppConfig) -> None:
-    url = console.input(
+    url = ask(
         "[yellow]URL[/yellow] [dim](e.g. https://github.com)[/dim]> "
     ).strip()
 

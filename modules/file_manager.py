@@ -13,6 +13,7 @@ from modules.console import (
     ensure_config_dir,
     adb,
     adb_output,
+    ask,
 )
 
 
@@ -39,7 +40,7 @@ def pull_file(config: AppConfig) -> None:
     console.print(
         "[cyan]Path under /sdcard/[/cyan] [dim](e.g. Download/sample.jpg)[/dim]"
     )
-    location = console.input("[prompt]> /sdcard/[/prompt]").strip()
+    location = ask("[prompt]> /sdcard/[/prompt]").strip()
 
     full_path = f"/sdcard/{location}"
 
@@ -74,7 +75,7 @@ def pull_file(config: AppConfig) -> None:
 
 
 def push_file(config: AppConfig) -> None:
-    location = console.input("[cyan]File path on computer[/cyan] > ").strip()
+    location = ask("[cyan]File path on computer[/cyan] > ").strip()
 
     if not location:
         print_null_input()
@@ -93,7 +94,7 @@ def push_file(config: AppConfig) -> None:
     ):
         return
 
-    destination = console.input(
+    destination = ask(
         "[cyan]Destination under /sdcard/[/cyan] [dim](e.g. Documents)[/dim]> "
     ).strip()
 

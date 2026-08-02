@@ -4,7 +4,7 @@ from pathlib import Path
 
 from modules.config import AppConfig
 from modules import banner
-from modules.console import console, confirm, adb, task_status, get_adb_executable
+from modules.console import console, confirm, adb, task_status, get_adb_executable, ask
 from modules.connection import get_ip_address, is_valid_ipv4
 
 
@@ -14,7 +14,7 @@ def hack(config: AppConfig) -> None:
     os.system(config.clear_cmd)
     console.print(banner.instructions_banner)
     console.print(banner.instruction)
-    choice = console.input("[prompt]> [/prompt]")
+    choice = ask("[prompt]> [/prompt]")
 
     if choice != "":
         console.print("[green]Returning to Main Menu.[/green]")
@@ -32,16 +32,16 @@ def hack(config: AppConfig) -> None:
         f"[cyan]LHOST[/cyan] [white]{ip}[/white]  [cyan]LPORT[/cyan] [white]{lport}[/white]"
     )
 
-    modify = console.input(
+    modify = ask(
         "[yellow]Enter = continue · M = edit LHOST/LPORT[/yellow]> "
     ).lower()
 
     while modify not in ("m", ""):
-        modify = console.input("[red]Enter or M[/red]> ").lower()
+        modify = ask("[red]Enter or M[/red]> ").lower()
 
     if modify == "m":
-        ip = console.input("[cyan]LHOST[/cyan]> ").strip()
-        lport_in = console.input("[cyan]LPORT[/cyan]> ").strip()
+        ip = ask("[cyan]LHOST[/cyan]> ").strip()
+        lport_in = ask("[cyan]LPORT[/cyan]> ").strip()
         if not is_valid_ipv4(ip):
             console.print("[red]Invalid LHOST → 127.0.0.1[/red]")
             ip = "127.0.0.1"

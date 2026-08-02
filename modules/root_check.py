@@ -1,4 +1,4 @@
-"""Root / debuggable build heuristics (menu 63)."""
+"""Root / debuggable build heuristics (menu 56)."""
 
 from rich.panel import Panel
 from rich.table import Table

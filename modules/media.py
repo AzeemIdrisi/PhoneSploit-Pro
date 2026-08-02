@@ -16,6 +16,7 @@ from modules.console import (
     ensure_config_dir,
     adb,
     adb_output,
+    ask,
     get_adb_executable,
 )
 
@@ -96,7 +97,7 @@ def screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration_raw = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_raw = ask("[cyan]Duration (seconds)[/cyan]> ").strip()
     duration_sec = _parse_positive_duration_seconds(duration_raw)
     if duration_sec is None:
         return
@@ -148,7 +149,7 @@ def anonymous_screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration_raw = console.input("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_raw = ask("[cyan]Duration (seconds)[/cyan]> ").strip()
     duration_sec = _parse_positive_duration_seconds(duration_raw)
     if duration_sec is None:
         return
@@ -194,7 +195,7 @@ def anonymous_screenrecord(config: AppConfig) -> None:
 
 
 def _push_and_open_media(config: AppConfig, label: str, intent_type: str) -> None:
-    location = console.input(f"[yellow]{label} path on computer[/yellow]> ").strip()
+    location = ask(f"[yellow]{label} path on computer[/yellow]> ").strip()
 
     if not location:
         print_null_input()
@@ -256,7 +257,7 @@ def _check_android_version() -> int | None:
 
 def _select_camera_facing() -> str | None:
     submenu_row("Front camera", "Back camera")
-    choice = console.input("[prompt]> [/prompt]").strip()
+    choice = ask("[prompt]> [/prompt]").strip()
     if choice in ("", "1"):
         return "front"
     if choice == "2":
@@ -293,7 +294,7 @@ def record_audio(config: AppConfig, mode: str) -> None:
         label = "Device Audio"
 
     submenu_row("Stream & record", "Record only (fast)")
-    choice = console.input("[prompt]> [/prompt]")
+    choice = ask("[prompt]> [/prompt]")
 
     save_path = str(Path(save_dir) / file_name)
 
@@ -319,16 +320,16 @@ def record_audio(config: AppConfig, mode: str) -> None:
 
 def mirror(config: AppConfig) -> None:
     submenu_row("Default (best quality)", "Fast (low bitrate)", "Custom")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
         subprocess.run(scrcpy_argv(config, []))
     elif mode == "2":
         subprocess.run(scrcpy_argv(config, ["-m", "1024", "-b", "1M"]))
     elif mode == "3":
-        size_in = console.input("[cyan]Size limit[/cyan] [dim](e.g. 1024)[/dim]> ").strip()
-        bitrate_in = console.input("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 2)[/dim]> ").strip()
-        fps_in = console.input("[cyan]Max FPS[/cyan] [dim](e.g. 15)[/dim]> ").strip()
+        size_in = ask("[cyan]Size limit[/cyan] [dim](e.g. 1024)[/dim]> ").strip()
+        bitrate_in = ask("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 2)[/dim]> ").strip()
+        fps_in = ask("[cyan]Max FPS[/cyan] [dim](e.g. 15)[/dim]> ").strip()
 
         extra: list[str] = []
         if size_in:
@@ -361,7 +362,7 @@ def camera_live(config: AppConfig) -> None:
         return
 
     submenu_row("Normal", "Rotate 90", "Rotate 180", "Rotate 270")
-    rotation_choice = console.input("[prompt]> [/prompt]").strip()
+    rotation_choice = ask("[prompt]> [/prompt]").strip()
     rotation_map = {
         "": "0",
         "1": "0",
@@ -375,7 +376,7 @@ def camera_live(config: AppConfig) -> None:
         return
 
     submenu_row("Default", "Fast (720p / 15 FPS)", "Custom")
-    mode = console.input("[prompt]> [/prompt]").strip()
+    mode = ask("[prompt]> [/prompt]").strip()
 
     args = [
         "--video-source=camera",
@@ -391,9 +392,9 @@ def camera_live(config: AppConfig) -> None:
     elif mode == "2":
         args += ["--camera-size=1280x720", "--camera-fps=15", "-b", "4M"]
     elif mode == "3":
-        size_in = console.input("[cyan]Camera size[/cyan] [dim](e.g. 1280x720, Enter=default)[/dim]> ").strip()
-        fps_in = console.input("[cyan]Camera FPS[/cyan] [dim](e.g. 30, Enter=default)[/dim]> ").strip()
-        bitrate_in = console.input("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 4, Enter=default)[/dim]> ").strip()
+        size_in = ask("[cyan]Camera size[/cyan] [dim](e.g. 1280x720, Enter=default)[/dim]> ").strip()
+        fps_in = ask("[cyan]Camera FPS[/cyan] [dim](e.g. 30, Enter=default)[/dim]> ").strip()
+        bitrate_in = ask("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 4, Enter=default)[/dim]> ").strip()
 
         if size_in:
             args.append(f"--camera-size={size_in}")

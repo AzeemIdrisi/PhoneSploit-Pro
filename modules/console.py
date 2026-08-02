@@ -1,3 +1,4 @@
+import re
 import subprocess
 from pathlib import Path
 from typing import Literal
@@ -47,7 +48,7 @@ def ensure_config_dir(
     val = getattr(config, field)
     if not val:
         val = (
-            console.input(
+            ask(
                 f"[yellow]Output folder[/yellow] [dim](Enter={default})[/dim]> "
             ).strip()
             or default
@@ -79,15 +80,58 @@ def print_null_input() -> None:
 
 
 def ask(prompt: str) -> str:
-    """Styled input prompt."""
-    return console.input(f"[prompt]{prompt}[/prompt]")
+    """Styled input prompt that survives terminal line editing.
+
+    readline redraws the entire line when you edit (backspace, arrow keys), so
+    the prompt must be handed to readline itself via ``input()`` rather than
+    printed beforehand — otherwise the redraw erases it. GNU readline miscounts
+    the width of ANSI escape codes, so those are wrapped in the ``\\x01`` /
+    ``\\x02`` markers readline ignores when measuring the prompt.
+    """
+    rendered = _render_prompt(prompt)
+    if _readline_is_gnu():
+        rendered = _wrap_ansi_escapes(rendered)
+    return input(rendered)
+
+
+def _render_prompt(prompt: str) -> str:
+    """Render rich-markup prompt to the ANSI string shown by input()."""
+    with console.capture() as capture:
+        console.print(prompt, end="")
+    return capture.get()
+
+
+_readline_backend_checked = False
+_readline_backend_gnu = False
+
+
+def _readline_is_gnu() -> bool:
+    """True when the active readline is GNU readline (not libedit/None)."""
+    global _readline_backend_checked, _readline_backend_gnu
+    if not _readline_backend_checked:
+        try:
+            import readline
+        except ImportError:
+            _readline_backend_gnu = False
+        else:
+            _readline_backend_gnu = "GNU" in (getattr(readline, "__doc__", "") or "")
+        _readline_backend_checked = True
+    return _readline_backend_gnu
+
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]")
+
+
+def _wrap_ansi_escapes(text: str) -> str:
+    """Wrap ANSI escapes in \\x01..\\x02 so GNU readline ignores their width."""
+    return _ANSI_ESCAPE.sub(lambda m: f"\x01{m.group(0)}\x02", text)
 
 
 def confirm(prompt: str = "Do you want to continue?") -> bool:
     """Ask Y/N confirmation. Returns True for yes/enter, False for no."""
-    choice = console.input(f"\n[white]{prompt}     [bold]Y / N[/bold][/white] > ").lower()
+    choice = ask(f"\n[white]{prompt}     [bold]Y / N[/bold][/white] > ").lower()
     while choice not in ("y", "n", ""):
-        choice = console.input("[error]Invalid choice![/error] Press Y or N > ").lower()
+        choice = ask("[error]Invalid choice![/error] Press Y or N > ").lower()
     return choice in ("y", "")
 
 

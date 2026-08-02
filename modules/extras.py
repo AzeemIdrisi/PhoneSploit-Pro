@@ -1,4 +1,4 @@
-"""Additional ADB toolkit features (menu 47–57)."""
+"""Additional ADB toolkit features (menu 36–55)."""
 
 from __future__ import annotations
 
@@ -22,16 +22,17 @@ from modules.console import (
     adb,
     adb_output,
     get_adb_executable,
+    ask,
 )
 
 
 def force_stop_app(config: AppConfig) -> None:
     submenu_row("Pick from list", "Enter package name")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
     if mode == "1":
         pkg = select_package_from_list()
     elif mode == "2":
-        pkg = console.input("[cyan]Package name[/cyan]> ").strip()
+        pkg = ask("[cyan]Package name[/cyan]> ").strip()
     else:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
@@ -49,11 +50,11 @@ def force_stop_app(config: AppConfig) -> None:
 
 def clear_app_data(config: AppConfig) -> None:
     submenu_row("Pick from list", "Enter package name")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
     if mode == "1":
         pkg = select_package_from_list()
     elif mode == "2":
-        pkg = console.input("[cyan]Package name[/cyan]> ").strip()
+        pkg = ask("[cyan]Package name[/cyan]> ").strip()
     else:
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
@@ -74,7 +75,7 @@ def clear_app_data(config: AppConfig) -> None:
 
 
 def save_logcat_snippet(config: AppConfig) -> None:
-    n = console.input("[cyan]Last N lines[/cyan] [dim](default 500)[/dim]> ").strip()
+    n = ask("[cyan]Last N lines[/cyan] [dim](default 500)[/dim]> ").strip()
     lines = int(n) if n.isdigit() else 500
     out_dir = ensure_config_dir(config, "pull_location")
     name = f"logcat-{datetime.now().strftime('%Y%m%d-%H%M%S')}.txt"
@@ -92,12 +93,12 @@ def save_logcat_snippet(config: AppConfig) -> None:
 
 def grant_revoke_permission(config: AppConfig) -> None:
     submenu_row("Grant", "Revoke")
-    mode = console.input("[prompt]> [/prompt]").strip()
+    mode = ask("[prompt]> [/prompt]").strip()
     if mode not in ("1", "2"):
         print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
         return
-    pkg = console.input("[cyan]Package name[/cyan]> ").strip()
-    perm = console.input(
+    pkg = ask("[cyan]Package name[/cyan]> ").strip()
+    perm = ask(
         "[cyan]Permission[/cyan] [dim](e.g. android.permission.CAMERA)[/dim]> "
     ).strip()
     if not pkg or not perm:
@@ -142,7 +143,7 @@ def restart_app(config: AppConfig) -> None:
 
 
 def live_logcat(config: AppConfig) -> None:
-    filt = console.input(
+    filt = ask(
         "[cyan]Optional filter[/cyan] [dim](empty=all, *:W, or TAG:S)[/dim]> "
     ).strip()
     console.print("[dim]Streaming logcat (Ctrl+C to stop)…[/dim]")
@@ -177,7 +178,7 @@ def install_split_apks(config: AppConfig) -> None:
     console.print(
         "[dim]Enter absolute paths to APK files, comma-separated on one line.[/dim]"
     )
-    raw = console.input("[cyan]APK paths[/cyan]> ").strip()
+    raw = ask("[cyan]APK paths[/cyan]> ").strip()
     if not raw:
         print_null_input()
         return
@@ -200,7 +201,7 @@ def install_split_apks(config: AppConfig) -> None:
 
 def developer_settings(config: AppConfig) -> None:
     submenu_row("Read global settings", "Write global setting")
-    mode = console.input("[prompt]> [/prompt]").strip()
+    mode = ask("[prompt]> [/prompt]").strip()
     if mode == "1":
         keys = [
             "animator_duration_scale",
@@ -216,8 +217,8 @@ def developer_settings(config: AppConfig) -> None:
             table.add_row(k, v or "[dim]empty[/dim]")
         console.print(table)
     elif mode == "2":
-        key = console.input("[cyan]Key[/cyan] [dim](global namespace)[/dim]> ").strip()
-        val = console.input("[cyan]Value[/cyan]> ").strip()
+        key = ask("[cyan]Key[/cyan] [dim](global namespace)[/dim]> ").strip()
+        val = ask("[cyan]Value[/cyan]> ").strip()
         if not key:
             print_null_input()
             return
@@ -249,7 +250,7 @@ def locale_read(config: AppConfig) -> None:
 
 def screen_stay_on(config: AppConfig) -> None:
     submenu_row("Stay on USB", "Stay on (all)", "Turn off stay-on")
-    mode = console.input("[prompt]> [/prompt]").strip()
+    mode = ask("[prompt]> [/prompt]").strip()
     if mode == "1":
         target = "usb"
     elif mode == "2":

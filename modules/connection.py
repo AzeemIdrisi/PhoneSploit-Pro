@@ -16,6 +16,7 @@ from modules.console import (
     adb,
     adb_output,
     get_adb_executable,
+    ask,
 )
 
 
@@ -133,7 +134,7 @@ def prompt_select_device_if_multiple(config: AppConfig) -> None:
 
     console.print(table)
     console.print("[yellow]Choose default device for this session.[/yellow]")
-    choice = console.input(
+    choice = ask(
         f"[prompt]Enter 1–{len(serials)} (Enter = first) > [/prompt]"
     ).strip()
     idx = 0
@@ -149,7 +150,7 @@ def connect(config: AppConfig) -> None:
     console.print(
         "[cyan]Target phone IP[/cyan] [dim](e.g. 192.168.1.23)[/dim]"
     )
-    ip = console.input("[prompt]> [/prompt]").strip()
+    ip = ask("[prompt]> [/prompt]").strip()
     if not ip:
         print_null_input()
         return
