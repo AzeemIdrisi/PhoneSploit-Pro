@@ -15,6 +15,7 @@ from modules.console import (
     adb,
     adb_output,
     ensure_config_dir,
+    ask,
 )
 
 # --- Saved-network parsing (formats vary by Android / OEM) ---
@@ -202,7 +203,7 @@ def _collect_saved_ssids() -> tuple[list[str], str]:
 
 def wifi_status_dump(config: AppConfig) -> None:
     console.print("[dim]1) Summary lines   2) Save full dumpsys wifi to file[/dim]")
-    mode = console.input("[prompt]> [/prompt]").strip()
+    mode = ask("[prompt]> [/prompt]").strip()
     with task_status("[info]Reading WiFi service…[/info]"):
         raw = adb_output(["shell", "dumpsys", "wifi"])
     if mode not in ("", "1", "2"):
@@ -254,7 +255,7 @@ def wlan_ip(config: AppConfig) -> None:
 def wifi_toggle(config: AppConfig) -> None:
     if not confirm("[yellow]Toggle WiFi radio via svc wifi?[/yellow]"):
         return
-    mode = console.input("[cyan]Type[/cyan] [dim]enable[/dim] or [dim]disable[/dim]> ").strip().lower()
+    mode = ask("[cyan]Type[/cyan] [dim]enable[/dim] or [dim]disable[/dim]> ").strip().lower()
     if mode not in ("enable", "disable"):
         print_error("Enter enable or disable.")
         return
@@ -267,7 +268,7 @@ def wifi_toggle(config: AppConfig) -> None:
 
 
 def ping_connectivity(config: AppConfig) -> None:
-    host = console.input("[cyan]Host to ping[/cyan] [dim](default 8.8.8.8)[/dim]> ").strip() or "8.8.8.8"
+    host = ask("[cyan]Host to ping[/cyan] [dim](default 8.8.8.8)[/dim]> ").strip() or "8.8.8.8"
     with task_status(f"[info]ping {host}…[/info]"):
         r = adb(["shell", "ping", "-c", "4", host])
     console.print((r.stdout + r.stderr).strip())

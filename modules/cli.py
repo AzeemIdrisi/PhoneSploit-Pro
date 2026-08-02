@@ -9,7 +9,7 @@ from rich.panel import Panel
 
 from modules import banner, color
 from modules.config import AppConfig
-from modules.console import console, confirm, print_error, set_adb_executable
+from modules.console import console, confirm, print_error, set_adb_executable, ask
 from modules.tools import (
     resolve_external_tools,
     require_adb,
@@ -123,10 +123,10 @@ def check_packages(config: AppConfig) -> None:
             "\n[yellow]Press [bold]I[/bold] to install missing tools automatically · "
             "[bold]Y[/bold] continue anyway · [bold]N[/bold] exit[/yellow] > "
         )
-        choice = console.input(prompt).strip().lower()
+        choice = ask(prompt).strip().lower()
 
         while choice not in ("i", "y", "n", "", "yes", "no"):
-            choice = console.input("[red]Invalid choice![/red] Press I, Y, or N > ").strip().lower()
+            choice = ask("[red]Invalid choice![/red] Press I, Y, or N > ").strip().lower()
 
         if choice in ("n", "no"):
             raise SystemExit(0)
@@ -233,8 +233,7 @@ def main(config: AppConfig) -> None:
     )
 
     console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Exit")
-    console.print("[red]\\[Main Menu][/red] > ", end="")
-    option = input().strip().lower()
+    option = ask("[red]\\[Main Menu][/red] > ").strip().lower()
 
     match option:
         case "p":

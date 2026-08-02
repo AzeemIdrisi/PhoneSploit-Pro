@@ -13,6 +13,7 @@ from modules.console import (
     ensure_config_dir,
     adb,
     adb_output,
+    ask,
 )
 
 
@@ -42,7 +43,7 @@ def _select_app_from_list() -> str | None:
         table.add_row(str(i), pkg)
 
     console.print(table)
-    selection = console.input("[prompt]Enter Selection > [/prompt]")
+    selection = ask("[prompt]Enter Selection > [/prompt]")
     if not selection.isdigit():
         print_error("Expected an Integer Value\n[green] Going back to Main Menu[/green]")
         return None
@@ -54,7 +55,7 @@ def _select_app_from_list() -> str | None:
 
 
 def install_app(config: AppConfig) -> None:
-    file_location = console.input("[cyan]APK path on computer[/cyan] > ").strip()
+    file_location = ask("[cyan]APK path on computer[/cyan] > ").strip()
 
     if not file_location:
         print_null_input()
@@ -85,14 +86,14 @@ def install_app(config: AppConfig) -> None:
 
 def uninstall_app(config: AppConfig) -> None:
     submenu_row("Select from app list", "Enter package name manually")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
         package_name = _select_app_from_list()
         if not package_name:
             return
     elif mode == "2":
-        package_name = console.input(
+        package_name = ask(
             "[cyan]Package name[/cyan] [dim](e.g. com.spotify.music)[/dim]> "
         ).strip()
         if not package_name:
@@ -120,14 +121,14 @@ def uninstall_app(config: AppConfig) -> None:
 
 def launch_app(config: AppConfig) -> None:
     submenu_row("Select from app list", "Enter package name manually")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
         package_name = _select_app_from_list()
         if not package_name:
             return
     elif mode == "2":
-        package_name = console.input(
+        package_name = ask(
             "[cyan]Package name[/cyan] [dim](e.g. com.spotify.music)[/dim]> "
         ).strip()
         if not package_name:
@@ -144,7 +145,7 @@ def launch_app(config: AppConfig) -> None:
 
 def list_apps(config: AppConfig) -> None:
     submenu_row("Third-party packages only", "All packages")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
         with task_status("[info]Fetching third-party packages…[/info]"):
@@ -171,14 +172,14 @@ def list_apps(config: AppConfig) -> None:
 
 def extract_apk(config: AppConfig) -> None:
     submenu_row("Select from app list", "Enter package name manually")
-    mode = console.input("[prompt]> [/prompt]")
+    mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
         package_name = _select_app_from_list()
         if not package_name:
             return
     elif mode == "2":
-        package_name = console.input(
+        package_name = ask(
             "[cyan]Package name[/cyan] [dim](e.g. com.spotify.music)[/dim]> "
         ).strip()
         if not package_name:

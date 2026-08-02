@@ -1,6 +1,6 @@
 from modules.config import AppConfig
 from modules import banner
-from modules.console import console, print_success, adb
+from modules.console import console, print_success, adb, ask
 
 
 def use_keycode(config: AppConfig) -> None:
@@ -10,7 +10,7 @@ def use_keycode(config: AppConfig) -> None:
 
     while True:
         console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Menu")
-        option = console.input(
+        option = ask(
             "[red]\\[KEYCODE][/red] [white]>[/white] "
         ).lower()
 
@@ -21,7 +21,7 @@ def use_keycode(config: AppConfig) -> None:
                 os.system(config.clear_cmd)
                 console.print(banner.keycode_menu)
             case "1":
-                text = console.input("[cyan]Text[/cyan]> ")
+                text = ask("[cyan]Text[/cyan]> ")
                 adb(["shell", "input", "text", text])
                 print_success(f'Entered: "{text}"')
             case "2":

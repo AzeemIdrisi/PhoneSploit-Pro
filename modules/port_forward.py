@@ -10,6 +10,7 @@ from modules.console import (
     print_null_input,
     get_adb_executable,
     submenu_row,
+    ask,
 )
 
 
@@ -28,11 +29,11 @@ def port_forward_menu(config: AppConfig) -> None:
         "Remove one rule",
         "Remove all rules",
     )
-    choice = console.input("[prompt]> [/prompt]").strip()
+    choice = ask("[prompt]> [/prompt]").strip()
 
     if choice == "1":
-        local = console.input("[cyan]Local (PC) TCP port[/cyan]> ").strip()
-        remote = console.input("[cyan]Remote (device) TCP port[/cyan]> ").strip()
+        local = ask("[cyan]Local (PC) TCP port[/cyan]> ").strip()
+        remote = ask("[cyan]Remote (device) TCP port[/cyan]> ").strip()
         if not local.isdigit() or not remote.isdigit():
             print_null_input()
             return
@@ -44,8 +45,8 @@ def port_forward_menu(config: AppConfig) -> None:
             print_error(out or "forward failed")
 
     elif choice == "2":
-        remote = console.input("[cyan]Device TCP port[/cyan]> ").strip()
-        local = console.input("[cyan]Host TCP port[/cyan]> ").strip()
+        remote = ask("[cyan]Device TCP port[/cyan]> ").strip()
+        local = ask("[cyan]Host TCP port[/cyan]> ").strip()
         if not remote.isdigit() or not local.isdigit():
             print_null_input()
             return
@@ -61,7 +62,7 @@ def port_forward_menu(config: AppConfig) -> None:
         console.print((r.stdout + r.stderr).strip() or "[dim](no rules)[/dim]")
 
     elif choice == "4":
-        spec = console.input(
+        spec = ask(
             "[cyan]Rule spec to remove[/cyan] [dim](e.g. tcp:8080)[/dim]> "
         ).strip()
         if not spec:
