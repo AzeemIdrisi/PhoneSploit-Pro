@@ -25,7 +25,7 @@
     For any queries, Contact me at : azeemidrisiofficial@gmail.com
 """
 
-version = "v2.1"
+version = "v2.1.1"
 
 menu1 = """
     [white]1. [green]Connect a Device                   [white]6. [green]Launch Metasploit Attack             [white]11. [green]Anonymous Screen Record
