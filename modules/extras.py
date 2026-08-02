@@ -1,4 +1,4 @@
-"""Additional ADB toolkit features (menu 47–57)."""
+"""Additional ADB toolkit features (menu 36–55)."""
 
 from __future__ import annotations
 

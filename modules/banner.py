@@ -28,43 +28,43 @@
 version = "v2.1"
 
 menu1 = """
-    [white]1. [green]Connect a Device             [white]6. [green]Get Screenshot                       [white]11. [green]Install an APK
-    [white]2. [green]List Connected Devices       [white]7. [green]Screen Record                        [white]12. [green]Uninstall an App
-    [white]3. [green]Disconnect All Devices       [white]8. [green]Download File/Folder from Device     [white]13. [green]List Installed Apps
-    [white]4. [green]Scan Network for Devices     [white]9. [green]Send File/Folder to Device           [white]14. [green]Access Device Shell
-    [white]5. [green]Mirror & Control Device     [white]10. [green]Run an App                           [white]15. [green]Launch Metasploit Attack
+    [white]1. [green]Connect a Device                   [white]6. [green]Launch Metasploit Attack             [white]11. [green]Anonymous Screen Record
+    [white]2. [green]List Connected Devices             [white]7. [green]Mirror & Control Device              [white]12. [green]Camera Live Stream
+    [white]3. [green]Scan Network for Devices           [white]8. [green]Take Screenshot                      [white]13. [green]Listen Mic Audio
+    [white]4. [green]Disconnect All Devices             [white]9. [green]Screen Record                        [white]14. [green]Record Mic Audio
+    [white]5. [green]Stop ADB Server                   [white]10. [green]Anonymous Screenshot                 [white]15. [green]Listen Device Audio
 
   [yellow]N: Next Page                                      (Page : 1 / 5)[/yellow]"""
 
 menu2 = """
-    [white]16. [green]List All Folders/Files      [white]21. [green]Anonymous Screenshot                [white]26. [green]Play a Video on Device
-    [white]17. [green]Send SMS                    [white]22. [green]Anonymous Screen Record             [white]27. [green]Get Device Information
-    [white]18. [green]Copy WhatsApp Data          [white]23. [green]Open a Link on Device               [white]28. [green]Get Battery Information
-    [white]19. [green]Copy All Screenshots        [white]24. [green]Display a Photo on Device           [white]29. [green]Restart Device
-    [white]20. [green]Copy All Camera Photos      [white]25. [green]Play an Audio on Device             [white]30. [green]Advanced Reboot Options
+    [white]16. [green]Record Device Audio               [white]21. [green]Send SMS                            [white]26. [green]Download File/Folder from Device
+    [white]17. [green]Dump All SMS                      [white]22. [green]Open a URL on Device                [white]27. [green]Send File/Folder to Device
+    [white]18. [green]Dump All Contacts                 [white]23. [green]Display a Photo on Device           [white]28. [green]List All Folders/Files
+    [white]19. [green]Dump Call Logs                    [white]24. [green]Play an Audio on Device             [white]29. [green]Copy WhatsApp Data
+    [white]20. [green]Access Device Shell               [white]25. [green]Play a Video on Device              [white]30. [green]Copy All Screenshots
 
   [yellow]P: Previous Page         N: Next Page            (Page : 2 / 5)[/yellow]"""
 
 menu3 = """
-    [white]31. [green]Unlock Device               [white]36. [green]Extract APK from Installed App      [white]41. [green]Record Mic Audio
-    [white]32. [green]Lock Device                 [white]37. [green]Stop ADB Server                     [white]42. [green]Listen Device Audio
-    [white]33. [green]Dump All SMS                [white]38. [green]Power Off Device                    [white]43. [green]Record Device Audio
-    [white]34. [green]Dump All Contacts           [white]39. [green]Use Keycodes (Control Device)       [white]44. [green]TCP Port Forward / Reverse
-    [white]35. [green]Dump Call Logs              [white]40. [green]Listen Mic Audio                    [white]45. [green]Force Stop App
+    [white]31. [green]Copy All Camera Photos            [white]36. [green]Install Split APKs                  [white]41. [green]Grant/Revoke Permission
+    [white]32. [green]Install an App                    [white]37. [green]Extract APK from Installed App      [white]42. [green]Control Device with Keycodes
+    [white]33. [green]Uninstall an App                  [white]38. [green]Force Stop App                      [white]43. [green]Unlock Device
+    [white]34. [green]Run an App                        [white]39. [green]Restart App                         [white]44. [green]Lock Device
+    [white]35. [green]List Installed Apps               [white]40. [green]Clear App Data                      [white]45. [green]Get Device Information
 
   [yellow]P: Previous Page         N: Next Page            (Page : 3 / 5)[/yellow]"""
 
 menu4 = """
-    [white]46. [green]Clear App Data                 [white]51. [green]Network Snapshot               [white]56. [green]WiFi Status Dump
-    [white]47. [green]Save Logcat Snippet            [white]52. [green]Install Split APKs             [white]57. [green]WLAN IP Info
-    [white]48. [green]Grant / Revoke Permission      [white]53. [green]Developer Settings             [white]58. [green]WiFi Radio Toggle
-    [white]49. [green]Restart App                    [white]54. [green]Read Locale                    [white]59. [green]Ping Connectivity
-    [white]50. [green]Live Logcat Stream             [white]55. [green]Screen Stay-On                 [white]60. [green]Saved WiFi Networks
+    [white]46. [green]Get Battery Information           [white]51. [green]Live Logcat Stream                  [white]56. [green]Root Heuristics
+    [white]47. [green]Restart Device                    [white]52. [green]Network Snapshot                    [white]57. [green]WiFi Status Dump
+    [white]48. [green]Advanced Reboot Options           [white]53. [green]Developer Settings                  [white]58. [green]WLAN IP Info
+    [white]49. [green]Power Off Device                  [white]54. [green]Read Locale                         [white]59. [green]WiFi Radio Toggle
+    [white]50. [green]Save Logcat Snippet               [white]55. [green]Screen Stay-On                      [white]60. [green]Ping Connectivity
 
   [yellow]P: Previous Page         N: Next Page            (Page : 4 / 5)[/yellow]"""
 
 menu5 = """
-    [white]61. [green]Root Heuristics                [white]62. [green]Camera Live         [white]63. [green]Update PhoneSploit-Pro
+    [white]61. [green]Saved WiFi Networks               [white]62. [green]TCP Port Forward/Reverse            [white]63. [green]Update PhoneSploit-Pro
 
   [yellow]P: Previous Page                                  (Page : 5 / 5)[/yellow]"""
 

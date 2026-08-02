@@ -254,207 +254,207 @@ def main(config: AppConfig) -> None:
                 return
             connection.list_devices(config)
         case "3":
-            if not require_adb(config):
-                return
-            connection.disconnect(config)
-        case "4":
             if not require_nmap(config):
                 return
             connection.scan_network(config)
+        case "4":
+            if not require_adb(config):
+                return
+            connection.disconnect(config)
         case "5":
-            if not require_scrcpy(config):
+            if not require_adb(config):
                 return
-            media.mirror(config)
+            connection.stop_adb(config)
         case "6":
-            if not require_adb(config):
-                return
-            media.get_screenshot(config)
-        case "7":
-            if not require_adb(config):
-                return
-            media.screenrecord(config)
-        case "8":
-            if not require_adb(config):
-                return
-            file_manager.pull_file(config)
-        case "9":
-            if not require_adb(config):
-                return
-            file_manager.push_file(config)
-        case "10":
-            if not require_adb(config):
-                return
-            app_manager.launch_app(config)
-        case "11":
-            if not require_adb(config):
-                return
-            app_manager.install_app(config)
-        case "12":
-            if not require_adb(config):
-                return
-            app_manager.uninstall_app(config)
-        case "13":
-            if not require_adb(config):
-                return
-            app_manager.list_apps(config)
-        case "14":
-            if not require_adb(config):
-                return
-            device.get_shell(config)
-        case "15":
             if not require_adb(config):
                 return
             if not require_metasploit(config):
                 return
             security.hack(config)
-        case "16":
+        case "7":
+            if not require_scrcpy(config):
+                return
+            media.mirror(config)
+        case "8":
             if not require_adb(config):
                 return
-            file_manager.list_files(config)
-        case "17":
+            media.get_screenshot(config)
+        case "9":
             if not require_adb(config):
                 return
-            communication.send_sms(config)
-        case "18":
-            if not require_adb(config):
-                return
-            file_manager.copy_whatsapp(config)
-        case "19":
-            if not require_adb(config):
-                return
-            file_manager.copy_screenshots(config)
-        case "20":
-            if not require_adb(config):
-                return
-            file_manager.copy_camera(config)
-        case "21":
+            media.screenrecord(config)
+        case "10":
             if not require_adb(config):
                 return
             media.anonymous_screenshot(config)
-        case "22":
+        case "11":
             if not require_adb(config):
                 return
             media.anonymous_screenrecord(config)
-        case "23":
-            if not require_adb(config):
+        case "12":
+            if not require_scrcpy(config):
                 return
-            communication.open_link(config)
-        case "24":
-            if not require_adb(config):
-                return
-            media.open_photo(config)
-        case "25":
-            if not require_adb(config):
-                return
-            media.open_audio(config)
-        case "26":
-            if not require_adb(config):
-                return
-            media.open_video(config)
-        case "27":
-            if not require_adb(config):
-                return
-            device.get_device_info(config)
-        case "28":
-            if not require_adb(config):
-                return
-            device.battery_info(config)
-        case "29":
-            if not require_adb(config):
-                return
-            device.reboot(config, "system")
-        case "30":
-            if not require_adb(config):
-                return
-            device.reboot(config, "advanced")
-        case "31":
-            if not require_adb(config):
-                return
-            device.unlock_device(config)
-        case "32":
-            if not require_adb(config):
-                return
-            device.lock_device(config)
-        case "33":
-            if not require_adb(config):
-                return
-            data_extraction.dump_sms(config)
-        case "34":
-            if not require_adb(config):
-                return
-            data_extraction.dump_contacts(config)
-        case "35":
-            if not require_adb(config):
-                return
-            data_extraction.dump_call_logs(config)
-        case "36":
-            if not require_adb(config):
-                return
-            app_manager.extract_apk(config)
-        case "37":
-            if not require_adb(config):
-                return
-            connection.stop_adb(config)
-        case "38":
-            if not require_adb(config):
-                return
-            device.power_off(config)
-        case "39":
-            if not require_adb(config):
-                return
-            input_control.use_keycode(config)
-        case "40":
+            media.camera_live(config)
+        case "13":
             if not require_scrcpy(config):
                 return
             media.stream_audio(config, "mic")
-        case "41":
+        case "14":
             if not require_scrcpy(config):
                 return
             media.record_audio(config, "mic")
-        case "42":
+        case "15":
             if not require_scrcpy(config):
                 return
             media.stream_audio(config, "device")
-        case "43":
+        case "16":
             if not require_scrcpy(config):
                 return
             media.record_audio(config, "device")
-        case "44":
+        case "17":
             if not require_adb(config):
                 return
-            port_forward.port_forward_menu(config)
-        case "45":
+            data_extraction.dump_sms(config)
+        case "18":
             if not require_adb(config):
                 return
-            extras.force_stop_app(config)
-        case "46":
+            data_extraction.dump_contacts(config)
+        case "19":
             if not require_adb(config):
                 return
-            extras.clear_app_data(config)
-        case "47":
+            data_extraction.dump_call_logs(config)
+        case "20":
             if not require_adb(config):
                 return
-            extras.save_logcat_snippet(config)
-        case "48":
+            device.get_shell(config)
+        case "21":
             if not require_adb(config):
                 return
-            extras.grant_revoke_permission(config)
-        case "49":
+            communication.send_sms(config)
+        case "22":
             if not require_adb(config):
                 return
-            extras.restart_app(config)
-        case "50":
+            communication.open_link(config)
+        case "23":
             if not require_adb(config):
                 return
-            extras.live_logcat(config)
-        case "51":
+            media.open_photo(config)
+        case "24":
             if not require_adb(config):
                 return
-            extras.network_snapshot(config)
-        case "52":
+            media.open_audio(config)
+        case "25":
+            if not require_adb(config):
+                return
+            media.open_video(config)
+        case "26":
+            if not require_adb(config):
+                return
+            file_manager.pull_file(config)
+        case "27":
+            if not require_adb(config):
+                return
+            file_manager.push_file(config)
+        case "28":
+            if not require_adb(config):
+                return
+            file_manager.list_files(config)
+        case "29":
+            if not require_adb(config):
+                return
+            file_manager.copy_whatsapp(config)
+        case "30":
+            if not require_adb(config):
+                return
+            file_manager.copy_screenshots(config)
+        case "31":
+            if not require_adb(config):
+                return
+            file_manager.copy_camera(config)
+        case "32":
+            if not require_adb(config):
+                return
+            app_manager.install_app(config)
+        case "33":
+            if not require_adb(config):
+                return
+            app_manager.uninstall_app(config)
+        case "34":
+            if not require_adb(config):
+                return
+            app_manager.launch_app(config)
+        case "35":
+            if not require_adb(config):
+                return
+            app_manager.list_apps(config)
+        case "36":
             if not require_adb(config):
                 return
             extras.install_split_apks(config)
+        case "37":
+            if not require_adb(config):
+                return
+            app_manager.extract_apk(config)
+        case "38":
+            if not require_adb(config):
+                return
+            extras.force_stop_app(config)
+        case "39":
+            if not require_adb(config):
+                return
+            extras.restart_app(config)
+        case "40":
+            if not require_adb(config):
+                return
+            extras.clear_app_data(config)
+        case "41":
+            if not require_adb(config):
+                return
+            extras.grant_revoke_permission(config)
+        case "42":
+            if not require_adb(config):
+                return
+            input_control.use_keycode(config)
+        case "43":
+            if not require_adb(config):
+                return
+            device.unlock_device(config)
+        case "44":
+            if not require_adb(config):
+                return
+            device.lock_device(config)
+        case "45":
+            if not require_adb(config):
+                return
+            device.get_device_info(config)
+        case "46":
+            if not require_adb(config):
+                return
+            device.battery_info(config)
+        case "47":
+            if not require_adb(config):
+                return
+            device.reboot(config, "system")
+        case "48":
+            if not require_adb(config):
+                return
+            device.reboot(config, "advanced")
+        case "49":
+            if not require_adb(config):
+                return
+            device.power_off(config)
+        case "50":
+            if not require_adb(config):
+                return
+            extras.save_logcat_snippet(config)
+        case "51":
+            if not require_adb(config):
+                return
+            extras.live_logcat(config)
+        case "52":
+            if not require_adb(config):
+                return
+            extras.network_snapshot(config)
         case "53":
             if not require_adb(config):
                 return
@@ -470,35 +470,33 @@ def main(config: AppConfig) -> None:
         case "56":
             if not require_adb(config):
                 return
-            wifi_utils.wifi_status_dump(config)
+            root_check.root_heuristics(config)
         case "57":
             if not require_adb(config):
                 return
-            wifi_utils.wlan_ip(config)
+            wifi_utils.wifi_status_dump(config)
         case "58":
             if not require_adb(config):
                 return
-            wifi_utils.wifi_toggle(config)
+            wifi_utils.wlan_ip(config)
         case "59":
             if not require_adb(config):
                 return
-            wifi_utils.ping_connectivity(config)
+            wifi_utils.wifi_toggle(config)
         case "60":
             if not require_adb(config):
                 return
-            wifi_utils.saved_wifi_networks(config)
+            wifi_utils.ping_connectivity(config)
         case "61":
             if not require_adb(config):
                 return
-            root_check.root_heuristics(config)
+            wifi_utils.saved_wifi_networks(config)
         case "62":
             if not require_adb(config):
                 return
-            if not require_scrcpy(config):
-                return
-            media.camera_live(config)
-        case "63": 
-             update_me(config)
+            port_forward.port_forward_menu(config)
+        case "63":
+            update_me(config)
         case _:
             console.print("\n[red]Invalid selection![/red]\n")
 

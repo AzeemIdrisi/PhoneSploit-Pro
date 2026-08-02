@@ -1,4 +1,4 @@
-"""WiFi-related ADB helpers (menu 58–62)."""
+"""WiFi-related ADB helpers (menu 57–61)."""
 
 import re
 from collections import OrderedDict
