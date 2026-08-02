@@ -3,10 +3,9 @@
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Section } from '@/components/ui/Section'
-import { Container } from '@/components/ui/Container'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
-import { Check, X, Monitor, Smartphone, Terminal, Globe, Shield, Cpu, ExternalLink } from 'lucide-react'
+import { Check, X, Monitor, Smartphone, Terminal, Shield, Cpu, ExternalLink } from 'lucide-react'
 
 const osData = [
   { id: 'ubuntu', name: 'Ubuntu', icon: Monitor, status: 'supported', version: '20.04+', notes: 'Fully tested' },

@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 import { featureCategories, features, FeatureCategory } from '@/data/features'
 import { FeatureCard } from './FeatureCard'
 import { Section } from '@/components/ui/Section'
-import { Container } from '@/components/ui/Container'
 import { Badge } from '@/components/ui/Badge'
 import { ExternalLink } from 'lucide-react'
 

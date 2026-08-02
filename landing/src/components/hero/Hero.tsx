@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
-import { Github, Star, ArrowRight, Terminal } from "lucide-react";
+import { Star, ArrowRight, Terminal } from "lucide-react";
+import { GitHubIcon } from "@/components/ui/BrandIcons";
 import { repoInfo } from "@/data/constants";
 
 export default function Hero() {
@@ -85,7 +85,7 @@ export default function Hero() {
               className="w-full sm:w-auto min-w-[160px]"
               onClick={scrollToGitHub}
             >
-              <Github className="mr-2 h-5 w-5" />
+              <GitHubIcon className="mr-2 h-5 w-5" />
               View on GitHub
             </Button>
           </motion.div>
@@ -101,7 +101,7 @@ export default function Hero() {
               <span>{repoInfo.starsFormatted}+ Stars</span>
             </div>
             <div className="flex items-center gap-2">
-              <Github className="h-4 w-4" />
+              <GitHubIcon className="h-4 w-4" />
               <span>Open Source</span>
             </div>
             <div className="flex items-center gap-2">

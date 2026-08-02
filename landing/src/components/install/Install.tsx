@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Section } from '@/components/ui/Section'
-import { Container } from '@/components/ui/Container'
-import { Copy, Check, Terminal, Monitor, Smartphone, AlertTriangle, Github, ExternalLink } from 'lucide-react'
+import { Copy, Check, Terminal, Monitor, Smartphone, AlertTriangle, ExternalLink } from 'lucide-react'
+import { GitHubIcon } from '@/components/ui/BrandIcons'
 
 const installTabs = [
   { id: 'linux', label: 'Linux / macOS', icon: Terminal },
@@ -207,7 +207,7 @@ export default function Install() {
 
           <Card padding="lg" className="bg-primary-900/20 border-primary-700/50">
             <div className="flex items-start gap-4">
-              <Github className="h-6 w-6 text-primary-400 shrink-0 mt-0.5" />
+              <GitHubIcon className="h-6 w-6 text-primary-400 shrink-0 mt-0.5" />
               <div>
                 <h4 className="font-semibold text-white">Run from GitHub (Alternative)</h4>
                 <p className="mt-1 text-sm text-primary-300">
@@ -220,7 +220,7 @@ export default function Install() {
                     rel="noopener noreferrer"
                     className="btn-secondary text-sm"
                   >
-                    <Github className="mr-2 h-4 w-4" />
+                    <GitHubIcon className="mr-2 h-4 w-4" />
                     Open Repository
                     <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
                   </a>

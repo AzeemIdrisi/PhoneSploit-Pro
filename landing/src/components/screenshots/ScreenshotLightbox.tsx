@@ -1,11 +1,10 @@
 'use client'
 
 import { useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
 import { Screenshot } from '@/data/screenshots'
-import { X, ChevronLeft, ChevronRight, Maximize2, Minimize2, Download } from 'lucide-react'
+import { X, Download } from 'lucide-react'
 
 interface ScreenshotLightboxProps {
   screenshot: Screenshot

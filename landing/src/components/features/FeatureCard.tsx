@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
 import { Feature } from '@/data/features'
 import { Card } from '@/components/ui/Card'
 import { icons } from '@/data/features'

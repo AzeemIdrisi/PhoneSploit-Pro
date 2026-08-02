@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion'
 import { Container } from '@/components/ui/Container'
 import { cn } from '@/lib/utils'
-import { Github, Star, MessageSquare, AlertTriangle, ExternalLink } from 'lucide-react'
+import { Star, MessageSquare, AlertTriangle, ExternalLink } from 'lucide-react'
+import { GitHubIcon } from '@/components/ui/BrandIcons'
 
 type CTAButtonProps = {
   href: string
@@ -17,7 +18,7 @@ const ctaButtons: CTAButtonProps[] = [
   {
     href: 'https://github.com/AzeemIdrisi/PhoneSploit-Pro',
     label: 'View on GitHub',
-    icon: Github,
+    icon: GitHubIcon,
     external: true,
     variant: 'primary',
   },
@@ -64,7 +65,7 @@ function CTAButton({ href, label, icon: Icon, external, variant }: CTAButtonProp
 export default function CTABanner() {
   return (
     <section className="relative py-20 sm:py-24" aria-labelledby="cta-heading">
-      <div className="absolute inset-0 bg-gradient-to-r from-primary-900/20 via-transparent to-primary-900/10" aria-hidden="true" />
+      <div className="absolute inset-0 bg-linear-to-r from-primary-900/20 via-transparent to-primary-900/10" aria-hidden="true" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-900/10 via-transparent to-transparent" aria-hidden="true" />
 
       <Container className="relative">
@@ -99,7 +100,7 @@ export default function CTABanner() {
               <span>Star the repo to support development</span>
             </div>
             <div className="flex items-center gap-2">
-              <Github className="h-4 w-4" aria-hidden="true" />
+              <GitHubIcon className="h-4 w-4" aria-hidden="true" />
               <span>MIT Licensed</span>
             </div>
             <div className="flex items-center gap-2">
