@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/Container";
-import { MessageSquare, ExternalLink, Star, GitFork } from "lucide-react";
-import { GitHubIcon, GitLabIcon, XIcon } from "@/components/ui/BrandIcons";
+import { MessageSquare, Star, GitFork } from "lucide-react";
+import { GitHubIcon } from "@/components/ui/BrandIcons";
 import { socialLinks, repoInfo } from "@/data/constants";
 import { getBasePath } from "@/lib/utils";
 
@@ -65,7 +65,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <GitHubIcon className="h-4 w-4" />
                   GitHub Repository
                 </a>
               </li>
@@ -76,7 +76,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <GitLabIcon className="h-4 w-4" />
+                  <GitHubIcon className="h-4 w-4" />
                   Report Issues
                 </a>
               </li>
@@ -87,7 +87,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <MessageSquare className="h-4 w-4" />
+                  <GitHubIcon className="h-4 w-4" />
                   Discussions
                 </a>
               </li>
@@ -98,7 +98,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <GitHubIcon className="h-4 w-4" />
                   Security Policy
                 </a>
               </li>
@@ -109,7 +109,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <GitHubIcon className="h-4 w-4" />
                   Contributing
                 </a>
               </li>
@@ -162,8 +162,6 @@ function getIcon(name: string) {
   const icons: Record<string, React.ComponentType<{ className?: string }>> = {
     github: GitHubIcon,
     "message-square": MessageSquare,
-    gitlab: GitHubIcon,
   };
-  1;
   return icons[name] || GitHubIcon;
 }

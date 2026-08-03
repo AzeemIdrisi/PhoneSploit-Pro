@@ -18,7 +18,7 @@ export default function Screenshots() {
         <Badge variant="info" className="mb-4 inline-block">In Action</Badge>
         <h2 className="section-title">See PhoneSploit Pro in Action</h2>
         <p className="section-subtitle mx-auto">
-          Screenshots showcasing the main dashboard, device control, data extraction, media features, and exploitation modules.
+          A look at PhoneSploit Pro in action.
         </p>
       </div>
 
@@ -44,20 +44,16 @@ export default function Screenshots() {
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
               />
               <div className="absolute inset-0 bg-linear-to-t from-surface-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-
-            <div className="absolute bottom-4 left-4 right-4 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-between px-4 pb-4">
-              <div className="text-left min-w-0">
-                <h3 className="font-semibold text-white truncate">{screenshot.caption}</h3>
-                <p className="text-xs text-primary-400">Click to view fullsize</p>
-              </div>
-              <button
-                onClick={() => setOpenImage(screenshot)}
-                className="p-2 rounded-xl bg-surface-900/90 backdrop-blur-sm border border-surface-700 text-primary-300 hover:text-white hover:bg-primary-900/50 hover:border-primary-700 transition-all shrink-0"
-                aria-label={`View ${screenshot.caption} fullsize`}
-              >
-                <Maximize className="h-5 w-5" />
-              </button>
+            <button
+              onClick={() => setOpenImage(screenshot)}
+              className="absolute inset-0 flex items-center justify-center"
+              aria-label={`View full size`}
+            >
+              <span className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white bg-surface-900/80 backdrop-blur-sm border border-surface-700 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                <Maximize className="h-4 w-4" />
+                View full size
+              </span>
+            </button>
             </div>
           </motion.article>
         ))}

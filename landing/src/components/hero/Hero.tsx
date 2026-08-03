@@ -20,10 +20,10 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[calc(100svh-8rem)] flex items-center justify-center overflow-hidden">
       <TerminalBackground />
 
-      <div className="relative z-10 container-custom py-20">
+      <div className="relative z-10 container-custom pt-8 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -186,14 +186,14 @@ function TerminalLines() {
 
   return (
     <div
-      className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 pointer-events-none font-mono text-xs sm:text-sm"
+      className="pointer-events-none absolute inset-0 z-0 mx-auto flex w-full max-w-6xl flex-col justify-center gap-3 px-6 font-mono text-base sm:text-lg md:text-xl sm:gap-4 lg:text-2xl"
       style={{ fontFamily: "var(--font-mono)" }}
       aria-hidden="true"
     >
       {lines.map((line, i) => (
         <motion.p
           key={i}
-          className="text-primary-300/70 whitespace-pre"
+          className="truncate whitespace-pre text-primary-300/20"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: [0, 1, 1, 0], x: 0 }}
           transition={{

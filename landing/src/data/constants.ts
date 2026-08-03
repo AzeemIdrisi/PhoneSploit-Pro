@@ -1,6 +1,7 @@
 import githubStats from "./github-stats.json";
 
 export const navLinks = [
+  { href: "#showcase", label: "Showcase" },
   { href: "#features", label: "Features" },
   { href: "#screenshots", label: "Screenshots" },
   { href: "#install", label: "Install" },
@@ -16,12 +17,12 @@ export const socialLinks = [
   {
     href: "https://github.com/AzeemIdrisi/PhoneSploit-Pro/issues",
     label: "Issues",
-    icon: "gitlab",
+    icon: "github",
   },
   {
     href: "https://github.com/AzeemIdrisi/PhoneSploit-Pro/discussions",
     label: "Discussions",
-    icon: "message-square",
+    icon: "github",
   },
 ];
 

@@ -1,4 +1,5 @@
 import Hero from '@/components/hero/Hero'
+import Showcase from '@/components/showcase/Showcase'
 import Features from '@/components/features/Features'
 import Screenshots from '@/components/screenshots/Screenshots'
 import Install from '@/components/install/Install'
@@ -13,6 +14,7 @@ export default function Home() {
       <Header />
       <main className="pt-16">
         <Hero />
+        <Showcase />
         <Features />
         <Screenshots />
         <Install />

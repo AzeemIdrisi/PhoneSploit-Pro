@@ -4,7 +4,7 @@ import { useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Screenshot } from '@/data/screenshots'
-import { X, Download } from 'lucide-react'
+import { X } from 'lucide-react'
 
 interface ScreenshotLightboxProps {
   screenshot: Screenshot
@@ -34,7 +34,7 @@ export function ScreenshotLightbox({ screenshot, onClose }: ScreenshotLightboxPr
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label={`${screenshot.caption} - Full size view`}
+      aria-label="Full size view"
       onClick={onClose}
     >
       <motion.div
@@ -59,28 +59,13 @@ export function ScreenshotLightbox({ screenshot, onClose }: ScreenshotLightboxPr
           <Image
             src={screenshot.src}
             alt={screenshot.alt}
-            width={screenshot.width}
-            height={screenshot.height}
-            className="max-w-full max-h-[85vh] object-contain rounded-xl"
+            fill
+            sizes="(max-width: 1024px) 100vw, 80vw"
+            className="object-contain max-w-[90vw] max-h-[85vh] rounded-xl"
             priority
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
           />
-        </div>
-
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4">
-          <div className="text-center text-white">
-            <p className="font-medium">{screenshot.caption}</p>
-            <p className="text-sm text-primary-400">{screenshot.width} × {screenshot.height}</p>
-          </div>
-          <a
-            href={screenshot.src}
-            download={`${screenshot.id}-${screenshot.caption.toLowerCase().replace(/\s+/g, '-')}.png`}
-            className="p-2 rounded-xl bg-surface-900/90 backdrop-blur-sm border border-surface-700 text-primary-300 hover:text-white hover:bg-primary-900/50 hover:border-primary-700 transition-all"
-            aria-label="Download screenshot"
-          >
-            <Download className="h-5 w-5" />
-          </a>
         </div>
       </motion.div>
     </motion.div>
