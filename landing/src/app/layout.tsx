@@ -1,4 +1,5 @@
 import { Inter, JetBrains_Mono } from 'next/font/google'
+import { getSiteUrl } from '@/lib/utils'
 import './globals.css'
 
 const inter = Inter({
@@ -13,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata = {
-  metadataBase: new URL('https://azeemidrisi.github.io/PhoneSploit-Pro/'),
+  metadataBase: new URL(getSiteUrl()),
   title: 'PhoneSploit Pro — Android ADB & Metasploit Toolkit',
   description: 'All-in-one hacking tool to remotely exploit Android devices using ADB and Metasploit-Framework. Automated Meterpreter sessions, device control, data extraction, and more.',
   openGraph: {

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "npm run fetch:github && next build",
     "fetch:github": "node scripts/fetch-github-stats.js",
     "start": "next start",
     "lint": "eslint .",

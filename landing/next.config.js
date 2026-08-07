@@ -1,10 +1,14 @@
+const isGitHubPages = process.env.GITHUB_PAGES === '1'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  ...(isGitHubPages && {
+    output: 'export',
+    basePath: '/PhoneSploit-Pro',
+    assetPrefix: '/PhoneSploit-Pro/',
+  }),
   images: { unoptimized: true },
   trailingSlash: true,
-  basePath: '/PhoneSploit-Pro',
-  assetPrefix: '/PhoneSploit-Pro/',
 }
 
 module.exports = nextConfig

@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
+import { getSiteUrl } from '@/lib/utils'
 
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://azeemidrisi.github.io/PhoneSploit-Pro/'
+  const baseUrl = getSiteUrl()
 
   return [
     {
