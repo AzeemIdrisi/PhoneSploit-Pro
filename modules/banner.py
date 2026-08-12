@@ -25,7 +25,7 @@
     For any queries, Contact me at : azeemidrisiofficial@gmail.com
 """
 
-version = "v2.1.1"
+version = "v2.2"
 
 menu1 = """
     [white]1. [green]Connect a Device                   [white]6. [green]Launch Metasploit Attack             [white]11. [green]Anonymous Screen Record
@@ -64,7 +64,8 @@ menu4 = """
   [yellow]P: Previous Page         N: Next Page            (Page : 4 / 5)[/yellow]"""
 
 menu5 = """
-    [white]61. [green]Saved WiFi Networks               [white]62. [green]TCP Port Forward/Reverse            [white]63. [green]Update PhoneSploit-Pro
+    [white]61. [green]Saved WiFi Networks               [white]62. [green]TCP Port Forward/Reverse            [white]63. [green]Set Resolution & Display Size
+    [white]64. [green]Update PhoneSploit-Pro
 
   [yellow]P: Previous Page                                  (Page : 5 / 5)[/yellow]"""
 

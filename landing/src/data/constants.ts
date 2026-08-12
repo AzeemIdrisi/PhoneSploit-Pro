@@ -34,5 +34,5 @@ export const repoInfo = {
   forks: githubStats.forks,
   starsFormatted: githubStats.starsFormatted,
   forksFormatted: githubStats.forksFormatted,
-  version: "v2.1.1",
+  version: "v2.2",
 };
