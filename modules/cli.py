@@ -229,7 +229,7 @@ def main(config: AppConfig) -> None:
     from modules import (
         connection, device, app_manager, file_manager,
         media, data_extraction, communication, security, input_control,
-        extras, port_forward, wifi_utils, root_check,
+        extras, port_forward, wifi_utils, root_check, display,
     )
 
     console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Exit")
@@ -496,6 +496,10 @@ def main(config: AppConfig) -> None:
                 return
             port_forward.port_forward_menu(config)
         case "63":
+            if not require_adb(config):
+                return
+            display.display_menu(config)
+        case "64":
             update_me(config)
         case _:
             console.print("\n[red]Invalid selection![/red]\n")
