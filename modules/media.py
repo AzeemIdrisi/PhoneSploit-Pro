@@ -428,3 +428,37 @@ def stream_audio(config: AppConfig, mode: str) -> None:
         subprocess.run(scrcpy_argv(config, ["--no-video", "--audio-source=mic"]))
     else:
         subprocess.run(scrcpy_argv(config, ["--no-video"]))
+
+
+def set_wallpaper(config: AppConfig) -> None:
+    location = ask("[cyan]Image path on computer[/cyan]> ").strip().strip("'\"")
+    if not location:
+        print_null_input()
+        return
+    src = Path(location)
+    if not src.is_file():
+        print_error("This file does not exist.")
+        return
+    if not confirm("Push this image to the device and open the wallpaper picker?"):
+        return
+    remote = f"/sdcard/wallpaper-{datetime.now().strftime('%Y%m%d%H%M%S')}{src.suffix.lower()}"
+    with task_status("[info]Pushing image…[/info]"):
+        push = adb(["push", str(src), remote])
+    if push.returncode != 0:
+        print_error((push.stdout + push.stderr).strip() or "adb push failed.")
+        return
+    with task_status("[info]Opening wallpaper picker…[/info]"):
+        adb(
+            [
+                "shell",
+                "am",
+                "start",
+                "-a",
+                "android.intent.action.ATTACH_DATA",
+                "-d",
+                f"file://{remote}",
+                "-t",
+                "image/*",
+            ]
+        )
+    print_success("Wallpaper picker opened. Choose the app (e.g. Wallpapers) to apply it.")

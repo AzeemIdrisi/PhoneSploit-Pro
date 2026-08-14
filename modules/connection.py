@@ -13,6 +13,8 @@ from modules.console import (
     print_null_input,
     confirm,
     task_status,
+    print_submenu,
+    parse_submenu_choice,
     adb,
     adb_output,
     get_adb_executable,
@@ -298,3 +300,103 @@ def scan_network(config: AppConfig) -> None:
         )
 
     console.print(table)
+
+
+def _wireless_pair() -> None:
+    addr = ask(
+        "[cyan]Pairing address[/cyan] [dim](IP:port from Wireless Debugging)[/dim]> "
+    ).strip()
+    if not addr:
+        print_null_input()
+        return
+    code = ask("[cyan]6-digit pairing code[/cyan]> ").strip()
+    if not code:
+        print_null_input()
+        return
+    exe = get_adb_executable()
+    if not exe:
+        print_error("ADB executable not available.")
+        return
+    with task_status(f"[info]Pairing with {addr}…[/info]"):
+        result = subprocess.run([exe, "pair", addr, code], capture_output=True, text=True)
+    out = (result.stdout + result.stderr).strip()
+    if result.returncode == 0:
+        print_success(out or "Paired. Use Connect with the other IP:port shown on the device.")
+    else:
+        print_error(out or f"Pairing failed (exit code {result.returncode}).")
+
+
+def _wireless_connect(config: AppConfig) -> None:
+    addr = ask("[cyan]Address[/cyan] [dim](IP:port or IP, default :5555)[/dim]> ").strip()
+    if not addr:
+        print_null_input()
+        return
+    if ":" not in addr:
+        addr = f"{addr}:5555"
+    with task_status(f"[info]Connecting to {addr}…[/info]"):
+        r = adb(["connect", addr])
+    out = (r.stdout + r.stderr).strip()
+    if "connected" in out.lower():
+        print_success(out)
+        prompt_select_device_if_multiple(config)
+    else:
+        print_error(out or "connect failed")
+
+
+def _wireless_tcpip() -> None:
+    port = ask("[cyan]Port[/cyan] [dim](Enter=5555)[/dim]> ").strip() or "5555"
+    if not port.isdigit():
+        print_error("Port must be a number.")
+        return
+    if not confirm("Restart adbd in TCP/IP listening mode?"):
+        return
+    with task_status("[info]Switching to TCP/IP mode…[/info]"):
+        r = adb(["tcpip", port])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or f"adbd now listening on TCP port {port}.")
+    else:
+        print_error(out or "failed")
+
+
+def _wireless_usb() -> None:
+    if not confirm("Switch adbd back to USB mode?"):
+        return
+    with task_status("[info]Switching to USB mode…[/info]"):
+        r = adb(["usb"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "adbd now listening on USB.")
+    else:
+        print_error(out or "failed")
+
+
+def wireless_menu(config: AppConfig) -> None:
+    items = [
+        "Pair Device",
+        "Connect to Device",
+        "Enable TCP/IP Mode",
+        "Switch Back to USB",
+    ]
+
+    def _render() -> None:
+        print_submenu("Wireless ADB", items)
+
+    _render()
+    while True:
+        choice = ask("[red]\\[Wireless ADB][/red] > ").strip().lower()
+        action = parse_submenu_choice(choice, config, _render)
+        if action == "exit":
+            return
+        if action == "redraw":
+            continue
+        if choice == "1":
+            _wireless_pair()
+        elif choice == "2":
+            _wireless_connect(config)
+        elif choice == "3":
+            _wireless_tcpip()
+        elif choice == "4":
+            _wireless_usb()
+        else:
+            print_error("Invalid selection")

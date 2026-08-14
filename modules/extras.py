@@ -6,6 +6,7 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
+from rich.panel import Panel
 from rich.table import Table
 
 from modules.app_manager import select_package_from_list
@@ -18,6 +19,8 @@ from modules.console import (
     confirm,
     task_status,
     submenu_row,
+    print_submenu,
+    parse_submenu_choice,
     ensure_config_dir,
     adb,
     adb_output,
@@ -267,3 +270,324 @@ def screen_stay_on(config: AppConfig) -> None:
         print_success("Done. Use option 3 to turn off when finished.")
     else:
         print_error((r.stdout + r.stderr).strip())
+
+
+# ---------------------------------------------------------------------------
+# Radio toggles, sound & display, notifications (menu 68, 70, 71)
+# ---------------------------------------------------------------------------
+
+def _adb_command_failed(r: subprocess.CompletedProcess[str]) -> bool:
+    out = (r.stdout + r.stderr).strip()
+    lowered = out.lower()
+    if r.returncode != 0:
+        return True
+    return any(
+        t in lowered
+        for t in (
+            "unknown command",
+            "securityexception",
+            "permission denial",
+            "not found",
+            "inaccessible or not found",
+            "not allowed",
+            "exception:",
+            "usage: cmd",
+        )
+    )
+
+
+def _run_shell(args: list[str], label: str, *, confirm_msg: str | None = None) -> bool:
+    if confirm_msg and not confirm(confirm_msg):
+        return False
+    with task_status(f"[info]{label}…[/info]"):
+        r = adb(args)
+    out = (r.stdout + r.stderr).strip()
+    if _adb_command_failed(r):
+        print_error(out or "command failed")
+        return False
+    print_success(out or "Done.")
+    return True
+
+
+def _toggle_radio(subcommand: str, on: bool) -> bool:
+    verb = "enable" if on else "disable"
+    label = f"{subcommand.replace('_', ' ').title()} {'on' if on else 'off'}"
+    with task_status(f"[info]Toggling {label}…[/info]"):
+        if subcommand == "airplane":
+            state = "1" if on else "0"
+            flag = "true" if on else "false"
+            r1 = adb(["shell", "settings", "put", "global", "airplane_mode_on", state])
+            r2 = adb(
+                [
+                    "shell",
+                    "am",
+                    "broadcast",
+                    "-a",
+                    "android.intent.action.AIRPLANE_MODE",
+                    "--ez",
+                    "state",
+                    flag,
+                ]
+            )
+            if _adb_command_failed(r1) and _adb_command_failed(r2):
+                print_error(
+                    (r1.stdout + r1.stderr + r2.stdout + r2.stderr).strip()
+                    or "airplane toggle failed"
+                )
+                return False
+            return True
+        if subcommand == "data":
+            r = adb(["shell", "svc", "data", verb])
+            if not _adb_command_failed(r):
+                return True
+            print_error((r.stdout + r.stderr).strip() or "mobile data toggle failed")
+            return False
+        if subcommand == "bluetooth":
+            r = adb(["shell", "svc", "bluetooth", verb])
+            if not _adb_command_failed(r):
+                return True
+            r2 = adb(["shell", "cmd", "bluetooth_manager", verb])
+            if not _adb_command_failed(r2):
+                return True
+            print_error(
+                "Bluetooth toggle blocked by the shell user on this Android version. "
+                "Toggle manually from quick settings."
+            )
+            return False
+        if subcommand == "nfc":
+            r = adb(["shell", "svc", "nfc", verb])
+            if _adb_command_failed(r):
+                print_error((r.stdout + r.stderr).strip() or "NFC toggle failed")
+                return False
+            return True
+    return False
+
+
+def radio_toggles(config: AppConfig) -> None:
+    items = ["Mobile Data", "Bluetooth", "NFC", "Airplane Mode"]
+    radios = {"1": "data", "2": "bluetooth", "3": "nfc", "4": "airplane"}
+
+    def _render() -> None:
+        print_submenu("Radio Toggles", items)
+
+    _render()
+    while True:
+        radio = ask("[red]\\[Radio Toggles][/red] > ").strip().lower()
+        action = parse_submenu_choice(radio, config, _render)
+        if action == "exit":
+            return
+        if action == "redraw":
+            continue
+        sub = radios.get(radio)
+        if not sub:
+            print_error("Invalid selection")
+            continue
+        while True:
+            console.print(
+                f"\n[bold cyan]{sub.replace('_', ' ').title()}[/bold cyan]\n"
+                "  [dim]1.[/dim] On\n"
+                "  [dim]2.[/dim] Off\n"
+                "  [dim]0.[/dim] Back\n"
+            )
+            state = ask("[prompt]> [/prompt]").strip().lower()
+            if state == "0":
+                break
+            if state == "1":
+                if _toggle_radio(sub, True):
+                    print_success(f"{sub.replace('_', ' ').title()} enabled.")
+            elif state == "2":
+                if _toggle_radio(sub, False):
+                    print_success(f"{sub.replace('_', ' ').title()} disabled.")
+            else:
+                print_error("Invalid selection")
+
+
+def _media_volume_show() -> None:
+    with task_status("[info]Reading media volume…[/info]"):
+        for args in (
+            ["shell", "cmd", "media", "volume", "--show", "--stream", "3"],
+            ["shell", "cmd", "media", "volume", "--get", "--stream", "3"],
+        ):
+            r = adb(args)
+            out = (r.stdout + r.stderr).strip()
+            if not _adb_command_failed(r) and out:
+                console.print(Panel(out, title="Media Volume (stream 3)", border_style="cyan"))
+                return
+    print_error("Volume query not supported (cmd media unavailable on this ROM).")
+
+
+def _media_volume_set(level: str) -> None:
+    attempts = [
+        ["shell", "cmd", "media", "volume", "--stream", "3", "--set", level],
+        ["shell", "cmd", "media_session", "volume", "--stream", "3", "--set", level],
+    ]
+    for args in attempts:
+        with task_status("[info]Setting media volume…[/info]"):
+            r = adb(args)
+        out = (r.stdout + r.stderr).strip()
+        if not _adb_command_failed(r):
+            print_success(out or f"Media volume set to {level}.")
+            return
+    print_error(
+        "Volume control not supported (cmd media / media_session unavailable on this ROM)."
+    )
+
+
+def _media_volume_menu() -> None:
+    vol_items = ["Show volume levels", "Set media volume"]
+    while True:
+        print_submenu("Media Volume", vol_items)
+        mode = ask("[red]\\[Media Volume][/red] > ").strip().lower()
+        if mode == "0":
+            return
+        if mode == "1":
+            _media_volume_show()
+        elif mode == "2":
+            raw = ask("[cyan]Media volume[/cyan] [dim](0-15)[/dim]> ").strip()
+            if not raw.isdigit() or not 0 <= int(raw) <= 15:
+                print_error("Enter a number between 0 and 15.")
+                continue
+            _media_volume_set(raw)
+        else:
+            print_error("Invalid selection")
+
+
+def _set_brightness() -> None:
+    raw = ask("[cyan]Brightness[/cyan] [dim](0-255, empty = auto)[/dim]> ").strip()
+    if not raw:
+        _run_shell(
+            ["shell", "settings", "put", "system", "screen_brightness_mode", "1"],
+            "Enabling auto brightness",
+        )
+        return
+    if not raw.isdigit() or not 0 <= int(raw) <= 255:
+        print_error("Enter a number between 0 and 255.")
+        return
+    with task_status("[info]Disabling auto brightness…[/info]"):
+        adb(["shell", "settings", "put", "system", "screen_brightness_mode", "0"])
+    _run_shell(["shell", "settings", "put", "system", "screen_brightness", raw], "Setting brightness")
+
+
+def _set_timeout() -> None:
+    seconds = ask("[cyan]Screen timeout[/cyan] [dim](seconds)[/dim]> ").strip()
+    if not seconds.isdigit():
+        print_error("Enter a number in seconds.")
+        return
+    _run_shell(
+        ["shell", "settings", "put", "system", "screen_off_timeout", str(int(seconds) * 1000)],
+        "Setting screen timeout",
+    )
+
+
+def _set_dnd() -> None:
+    dnd_items = ["Off", "Alarms Only", "Priority Only", "Total Silence"]
+    print_submenu("Do Not Disturb", dnd_items)
+    choice = ask("[red]\\[DND][/red] > ").strip()
+    modes = {"1": "0", "2": "1", "3": "2", "4": "3"}
+    mode = modes.get(choice)
+    if choice == "0":
+        return
+    if mode is None:
+        print_error("Invalid selection")
+        return
+    _run_shell(["shell", "settings", "put", "secure", "zen_mode", mode], "Setting Do Not Disturb mode")
+
+
+def sound_display(config: AppConfig) -> None:
+    items = [
+        "Set Media Volume",
+        "Set Screen Brightness",
+        "Set Screen Timeout",
+        "Do Not Disturb Mode",
+    ]
+
+    def _render() -> None:
+        print_submenu("Sound & Display", items)
+
+    _render()
+    while True:
+        choice = ask("[red]\\[Sound & Display][/red] > ").strip().lower()
+        action = parse_submenu_choice(choice, config, _render)
+        if action == "exit":
+            return
+        if action == "redraw":
+            continue
+        if choice == "1":
+            _media_volume_menu()
+        elif choice == "2":
+            _set_brightness()
+        elif choice == "3":
+            _set_timeout()
+        elif choice == "4":
+            _set_dnd()
+        else:
+            print_error("Invalid selection")
+
+
+def _run_statusbar(args: list[str], label: str) -> None:
+    with task_status(f"[info]{label}…[/info]"):
+        r = adb(["shell", "cmd", "statusbar", *args])
+    out = (r.stdout + r.stderr).strip()
+    if _adb_command_failed(r):
+        print_error(out or "not supported on this Android version")
+    else:
+        print_success(out or "Done.")
+
+
+def notifications_menu(config: AppConfig) -> None:
+    items = [
+        "Post a Notification",
+        "Expand Notifications Panel",
+        "Expand Quick Settings",
+        "Collapse Panel",
+    ]
+
+    def _render() -> None:
+        print_submenu("Notifications", items)
+
+    _render()
+    while True:
+        choice = ask("[red]\\[Notifications][/red] > ").strip().lower()
+        action = parse_submenu_choice(choice, config, _render)
+        if action == "exit":
+            return
+        if action == "redraw":
+            continue
+        if choice == "1":
+            title = ask("[cyan]Title[/cyan]> ").strip()
+            message = ask("[cyan]Message[/cyan]> ").strip()
+            tag = f"phonesploit-{datetime.now().strftime('%H%M%S')}"
+            if not title and not message:
+                print_error("Null input")
+                continue
+            with task_status("[info]Posting notification…[/info]"):
+                r = adb(
+                    [
+                        "shell",
+                        "cmd",
+                        "notification",
+                        "post",
+                        "-S",
+                        "bigtext",
+                        "-t",
+                        title,
+                        tag,
+                        message,
+                    ]
+                )
+            out = (r.stdout + r.stderr).strip()
+            if _adb_command_failed(r) or "permission" in out.lower():
+                print_error(
+                    "Posting failed (shell user denied on most devices). "
+                    "Status bar expand/collapse may still work."
+                )
+            else:
+                print_success(out or "Notification posted.")
+        elif choice == "2":
+            _run_statusbar(["expand-notifications"], "Expanding notifications panel")
+        elif choice == "3":
+            _run_statusbar(["expand-settings"], "Expanding quick settings")
+        elif choice == "4":
+            _run_statusbar(["collapse"], "Collapsing panel")
+        else:
+            print_error("Invalid selection")

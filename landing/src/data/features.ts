@@ -1,4 +1,4 @@
-import { Monitor, HardDrive, Camera, Smartphone, Wifi, Terminal, Shield, Key, Globe, Database, Mic, Music, FileText, Image, Video, AppWindow, Download, Upload, Lock, Unlock, Power, RefreshCw, Search, Eye, Mic2, List, Settings, HelpCircle, Zap, ShieldCheck, Network, Server, Cpu, MemoryStick, MessageSquare, Trash2, Smartphone as SmartphoneIcon, Wifi as WifiIcon, Bluetooth, Usb, Monitor as MonitorIcon, Camera as CameraIcon, Mic as MicIcon, Speaker, HardDrive as HardDriveIcon, Database as DatabaseIcon, FileText as FileTextIcon, Image as ImageIcon, Video as VideoIcon, Music as MusicIcon, AppWindow as AppWindowIcon, Download as DownloadIcon, Upload as UploadIcon, Lock as LockIcon, Unlock as UnlockIcon, Power as PowerIcon, RefreshCw as RefreshCwIcon, Search as SearchIcon, Eye as EyeIcon, Mic2 as Mic2Icon, List as ListIcon, Settings as SettingsIcon, HelpCircle as HelpCircleIcon, Zap as ZapIcon, ShieldCheck as ShieldCheckIcon, Network as NetworkIcon, Server as ServerIcon, Cpu as CpuIcon, MemoryStick as MemoryStickIcon } from 'lucide-react'
+import { Monitor, HardDrive, Camera, Smartphone, Wifi, Terminal, Shield, Key, Globe, Database, Mic, Music, FileText, Image, Video, AppWindow, Download, Upload, Lock, Unlock, Power, RefreshCw, Search, Eye, Mic2, List, Settings, HelpCircle, Zap, ShieldCheck, Network, Server, Cpu, MemoryStick, MessageSquare, Trash2, Smartphone as SmartphoneIcon, Wifi as WifiIcon, Bluetooth, Usb, Monitor as MonitorIcon, Camera as CameraIcon, Mic as MicIcon, Speaker, HardDrive as HardDriveIcon, Database as DatabaseIcon, FileText as FileTextIcon, Image as ImageIcon, Video as VideoIcon, Music as MusicIcon, AppWindow as AppWindowIcon, Download as DownloadIcon, Upload as UploadIcon, Lock as LockIcon, Unlock as UnlockIcon, Power as PowerIcon, RefreshCw as RefreshCwIcon, Search as SearchIcon, Eye as EyeIcon, Mic2 as Mic2Icon, List as ListIcon, Settings as SettingsIcon, HelpCircle as HelpCircleIcon, Zap as ZapIcon, ShieldCheck as ShieldCheckIcon, Network as NetworkIcon, Server as ServerIcon, Cpu as CpuIcon, MemoryStick as MemoryStickIcon, Clipboard, MapPin, Fingerprint, BarChart3, Battery, Volume2, Bell, Radio, Home, PauseCircle, BatteryCharging, ToggleLeft } from 'lucide-react'
 
 export type FeatureCategory = 'device' | 'data' | 'media' | 'apps' | 'network' | 'exploit'
 
@@ -11,7 +11,7 @@ export interface Feature {
 }
 
 export const icons = {
-  Monitor, HardDrive, Camera, Smartphone, Wifi, Terminal, Shield, Key, Globe, Database, Mic, Music, FileText, Image, Video, AppWindow, Download, Upload, Lock, Unlock, Power, RefreshCw, Search, Eye, Mic2, List, Settings, HelpCircle, Zap, ShieldCheck, Network, Server, Cpu, MemoryStick, MessageSquare, Trash2, SmartphoneIcon, WifiIcon, Bluetooth, Usb, MonitorIcon, CameraIcon, MicIcon, Speaker, HardDriveIcon, DatabaseIcon, FileTextIcon, ImageIcon, VideoIcon, MusicIcon, AppWindowIcon, DownloadIcon, UploadIcon, LockIcon, UnlockIcon, PowerIcon, RefreshCwIcon, SearchIcon, EyeIcon, Mic2Icon, ListIcon, SettingsIcon, HelpCircleIcon, ZapIcon, ShieldCheckIcon, NetworkIcon, ServerIcon, CpuIcon, MemoryStickIcon,
+  Monitor, HardDrive, Camera, Smartphone, Wifi, Terminal, Shield, Key, Globe, Database, Mic, Music, FileText, Image, Video, AppWindow, Download, Upload, Lock, Unlock, Power, RefreshCw, Search, Eye, Mic2, List, Settings, HelpCircle, Zap, ShieldCheck, Network, Server, Cpu, MemoryStick, MessageSquare, Trash2, SmartphoneIcon, WifiIcon, Bluetooth, Usb, MonitorIcon, CameraIcon, MicIcon, Speaker, HardDriveIcon, DatabaseIcon, FileTextIcon, ImageIcon, VideoIcon, MusicIcon, AppWindowIcon, DownloadIcon, UploadIcon, LockIcon, UnlockIcon, PowerIcon, RefreshCwIcon, SearchIcon, EyeIcon, Mic2Icon, ListIcon, SettingsIcon, HelpCircleIcon, ZapIcon, ShieldCheckIcon, NetworkIcon, ServerIcon, CpuIcon, MemoryStickIcon, Clipboard, MapPin, Fingerprint, BarChart3, Battery, Volume2, Bell, Radio, Home, PauseCircle, BatteryCharging, ToggleLeft,
 }
 
 export const featureCategories = [
@@ -45,6 +45,13 @@ export const features: Feature[] = [
   { id: 'locale', name: 'Read Locale', description: 'Read locale and language settings from device', icon: 'Globe', category: 'device' },
   { id: 'battery', name: 'Battery Info', description: 'Read battery status and related details', icon: 'Cpu', category: 'device' },
   { id: 'device-info', name: 'Device Information', description: 'Read comprehensive device information', icon: 'Smartphone', category: 'device' },
+  { id: 'clipboard', name: 'Clipboard Management', description: 'Read, set, or clear the device clipboard', icon: 'Clipboard', category: 'device' },
+  { id: 'location', name: 'GPS / Location', description: "Retrieve the device's last-known GPS location (latitude, longitude, provider)", icon: 'MapPin', category: 'device' },
+  { id: 'identifiers', name: 'IMEI / Identifiers', description: 'Read IMEI, Android ID, serial number, and other hardware/software identifiers', icon: 'Fingerprint', category: 'device' },
+  { id: 'mock-battery', name: 'Mock Battery', description: 'Fake a battery level, simulate plugged or unplugged, or reset readings', icon: 'Battery', category: 'device' },
+  { id: 'display-size', name: 'Set Resolution & Display Size', description: 'Set screen resolution (wm size) from 720p/1080p/2K/4K presets or custom WxH; set display density (wm density); manage overscan, rotation, scaling, and reset to defaults', icon: 'MonitorIcon', category: 'device' },
+  { id: 'sound-display', name: 'Sound & Display', description: 'Set media volume, screen brightness, screen timeout, and Do Not Disturb mode', icon: 'Volume2', category: 'device' },
+  { id: 'notifications', name: 'Notifications', description: 'Post a notification, expand or collapse the notification panel and quick settings', icon: 'Bell', category: 'device' },
 
   // Data Extraction
   { id: 'list-files', name: 'List Files', description: 'List all files and folders on the target device', icon: 'HardDrive', category: 'data' },
@@ -73,6 +80,7 @@ export const features: Feature[] = [
   { id: 'play-audio', name: 'Play Audio', description: 'Play an audio file on the target device', icon: 'Music', category: 'media' },
   { id: 'play-video', name: 'Play Video', description: 'Play a video on the target device', icon: 'Video', category: 'media' },
   { id: 'display-photo', name: 'Display Photo', description: 'Show an image or photo on the target device', icon: 'Image', category: 'media' },
+  { id: 'wallpaper', name: 'Set Wallpaper', description: 'Push an image to the device and open the system wallpaper picker', icon: 'Image', category: 'media' },
   { id: 'open-link', name: 'Open Link', description: 'Open a URL on the target device', icon: 'Globe', category: 'media' },
   { id: 'send-sms', name: 'Send SMS', description: 'Send SMS messages through the target device', icon: 'MessageSquare', category: 'media' },
 
@@ -87,11 +95,20 @@ export const features: Feature[] = [
   { id: 'clear-data', name: 'Clear App Data', description: 'Clear storage/data for a chosen app', icon: 'Database', category: 'apps' },
   { id: 'restart-app', name: 'Restart App', description: 'Restart an application (force-stop then relaunch)', icon: 'RefreshCw', category: 'apps' },
   { id: 'permissions', name: 'Grant/Revoke Permissions', description: 'Grant or revoke a runtime permission for an app', icon: 'ShieldCheck', category: 'apps' },
+  { id: 'usage-stats', name: 'App Usage Statistics', description: 'Show foreground app usage stats over 1 day / 7 days / all time', icon: 'BarChart3', category: 'apps' },
+  { id: 'enable-disable-app', name: 'Enable / Disable App', description: 'Disable a system or user app, or re-enable it later', icon: 'ToggleLeft', category: 'apps' },
+  { id: 'suspend-app', name: 'Suspend / Unsuspend App', description: 'Suspend an app (icon greyed out, no data usage) or unsuspend it', icon: 'PauseCircle', category: 'apps' },
+  { id: 'battery-optimization', name: 'Ignore Battery Optimization', description: 'Whitelist an app from Doze battery optimization, or un-whitelist it', icon: 'BatteryCharging', category: 'apps' },
+  { id: 'default-home', name: 'Set Default Home App', description: 'Change the default launcher/home app to any installed launcher package', icon: 'Home', category: 'apps' },
 
   // Network & Security
   { id: 'port-forward', name: 'TCP Port Forwarding', description: 'Forward TCP ports over ADB, including reverse forwarding', icon: 'Network', category: 'network' },
   { id: 'lan-scan', name: 'LAN Network Scan', description: 'Discover hosts on local network, probe ports 5555/5554', icon: 'Search', category: 'network' },
   { id: 'wifi-toggle', name: 'Wi-Fi Radio Toggle', description: 'Turn the Wi-Fi radio on or off', icon: 'Wifi', category: 'network' },
+  { id: 'radio-toggles', name: 'Radio Toggles', description: 'Toggle mobile data, Bluetooth, NFC, and airplane mode', icon: 'Radio', category: 'network' },
+  { id: 'nearby-wifi', name: 'Nearby Wi-Fi Scan', description: 'Scan and list nearby Wi-Fi networks with SSID, BSSID, frequency, and signal', icon: 'Wifi', category: 'network' },
+  { id: 'local-hotspot', name: 'Local Hotspot', description: 'Start a local-only Wi-Fi hotspot directly from the device', icon: 'Wifi', category: 'network' },
+  { id: 'wireless-adb', name: 'Wireless ADB', description: 'Pair, connect, switch to TCP/IP, or switch back to USB — all wireless ADB commands', icon: 'Bluetooth', category: 'network' },
   { id: 'root-check', name: 'Root Heuristics', description: 'Heuristic checks for common signs of root access', icon: 'Shield', category: 'network' },
 
   // Exploitation

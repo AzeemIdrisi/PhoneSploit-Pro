@@ -9,7 +9,7 @@ from rich.panel import Panel
 
 from modules import banner, color
 from modules.config import AppConfig
-from modules.console import console, confirm, print_error, set_adb_executable, ask
+from modules.console import console, print_error, set_adb_executable, ask
 from modules.tools import (
     resolve_external_tools,
     require_adb,
@@ -174,51 +174,9 @@ def clear_screen(config: AppConfig) -> None:
 def change_page(config: AppConfig, direction: str) -> None:
     if direction == "p" and config.page_number > 0:
         config.page_number -= 1
-    elif direction == "n" and config.page_number < 4:
+    elif direction == "n" and config.page_number < 5:
         config.page_number += 1
     clear_screen(config)
-
-
-# ---------------------------------------------------------------------------
-# Misc actions
-# ---------------------------------------------------------------------------
-
-def update_me(config: AppConfig) -> None:
-    if not confirm(
-        "Run [cyan]git fetch[/cyan] and [cyan]git rebase[/cyan] to update PhoneSploit-Pro? "
-        "Uncommitted local changes may conflict or be lost."
-    ):
-        return
-    console.print("[yellow]Updating PhoneSploit-Pro...[/yellow]")
-    console.print("[green]Fetching latest updates from GitHub...[/green]")
-    fetch = subprocess.run(
-        ["git", "fetch"],
-        capture_output=True,
-        text=True,
-    )
-    if fetch.returncode != 0:
-        detail = (fetch.stdout + fetch.stderr).strip() or f"exit code {fetch.returncode}"
-        print_error(f"git fetch failed: {detail}")
-        return
-
-    console.print("[green]Applying changes...[/green]")
-    rebase = subprocess.run(
-        ["git", "rebase"],
-        capture_output=True,
-        text=True,
-    )
-    if rebase.returncode != 0:
-        detail = (rebase.stdout + rebase.stderr).strip() or f"exit code {rebase.returncode}"
-        print_error(f"git rebase failed: {detail}")
-        console.print(
-            "[yellow]If rebase stopped with conflicts, fix the files, then run "
-            "[cyan]git rebase --continue[/cyan]. To give up and restore the previous state, run "
-            "[cyan]git rebase --abort[/cyan].[/yellow]"
-        )
-        return
-
-    console.print("[cyan]Please restart PhoneSploit-Pro.[/cyan]")
-    config.run = False
 
 
 # ---------------------------------------------------------------------------
@@ -500,7 +458,69 @@ def main(config: AppConfig) -> None:
                 return
             display.display_menu(config)
         case "64":
-            update_me(config)
+            if not require_adb(config):
+                return
+            data_extraction.clipboard_menu(config)
+        case "65":
+            if not require_adb(config):
+                return
+            data_extraction.get_location(config)
+        case "66":
+            if not require_adb(config):
+                return
+            data_extraction.get_identifiers(config)
+        case "67":
+            if not require_adb(config):
+                return
+            data_extraction.usage_stats(config)
+        case "68":
+            if not require_adb(config):
+                return
+            extras.radio_toggles(config)
+        case "69":
+            if not require_adb(config):
+                return
+            device.mock_battery(config)
+        case "70":
+            if not require_adb(config):
+                return
+            extras.sound_display(config)
+        case "71":
+            if not require_adb(config):
+                return
+            extras.notifications_menu(config)
+        case "72":
+            if not require_adb(config):
+                return
+            media.set_wallpaper(config)
+        case "73":
+            if not require_adb(config):
+                return
+            wifi_utils.nearby_wifi_scan(config)
+        case "74":
+            if not require_adb(config):
+                return
+            wifi_utils.local_hotspot(config)
+        case "75":
+            if not require_adb(config):
+                return
+            connection.wireless_menu(config)
+        case "76":
+            if not require_adb(config):
+                return
+            app_manager.enable_disable_app(config)
+        case "77":
+            if not require_adb(config):
+                return
+            app_manager.suspend_unsuspend_app(config)
+        case "78":
+            if not require_adb(config):
+                return
+            app_manager.ignore_battery_optimization(config)
+        case "79":
+            if not require_adb(config):
+                return
+            app_manager.set_home_app(config)
         case _:
             console.print("\n[red]Invalid selection![/red]\n")
 

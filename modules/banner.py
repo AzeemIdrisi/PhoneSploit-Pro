@@ -34,7 +34,7 @@ menu1 = """
     [white]4. [green]Disconnect All Devices             [white]9. [green]Screen Record                        [white]14. [green]Record Mic Audio
     [white]5. [green]Stop ADB Server                   [white]10. [green]Anonymous Screenshot                 [white]15. [green]Listen Device Audio
 
-  [yellow]N: Next Page                                      (Page : 1 / 5)[/yellow]"""
+  [yellow]N: Next Page                                      (Page : 1 / 6)[/yellow]"""
 
 menu2 = """
     [white]16. [green]Record Device Audio               [white]21. [green]Send SMS                            [white]26. [green]Download File/Folder from Device
@@ -43,7 +43,7 @@ menu2 = """
     [white]19. [green]Dump Call Logs                    [white]24. [green]Play an Audio on Device             [white]29. [green]Copy WhatsApp Data
     [white]20. [green]Access Device Shell               [white]25. [green]Play a Video on Device              [white]30. [green]Copy All Screenshots
 
-  [yellow]P: Previous Page         N: Next Page            (Page : 2 / 5)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 2 / 6)[/yellow]"""
 
 menu3 = """
     [white]31. [green]Copy All Camera Photos            [white]36. [green]Install Split APKs                  [white]41. [green]Grant/Revoke Permission
@@ -52,7 +52,7 @@ menu3 = """
     [white]34. [green]Run an App                        [white]39. [green]Restart App                         [white]44. [green]Lock Device
     [white]35. [green]List Installed Apps               [white]40. [green]Clear App Data                      [white]45. [green]Get Device Information
 
-  [yellow]P: Previous Page         N: Next Page            (Page : 3 / 5)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 3 / 6)[/yellow]"""
 
 menu4 = """
     [white]46. [green]Get Battery Information           [white]51. [green]Live Logcat Stream                  [white]56. [green]Root Heuristics
@@ -61,15 +61,24 @@ menu4 = """
     [white]49. [green]Power Off Device                  [white]54. [green]Read Locale                         [white]59. [green]WiFi Radio Toggle
     [white]50. [green]Save Logcat Snippet               [white]55. [green]Screen Stay-On                      [white]60. [green]Ping Connectivity
 
-  [yellow]P: Previous Page         N: Next Page            (Page : 4 / 5)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 4 / 6)[/yellow]"""
 
 menu5 = """
-    [white]61. [green]Saved WiFi Networks               [white]62. [green]TCP Port Forward/Reverse            [white]63. [green]Set Resolution & Display Size
-    [white]64. [green]Update PhoneSploit-Pro
+    [white]61. [green]Saved WiFi Networks               [white]66. [green]Get IMEI / Identifiers            [white]71. [green]Notifications
+    [white]62. [green]TCP Port Forward/Reverse          [white]67. [green]App Usage Statistics              [white]72. [green]Set Wallpaper
+    [white]63. [green]Set Resolution & Display Size     [white]68. [green]Radio Toggles                     [white]73. [green]Nearby WiFi Scan
+    [white]64. [green]Read / Set Clipboard              [white]69. [green]Mock Battery Level                [white]74. [green]Local WiFi Hotspot
+    [white]65. [green]Get Device Location               [white]70. [green]Sound & Display                   [white]75. [green]Wireless ADB
 
-  [yellow]P: Previous Page                                  (Page : 5 / 5)[/yellow]"""
+  [yellow]P: Previous Page         N: Next Page            (Page : 5 / 6)[/yellow]"""
 
-menu = [menu1, menu2, menu3, menu4, menu5]
+menu6 = """
+    [white]76. [green]Enable / Disable App              [white]77. [green]Suspend / Unsuspend App
+    [white]78. [green]Ignore Battery Optimization         [white]79. [green]Set Default Home App
+
+  [yellow]P: Previous Page                                  (Page : 6 / 6)[/yellow]"""
+
+menu = [menu1, menu2, menu3, menu4, menu5, menu6]
 
 instruction = """
 This attack will launch Metasploit-Framework    (msfconsole)

@@ -1,5 +1,7 @@
+import os
 import re
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
 from typing import Literal
 
@@ -34,6 +36,34 @@ def submenu_row(*labels: str) -> None:
     """Compact one-line submenu: 1) …  2) …"""
     parts = [f"[dim]{i}[/dim] {text}" for i, text in enumerate(labels, 1)]
     console.print("  " + "   ".join(parts))
+
+
+SubmenuAction = Literal["exit", "redraw", "proceed"]
+
+
+def print_submenu(title: str, items: list[str]) -> None:
+    """Vertical numbered submenu with Back and Clear hints."""
+    console.print(f"\n[bold cyan]{title}[/bold cyan]")
+    for i, item in enumerate(items, 1):
+        console.print(f"  [dim]{i}.[/dim] {item}")
+    console.print("  [dim]0.[/dim] Back to Main Menu")
+    console.print("[dim]  99:[/dim] Clear")
+
+
+def parse_submenu_choice(
+    choice: str,
+    config: AppConfig,
+    reprint_fn: Callable[[], None],
+) -> SubmenuAction:
+    """Handle 0 (exit submenu) and 99 (clear + reprint)."""
+    if choice == "0":
+        console.print("\n[white]Going back to Main Menu…[/white]\n")
+        return "exit"
+    if choice == "99":
+        os.system(config.clear_cmd)
+        reprint_fn()
+        return "redraw"
+    return "proceed"
 
 
 _ConfigDirAttr = Literal["pull_location", "screenshot_location", "screenrecord_location"]

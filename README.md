@@ -119,6 +119,22 @@ The goal of this project is to make penetration testing and vulnerability assess
 | **Saved Wi‑Fi networks**                 | List saved Wi‑Fi networks known to the device.                                                                                                                                                                                                                                                                                                                               |
 | **Root heuristics**                      | Heuristic checks for common signs of root access.                                                                                                                                                                                                                                                                                                                            |
 | **Set resolution & display size**        | Set screen resolution (`wm size`) from 720p/1080p/2K/4K presets in portrait or landscape, or a custom `WxH`; set display density (`wm density`) from common DPI presets or a custom value. Also manage overscan (`wm overscan`), rotation (`wm set-user-rotation`), display scaling (`wm scaling`) and reset everything to device defaults. |
+| **Clipboard management**                 | Read, set, or clear the device clipboard. |
+| **GPS / location**                       | Retrieve the device's last-known GPS location (latitude, longitude, provider). |
+| **IMEI / device identifiers**            | Read IMEI, Android ID, serial number, and other hardware/software identifiers. |
+| **App usage statistics**                 | Show foreground app usage stats over 1 day / 7 days / all time. |
+| **Radio toggles**                        | Toggle mobile data, Bluetooth, NFC, and airplane mode. |
+| **Mock battery**                         | Fake a battery level, simulate plugged or unplugged, or reset readings. |
+| **Sound & display settings**             | Set media volume, screen brightness, screen timeout, and Do Not Disturb mode. |
+| **Notifications**                        | Post a notification, expand or collapse the notification panel and quick settings. |
+| **Set wallpaper**                        | Push an image to the device and open the system wallpaper picker. |
+| **Nearby Wi‑Fi scan**                    | Scan and list nearby Wi‑Fi networks with SSID, BSSID, frequency, and signal. |
+| **Local hotspot**                        | Start a local-only Wi‑Fi hotspot directly from the device. |
+| **Wireless ADB setup**                   | Pair, connect, switch to TCP/IP, or switch back to USB — all wireless ADB commands. |
+| **Enable / disable app**                 | Disable a system or user app, or re-enable it later. |
+| **Suspend / unsuspend app**              | Suspend an app (icon greyed out, no data usage) or unsuspend it. |
+| **Ignore battery optimization**          | Whitelist an app from Doze battery optimization, or un-whitelist it. |
+| **Set default home app**                 | Change the default launcher/home app to any installed launcher package. |
 
 ---
 
