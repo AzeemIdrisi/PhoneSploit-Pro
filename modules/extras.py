@@ -19,8 +19,6 @@ from modules.console import (
     confirm,
     task_status,
     submenu_row,
-    print_submenu,
-    parse_submenu_choice,
     ensure_config_dir,
     adb,
     adb_output,
@@ -35,13 +33,13 @@ def force_stop_app(config: AppConfig) -> None:
     if mode == "1":
         pkg = select_package_from_list()
     elif mode == "2":
-        pkg = ask("[cyan]Package name[/cyan]> ").strip()
+        pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
     if not pkg:
         return
-    if not confirm(f"Force-stop [yellow]{pkg}[/yellow]?"):
+    if not confirm(f"Force-stop [bold yellow]{pkg}[/bold yellow]?"):
         return
     with task_status(f"[info]Force-stopping {pkg}…[/info]"):
         r = adb(["shell", "am", "force-stop", pkg])
@@ -57,14 +55,14 @@ def clear_app_data(config: AppConfig) -> None:
     if mode == "1":
         pkg = select_package_from_list()
     elif mode == "2":
-        pkg = ask("[cyan]Package name[/cyan]> ").strip()
+        pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
     if not pkg:
         return
     if not confirm(
-        f"[bold red]Clear all data[/bold red] for [yellow]{pkg}[/yellow]? "
+        f"[bold red]Clear all data[/bold red] for [bold yellow]{pkg}[/bold yellow]? "
         "This cannot be undone."
     ):
         return
@@ -78,7 +76,7 @@ def clear_app_data(config: AppConfig) -> None:
 
 
 def save_logcat_snippet(config: AppConfig) -> None:
-    n = ask("[cyan]Last N lines[/cyan] [dim](default 500)[/dim]> ").strip()
+    n = ask("[bold cyan]Last N lines[/bold cyan] [dim](default 500)[/dim]> ").strip()
     lines = int(n) if n.isdigit() else 500
     out_dir = ensure_config_dir(config, "pull_location")
     name = f"logcat-{datetime.now().strftime('%Y%m%d-%H%M%S')}.txt"
@@ -98,17 +96,17 @@ def grant_revoke_permission(config: AppConfig) -> None:
     submenu_row("Grant", "Revoke")
     mode = ask("[prompt]> [/prompt]").strip()
     if mode not in ("1", "2"):
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
-    pkg = ask("[cyan]Package name[/cyan]> ").strip()
+    pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
     perm = ask(
-        "[cyan]Permission[/cyan] [dim](e.g. android.permission.CAMERA)[/dim]> "
+        "[bold cyan]Permission[/bold cyan] [dim](e.g. android.permission.CAMERA)[/dim]> "
     ).strip()
     if not pkg or not perm:
         print_null_input()
         return
     verb = "grant" if mode == "1" else "revoke"
-    if not confirm(f"{verb.capitalize()} [cyan]{perm}[/cyan] for [yellow]{pkg}[/yellow]?"):
+    if not confirm(f"{verb.capitalize()} [bold cyan]{perm}[/bold cyan] for [bold yellow]{pkg}[/bold yellow]?"):
         return
     with task_status(f"[info]pm {verb}…[/info]"):
         r = adb(["shell", "pm", verb, pkg, perm])
@@ -123,7 +121,7 @@ def restart_app(config: AppConfig) -> None:
     pkg = select_package_from_list()
     if not pkg:
         return
-    if not confirm(f"Restart [yellow]{pkg}[/yellow]?"):
+    if not confirm(f"Restart [bold yellow]{pkg}[/bold yellow]?"):
         return
     with task_status("[info]Stopping…[/info]"):
         adb(["shell", "am", "force-stop", pkg])
@@ -147,9 +145,9 @@ def restart_app(config: AppConfig) -> None:
 
 def live_logcat(config: AppConfig) -> None:
     filt = ask(
-        "[cyan]Optional filter[/cyan] [dim](empty=all, *:W, or TAG:S)[/dim]> "
+        "[bold cyan]Optional filter[/bold cyan] [dim](empty=all, *:W, or TAG:S)[/dim]> "
     ).strip()
-    console.print("[dim]Streaming logcat (Ctrl+C to stop)…[/dim]")
+    console.print("[bold dim]Streaming logcat (Ctrl+C to stop)…[/bold dim]")
     exe = get_adb_executable()
     if not exe:
         print_error("ADB not available.")
@@ -160,7 +158,7 @@ def live_logcat(config: AppConfig) -> None:
     try:
         subprocess.run(args)
     except KeyboardInterrupt:
-        console.print("\n[yellow]Stopped.[/yellow]")
+        console.print("\n[bold yellow]Stopped.[/bold yellow]")
 
 
 def network_snapshot(config: AppConfig) -> None:
@@ -174,14 +172,14 @@ def network_snapshot(config: AppConfig) -> None:
     console.print(ip_addr[:8000] + ("…" if len(ip_addr) > 8000 else ""))
     console.print("\n[bold cyan]Routes[/bold cyan]")
     console.print(route or "[dim]N/A[/dim]")
-    console.print(f"\n[bold cyan]net.dns1[/bold cyan] [white]{dns or 'N/A'}[/white]")
+    console.print(f"\n[bold cyan]net.dns1[/bold cyan] [bold white]{dns or 'N/A'}[/bold white]")
 
 
 def install_split_apks(config: AppConfig) -> None:
     console.print(
         "[dim]Enter absolute paths to APK files, comma-separated on one line.[/dim]"
     )
-    raw = ask("[cyan]APK paths[/cyan]> ").strip()
+    raw = ask("[bold cyan]APK paths[/bold cyan]> ").strip()
     if not raw:
         print_null_input()
         return
@@ -190,7 +188,7 @@ def install_split_apks(config: AppConfig) -> None:
         if not p.is_file():
             print_error(f"Not a file: {p}")
             return
-    if not confirm(f"Install [cyan]{len(paths)}[/cyan] APK(s) as one session?"):
+    if not confirm(f"Install [bold cyan]{len(paths)}[/bold cyan] APK(s) as one session?"):
         return
     args = ["install-multiple", "-r"] + [str(p) for p in paths]
     with task_status("[info]install-multiple…[/info]"):
@@ -203,9 +201,25 @@ def install_split_apks(config: AppConfig) -> None:
 
 
 def developer_settings(config: AppConfig) -> None:
-    submenu_row("Read global settings", "Write global setting")
+    submenu_row("Open Developer Options", "Read global settings", "Write global setting")
     mode = ask("[prompt]> [/prompt]").strip()
     if mode == "1":
+        with task_status("[info]Opening Developer Options…[/info]"):
+            r = adb(
+                [
+                    "shell",
+                    "am",
+                    "start",
+                    "-a",
+                    "android.settings.APPLICATION_DEVELOPMENT_SETTINGS",
+                ]
+            )
+        out = (r.stdout + r.stderr).strip()
+        if r.returncode == 0:
+            print_success(out or "Opened Developer Options on the device.")
+        else:
+            print_error(out or "failed to open Developer Options")
+    elif mode == "2":
         keys = [
             "animator_duration_scale",
             "transition_animation_scale",
@@ -213,19 +227,19 @@ def developer_settings(config: AppConfig) -> None:
             "adb_enabled",
         ]
         table = Table(title="settings get global", show_header=True, header_style="bold cyan")
-        table.add_column("Key", style="yellow")
+        table.add_column("Key", style="bold yellow")
         table.add_column("Value", style="white")
         for k in keys:
             v = adb_output(["shell", "settings", "get", "global", k])
             table.add_row(k, v or "[dim]empty[/dim]")
         console.print(table)
-    elif mode == "2":
-        key = ask("[cyan]Key[/cyan] [dim](global namespace)[/dim]> ").strip()
-        val = ask("[cyan]Value[/cyan]> ").strip()
+    elif mode == "3":
+        key = ask("[bold cyan]Key[/bold cyan] [dim](global namespace)[/dim]> ").strip()
+        val = ask("[bold cyan]Value[/bold cyan]> ").strip()
         if not key:
             print_null_input()
             return
-        if not confirm(f"settings put global [yellow]{key}[/yellow] = [cyan]{val}[/cyan]?"):
+        if not confirm(f"settings put global [bold yellow]{key}[/bold yellow] = [bold cyan]{val}[/bold cyan]?"):
             return
         r = adb(["shell", "settings", "put", "global", key, val])
         if r.returncode == 0:
@@ -233,7 +247,7 @@ def developer_settings(config: AppConfig) -> None:
         else:
             print_error((r.stdout + r.stderr).strip())
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
 
 
 def locale_read(config: AppConfig) -> None:
@@ -244,7 +258,7 @@ def locale_read(config: AppConfig) -> None:
             ("ro.product.locale", adb_output(["shell", "getprop", "ro.product.locale"])),
         ]
     table = Table(title="Locale", show_header=True, header_style="bold cyan")
-    table.add_column("Source", style="yellow")
+    table.add_column("Source", style="bold yellow")
     table.add_column("Value", style="white")
     for label, val in rows:
         table.add_row(label, val or "[dim]N/A[/dim]")
@@ -261,9 +275,9 @@ def screen_stay_on(config: AppConfig) -> None:
     elif mode == "3":
         target = "false"
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
-    if not confirm(f"Set [cyan]svc power stayon {target}[/cyan]?"):
+    if not confirm(f"Set [bold cyan]svc power stayon {target}[/bold cyan]?"):
         return
     r = adb(["shell", "svc", "power", "stayon", target])
     if r.returncode == 0:
@@ -363,43 +377,32 @@ def _toggle_radio(subcommand: str, on: bool) -> bool:
     return False
 
 
-def radio_toggles(config: AppConfig) -> None:
-    items = ["Mobile Data", "Bluetooth", "NFC", "Airplane Mode"]
-    radios = {"1": "data", "2": "bluetooth", "3": "nfc", "4": "airplane"}
+def _radio_on_off(config: AppConfig, label: str, subcommand: str) -> None:
+    submenu_row("On", "Off")
+    state = ask("[prompt]> [/prompt]").strip().lower()
+    if state == "0":
+        return
+    if state not in ("1", "2"):
+        print_error("Invalid selection")
+        return
+    if _toggle_radio(subcommand, state == "1"):
+        print_success(f"{label} {'enabled' if state == '1' else 'disabled'}.")
 
-    def _render() -> None:
-        print_submenu("Radio Toggles", items)
 
-    _render()
-    while True:
-        radio = ask("[red]\\[Radio Toggles][/red] > ").strip().lower()
-        action = parse_submenu_choice(radio, config, _render)
-        if action == "exit":
-            return
-        if action == "redraw":
-            continue
-        sub = radios.get(radio)
-        if not sub:
-            print_error("Invalid selection")
-            continue
-        while True:
-            console.print(
-                f"\n[bold cyan]{sub.replace('_', ' ').title()}[/bold cyan]\n"
-                "  [dim]1.[/dim] On\n"
-                "  [dim]2.[/dim] Off\n"
-                "  [dim]0.[/dim] Back\n"
-            )
-            state = ask("[prompt]> [/prompt]").strip().lower()
-            if state == "0":
-                break
-            if state == "1":
-                if _toggle_radio(sub, True):
-                    print_success(f"{sub.replace('_', ' ').title()} enabled.")
-            elif state == "2":
-                if _toggle_radio(sub, False):
-                    print_success(f"{sub.replace('_', ' ').title()} disabled.")
-            else:
-                print_error("Invalid selection")
+def radio_data(config: AppConfig) -> None:
+    _radio_on_off(config, "Mobile Data", "data")
+
+
+def radio_bluetooth(config: AppConfig) -> None:
+    _radio_on_off(config, "Bluetooth", "bluetooth")
+
+
+def radio_nfc(config: AppConfig) -> None:
+    _radio_on_off(config, "NFC", "nfc")
+
+
+def radio_airplane(config: AppConfig) -> None:
+    _radio_on_off(config, "Airplane Mode", "airplane")
 
 
 def _media_volume_show() -> None:
@@ -411,7 +414,7 @@ def _media_volume_show() -> None:
             r = adb(args)
             out = (r.stdout + r.stderr).strip()
             if not _adb_command_failed(r) and out:
-                console.print(Panel(out, title="Media Volume (stream 3)", border_style="cyan"))
+                console.print(Panel(out, title="[bold cyan]Media Volume (stream 3)[/bold cyan]", border_style="bold cyan"))
                 return
     print_error("Volume query not supported (cmd media unavailable on this ROM).")
 
@@ -433,27 +436,8 @@ def _media_volume_set(level: str) -> None:
     )
 
 
-def _media_volume_menu() -> None:
-    vol_items = ["Show volume levels", "Set media volume"]
-    while True:
-        print_submenu("Media Volume", vol_items)
-        mode = ask("[red]\\[Media Volume][/red] > ").strip().lower()
-        if mode == "0":
-            return
-        if mode == "1":
-            _media_volume_show()
-        elif mode == "2":
-            raw = ask("[cyan]Media volume[/cyan] [dim](0-15)[/dim]> ").strip()
-            if not raw.isdigit() or not 0 <= int(raw) <= 15:
-                print_error("Enter a number between 0 and 15.")
-                continue
-            _media_volume_set(raw)
-        else:
-            print_error("Invalid selection")
-
-
 def _set_brightness() -> None:
-    raw = ask("[cyan]Brightness[/cyan] [dim](0-255, empty = auto)[/dim]> ").strip()
+    raw = ask("[bold cyan]Brightness[/bold cyan] [dim](0-255, empty = auto)[/dim]> ").strip()
     if not raw:
         _run_shell(
             ["shell", "settings", "put", "system", "screen_brightness_mode", "1"],
@@ -469,7 +453,7 @@ def _set_brightness() -> None:
 
 
 def _set_timeout() -> None:
-    seconds = ask("[cyan]Screen timeout[/cyan] [dim](seconds)[/dim]> ").strip()
+    seconds = ask("[bold cyan]Screen timeout[/bold cyan] [dim](seconds)[/dim]> ").strip()
     if not seconds.isdigit():
         print_error("Enter a number in seconds.")
         return
@@ -479,49 +463,17 @@ def _set_timeout() -> None:
     )
 
 
-def _set_dnd() -> None:
-    dnd_items = ["Off", "Alarms Only", "Priority Only", "Total Silence"]
-    print_submenu("Do Not Disturb", dnd_items)
-    choice = ask("[red]\\[DND][/red] > ").strip()
+def _set_dnd(config: AppConfig) -> None:
+    submenu_row("Off", "Alarms Only", "Priority Only", "Total Silence")
+    choice = ask("[prompt]> [/prompt]").strip()
     modes = {"1": "0", "2": "1", "3": "2", "4": "3"}
     mode = modes.get(choice)
-    if choice == "0":
+    if not choice or choice == "0":
         return
     if mode is None:
         print_error("Invalid selection")
         return
     _run_shell(["shell", "settings", "put", "secure", "zen_mode", mode], "Setting Do Not Disturb mode")
-
-
-def sound_display(config: AppConfig) -> None:
-    items = [
-        "Set Media Volume",
-        "Set Screen Brightness",
-        "Set Screen Timeout",
-        "Do Not Disturb Mode",
-    ]
-
-    def _render() -> None:
-        print_submenu("Sound & Display", items)
-
-    _render()
-    while True:
-        choice = ask("[red]\\[Sound & Display][/red] > ").strip().lower()
-        action = parse_submenu_choice(choice, config, _render)
-        if action == "exit":
-            return
-        if action == "redraw":
-            continue
-        if choice == "1":
-            _media_volume_menu()
-        elif choice == "2":
-            _set_brightness()
-        elif choice == "3":
-            _set_timeout()
-        elif choice == "4":
-            _set_dnd()
-        else:
-            print_error("Invalid selection")
 
 
 def _run_statusbar(args: list[str], label: str) -> None:
@@ -534,60 +486,69 @@ def _run_statusbar(args: list[str], label: str) -> None:
         print_success(out or "Done.")
 
 
-def notifications_menu(config: AppConfig) -> None:
-    items = [
-        "Post a Notification",
-        "Expand Notifications Panel",
-        "Expand Quick Settings",
-        "Collapse Panel",
-    ]
+def notif_post(config: AppConfig) -> None:
+    title = ask("[bold cyan]Title[/bold cyan]> ").strip()
+    message = ask("[bold cyan]Message[/bold cyan]> ").strip()
+    tag = f"phonesploit-{datetime.now().strftime('%H%M%S')}"
+    if not title and not message:
+        print_error("Null input")
+        return
+    with task_status("[info]Posting notification…[/info]"):
+        r = adb(
+            [
+                "shell",
+                "cmd",
+                "notification",
+                "post",
+                "-S",
+                "bigtext",
+                "-t",
+                title,
+                tag,
+                message,
+            ]
+        )
+    out = (r.stdout + r.stderr).strip()
+    if _adb_command_failed(r) or "permission" in out.lower():
+        print_error(
+            "Posting failed (shell user denied on most devices). "
+            "Status bar expand/collapse may still work."
+        )
+    else:
+        print_success(out or "Notification posted.")
 
-    def _render() -> None:
-        print_submenu("Notifications", items)
 
-    _render()
-    while True:
-        choice = ask("[red]\\[Notifications][/red] > ").strip().lower()
-        action = parse_submenu_choice(choice, config, _render)
-        if action == "exit":
-            return
-        if action == "redraw":
-            continue
-        if choice == "1":
-            title = ask("[cyan]Title[/cyan]> ").strip()
-            message = ask("[cyan]Message[/cyan]> ").strip()
-            tag = f"phonesploit-{datetime.now().strftime('%H%M%S')}"
-            if not title and not message:
-                print_error("Null input")
-                continue
-            with task_status("[info]Posting notification…[/info]"):
-                r = adb(
-                    [
-                        "shell",
-                        "cmd",
-                        "notification",
-                        "post",
-                        "-S",
-                        "bigtext",
-                        "-t",
-                        title,
-                        tag,
-                        message,
-                    ]
-                )
-            out = (r.stdout + r.stderr).strip()
-            if _adb_command_failed(r) or "permission" in out.lower():
-                print_error(
-                    "Posting failed (shell user denied on most devices). "
-                    "Status bar expand/collapse may still work."
-                )
-            else:
-                print_success(out or "Notification posted.")
-        elif choice == "2":
-            _run_statusbar(["expand-notifications"], "Expanding notifications panel")
-        elif choice == "3":
-            _run_statusbar(["expand-settings"], "Expanding quick settings")
-        elif choice == "4":
-            _run_statusbar(["collapse"], "Collapsing panel")
-        else:
-            print_error("Invalid selection")
+def notif_expand(config: AppConfig) -> None:
+    _run_statusbar(["expand-notifications"], "Expanding notifications panel")
+
+
+def notif_expand_qs(config: AppConfig) -> None:
+    _run_statusbar(["expand-settings"], "Expanding quick settings")
+
+
+def notif_collapse(config: AppConfig) -> None:
+    _run_statusbar(["collapse"], "Collapsing panel")
+
+
+def sound_volume_show(config: AppConfig) -> None:
+    _media_volume_show()
+
+
+def sound_volume_set(config: AppConfig) -> None:
+    raw = ask("[bold cyan]Media volume[/bold cyan] [dim](0-15)[/dim]> ").strip()
+    if not raw.isdigit() or not 0 <= int(raw) <= 15:
+        print_error("Enter a number between 0 and 15.")
+        return
+    _media_volume_set(raw)
+
+
+def sound_brightness(config: AppConfig) -> None:
+    _set_brightness()
+
+
+def sound_timeout(config: AppConfig) -> None:
+    _set_timeout()
+
+
+def sound_dnd(config: AppConfig) -> None:
+    _set_dnd(config)

@@ -1,76 +1,47 @@
 from modules.config import AppConfig
-from modules import banner
-from modules.console import console, print_success, adb, ask
+from modules.console import (
+    console,
+    print_success,
+    print_error,
+    adb,
+    ask,
+)
 
 
-def use_keycode(config: AppConfig) -> None:
-    import os
-    os.system(config.clear_cmd)
-    console.print(banner.keycode_menu)
+def _keyevent(config: AppConfig, code: str, label: str) -> None:
+    adb(["shell", "input", "keyevent", code])
+    print_success(label)
 
-    while True:
-        console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Menu")
-        option = ask(
-            "[red]\\[KEYCODE][/red] [white]>[/white] "
-        ).lower()
 
-        match option:
-            case "0":
-                return
-            case "99":
-                os.system(config.clear_cmd)
-                console.print(banner.keycode_menu)
-            case "1":
-                text = ask("[cyan]Text[/cyan]> ")
-                adb(["shell", "input", "text", text])
-                print_success(f'Entered: "{text}"')
-            case "2":
-                adb(["shell", "input", "keyevent", "3"])
-                print_success("Home")
-            case "3":
-                adb(["shell", "input", "keyevent", "4"])
-                print_success("Back")
-            case "4":
-                adb(["shell", "input", "keyevent", "187"])
-                print_success("Recent apps")
-            case "5":
-                adb(["shell", "input", "keyevent", "26"])
-                print_success("Power")
-            case "6":
-                adb(["shell", "input", "keyevent", "19"])
-                print_success("DPAD up")
-            case "7":
-                adb(["shell", "input", "keyevent", "20"])
-                print_success("DPAD down")
-            case "8":
-                adb(["shell", "input", "keyevent", "21"])
-                print_success("DPAD left")
-            case "9":
-                adb(["shell", "input", "keyevent", "22"])
-                print_success("DPAD right")
-            case "10":
-                adb(["shell", "input", "keyevent", "67"])
-                print_success("Delete")
-            case "11":
-                adb(["shell", "input", "keyevent", "66"])
-                print_success("Enter")
-            case "12":
-                adb(["shell", "input", "keyevent", "24"])
-                print_success("Volume up")
-            case "13":
-                adb(["shell", "input", "keyevent", "25"])
-                print_success("Volume down")
-            case "14":
-                adb(["shell", "input", "keyevent", "126"])
-                print_success("Media play")
-            case "15":
-                adb(["shell", "input", "keyevent", "127"])
-                print_success("Media pause")
-            case "16":
-                adb(["shell", "input", "keyevent", "61"])
-                print_success("Tab")
-            case "17":
-                adb(["shell", "input", "keyevent", "111"])
-                print_success("Esc")
-            case _:
-                console.print("[red]Invalid[/red]")
+def keycode_text(config: AppConfig) -> None:
+    text = ask("[bold cyan]Text[/bold cyan]> ")
+    adb(["shell", "input", "text", text])
+    print_success(f'Entered: "{text}"')
+
+
+def keycode(config: AppConfig, code: str, label: str) -> None:
+    _keyevent(config, code, label)
+
+
+KEYCODE_MAP = {
+    "keycode_home": ("3", "Home"),
+    "keycode_back": ("4", "Back"),
+    "keycode_recent": ("187", "Recent apps"),
+    "keycode_power": ("26", "Power"),
+    "keycode_dpad_up": ("19", "DPAD up"),
+    "keycode_dpad_down": ("20", "DPAD down"),
+    "keycode_dpad_left": ("21", "DPAD left"),
+    "keycode_dpad_right": ("22", "DPAD right"),
+    "keycode_delete": ("67", "Delete"),
+    "keycode_enter": ("66", "Enter"),
+    "keycode_vol_up": ("24", "Volume up"),
+    "keycode_vol_down": ("25", "Volume down"),
+    "keycode_media_play": ("126", "Media play"),
+    "keycode_media_pause": ("127", "Media pause"),
+    "keycode_tab": ("61", "Tab"),
+    "keycode_esc": ("111", "Esc"),
+}
+
+
+def _keycode_handler(config: AppConfig, code: str, label: str) -> None:
+    _keyevent(config, code, label)

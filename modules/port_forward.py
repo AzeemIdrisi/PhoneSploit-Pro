@@ -9,7 +9,6 @@ from modules.console import (
     print_success,
     print_null_input,
     get_adb_executable,
-    submenu_row,
     ask,
 )
 
@@ -21,67 +20,63 @@ def _run_host(args: list[str]) -> subprocess.CompletedProcess:
     return subprocess.run([exe] + args, capture_output=True, text=True)
 
 
-def port_forward_menu(config: AppConfig) -> None:
-    submenu_row(
-        "Forward (PC port → device port)",
-        "Reverse (device port → PC port)",
-        "List rules",
-        "Remove one rule",
-        "Remove all rules",
-    )
-    choice = ask("[prompt]> [/prompt]").strip()
+def _prompt_ports(title: str) -> tuple[str, str] | None:
+    local = ask(f"[bold cyan]{title}[/bold cyan] [dim](TCP port)[/dim]> ").strip()
+    remote = ask("[bold cyan]Remote (device) TCP port[/bold cyan]> ").strip()
+    if not local.isdigit() or not remote.isdigit():
+        print_null_input()
+        return None
+    return local, remote
 
-    if choice == "1":
-        local = ask("[cyan]Local (PC) TCP port[/cyan]> ").strip()
-        remote = ask("[cyan]Remote (device) TCP port[/cyan]> ").strip()
-        if not local.isdigit() or not remote.isdigit():
-            print_null_input()
-            return
-        r = _run_host(["forward", f"tcp:{local}", f"tcp:{remote}"])
-        out = (r.stdout + r.stderr).strip()
-        if r.returncode == 0:
-            print_success(out or f"Forwarded tcp:{local} → device tcp:{remote}")
-        else:
-            print_error(out or "forward failed")
 
-    elif choice == "2":
-        remote = ask("[cyan]Device TCP port[/cyan]> ").strip()
-        local = ask("[cyan]Host TCP port[/cyan]> ").strip()
-        if not remote.isdigit() or not local.isdigit():
-            print_null_input()
-            return
-        r = _run_host(["reverse", f"tcp:{remote}", f"tcp:{local}"])
-        out = (r.stdout + r.stderr).strip()
-        if r.returncode == 0:
-            print_success(out or f"Reverse tcp:{remote} → host tcp:{local}")
-        else:
-            print_error(out or "reverse failed")
-
-    elif choice == "3":
-        r = _run_host(["forward", "--list"])
-        console.print((r.stdout + r.stderr).strip() or "[dim](no rules)[/dim]")
-
-    elif choice == "4":
-        spec = ask(
-            "[cyan]Rule spec to remove[/cyan] [dim](e.g. tcp:8080)[/dim]> "
-        ).strip()
-        if not spec:
-            print_null_input()
-            return
-        r = _run_host(["forward", "--remove", spec])
-        out = (r.stdout + r.stderr).strip()
-        if r.returncode == 0:
-            print_success(out or "Removed.")
-        else:
-            print_error(out or "remove failed")
-
-    elif choice == "5":
-        r = _run_host(["forward", "--remove-all"])
-        out = (r.stdout + r.stderr).strip()
-        if r.returncode == 0:
-            print_success(out or "All forwarding rules removed.")
-        else:
-            print_error(out or "failed")
-
+def port_forward_add(config: AppConfig) -> None:
+    ports = _prompt_ports("Local (PC) TCP port")
+    if ports is None:
+        return
+    local, remote = ports
+    r = _run_host(["forward", f"tcp:{local}", f"tcp:{remote}"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or f"Forwarded tcp:{local} → device tcp:{remote}")
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error(out or "forward failed")
+
+
+def port_forward_reverse(config: AppConfig) -> None:
+    ports = _prompt_ports("Device TCP port")
+    if ports is None:
+        return
+    remote, local = ports
+    r = _run_host(["reverse", f"tcp:{remote}", f"tcp:{local}"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or f"Reverse tcp:{remote} → host tcp:{local}")
+    else:
+        print_error(out or "reverse failed")
+
+
+def port_forward_list(config: AppConfig) -> None:
+    r = _run_host(["forward", "--list"])
+    console.print((r.stdout + r.stderr).strip() or "[dim](no rules)[/dim]")
+
+
+def port_forward_remove(config: AppConfig) -> None:
+    spec = ask("[bold cyan]Rule spec to remove[/bold cyan] [dim](e.g. tcp:8080)[/dim]> ").strip()
+    if not spec:
+        print_null_input()
+        return
+    r = _run_host(["forward", "--remove", spec])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "Removed.")
+    else:
+        print_error(out or "remove failed")
+
+
+def port_forward_remove_all(config: AppConfig) -> None:
+    r = _run_host(["forward", "--remove-all"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "All forwarding rules removed.")
+    else:
+        print_error(out or "failed")

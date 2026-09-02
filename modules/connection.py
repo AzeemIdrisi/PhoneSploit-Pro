@@ -13,10 +13,7 @@ from modules.console import (
     print_null_input,
     confirm,
     task_status,
-    print_submenu,
-    parse_submenu_choice,
     adb,
-    adb_output,
     get_adb_executable,
     ask,
 )
@@ -130,12 +127,12 @@ def prompt_select_device_if_multiple(config: AppConfig) -> None:
         header_style="bold cyan",
     )
     table.add_column("#", style="bold green", justify="right")
-    table.add_column("Serial", style="white")
+    table.add_column("Serial", style="bold white")
     for i, s in enumerate(serials, 1):
         table.add_row(str(i), s)
 
     console.print(table)
-    console.print("[yellow]Choose default device for this session.[/yellow]")
+    console.print("[bold yellow]Choose default device for this session.[/bold yellow]")
     choice = ask(
         f"[prompt]Enter 1–{len(serials)} (Enter = first) > [/prompt]"
     ).strip()
@@ -145,12 +142,12 @@ def prompt_select_device_if_multiple(config: AppConfig) -> None:
         if 1 <= n <= len(serials):
             idx = n - 1
     os.environ["ANDROID_SERIAL"] = serials[idx]
-    console.print(f"[green]Using device[/green] [white]{serials[idx]}[/white]")
+    console.print(f"[bold green]Using device[/bold green] [bold white]{serials[idx]}[/bold white]")
 
 
 def connect(config: AppConfig) -> None:
     console.print(
-        "[cyan]Target phone IP[/cyan] [dim](e.g. 192.168.1.23)[/dim]"
+        "[bold cyan]Target phone IP[/bold cyan] [dim](e.g. 192.168.1.23)[/dim]"
     )
     ip = ask("[prompt]> [/prompt]").strip()
     if not ip:
@@ -158,29 +155,8 @@ def connect(config: AppConfig) -> None:
         return
 
     if not is_valid_ipv4(ip):
-        print_error("Invalid IPv4 address\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid IPv4 address\n[bold green] Going back to Main Menu[/bold green]")
         return
-
-    if not confirm(
-        "Connecting will [yellow]restart the ADB server[/yellow] and may disconnect "
-        "other active ADB sessions on this computer. Continue?"
-    ):
-        return
-
-    adb_exe = get_adb_executable()
-    if not adb_exe:
-        print_error("ADB executable not available.")
-        return
-
-    with task_status("[info]Restarting ADB server…[/info]"):
-        subprocess.run(
-            [adb_exe, "kill-server"],
-            capture_output=True,
-        )
-        subprocess.run(
-            [adb_exe, "start-server"],
-            capture_output=True,
-        )
 
     with task_status(f"[info]Connecting to {ip}:5555…[/info]"):
         result = adb(["connect", f"{ip}:5555"])
@@ -199,12 +175,12 @@ def list_devices(config: AppConfig) -> None:
 
     lines = result.stdout.strip().splitlines()
     if len(lines) <= 1:
-        console.print("[yellow]No devices connected.[/yellow]")
+        console.print("[bold yellow]No devices connected.[/bold yellow]")
         return
 
     table = Table(title="Connected Devices", show_header=True, header_style="bold cyan")
-    table.add_column("Device", style="white")
-    table.add_column("State", style="green")
+    table.add_column("Device", style="bold white")
+    table.add_column("State", style="bold green")
     table.add_column("Info", style="dim white")
 
     for line in lines[1:]:
@@ -220,23 +196,41 @@ def list_devices(config: AppConfig) -> None:
 
 
 def disconnect(config: AppConfig) -> None:
-    if not confirm("Disconnect [bold]all[/bold] ADB devices?"):
+    if not confirm("Disconnect [bold white]all[/bold white] ADB devices?"):
         return
     with task_status("[info]Disconnecting…[/info]"):
         result = adb(["disconnect"])
     os.environ.pop("ANDROID_SERIAL", None)
-    console.print(f"[green]{result.stdout.strip()}[/green]")
+    console.print(f"[bold green]{result.stdout.strip()}[/bold green]")
 
 
 def stop_adb(config: AppConfig) -> None:
     if not confirm(
-        "Stop the ADB server? [yellow]All device connections will be lost[/yellow] until you start ADB again."
+        "Stop the ADB server? [bold yellow]All device connections will be lost[/bold yellow] until you start ADB again."
     ):
         return
     with task_status("[info]Stopping ADB server…[/info]"):
         adb(["kill-server"])
     os.environ.pop("ANDROID_SERIAL", None)
     print_success("ADB server stopped.")
+
+
+def restart_adb(config: AppConfig) -> None:
+    if not confirm(
+        "Restart the ADB server? [bold yellow]Active ADB sessions on this computer "
+        "may be disconnected[/bold yellow] until the server restarts."
+    ):
+        return
+    adb_exe = get_adb_executable()
+    if not adb_exe:
+        print_error("ADB executable not available.")
+        return
+    with task_status("[info]Restarting ADB server…[/info]"):
+        subprocess.run([adb_exe, "kill-server"], capture_output=True)
+        subprocess.run([adb_exe, "start-server"], capture_output=True)
+    os.environ.pop("ANDROID_SERIAL", None)
+    print_success("ADB server restarted.")
+    prompt_select_device_if_multiple(config)
 
 
 def _port_scanner(config: AppConfig) -> nmap.PortScanner:
@@ -267,7 +261,7 @@ def scan_network(config: AppConfig) -> None:
     hosts = _sort_ipv4(hosts)
 
     if not hosts:
-        console.print("[yellow]No hosts found.[/yellow]")
+        console.print("[bold yellow]No hosts found.[/bold yellow]")
         return
 
     ports_scan = _port_scanner(config)
@@ -285,8 +279,8 @@ def scan_network(config: AppConfig) -> None:
 
     table = Table(title=f"Network Scan — {subnet}", show_header=True, header_style="bold cyan")
     table.add_column("IP Address", style="bold green")
-    table.add_column("ADB 5555 / 5554", style="cyan")
-    table.add_column("Android?", style="yellow")
+    table.add_column("ADB 5555 / 5554", style="bold cyan")
+    table.add_column("Android?", style="bold yellow")
 
     for host in hosts:
         adb_summary = ""
@@ -304,12 +298,12 @@ def scan_network(config: AppConfig) -> None:
 
 def _wireless_pair() -> None:
     addr = ask(
-        "[cyan]Pairing address[/cyan] [dim](IP:port from Wireless Debugging)[/dim]> "
+        "[bold cyan]Pairing address[/bold cyan] [dim](IP:port from Wireless Debugging)[/dim]> "
     ).strip()
     if not addr:
         print_null_input()
         return
-    code = ask("[cyan]6-digit pairing code[/cyan]> ").strip()
+    code = ask("[bold cyan]6-digit pairing code[/bold cyan]> ").strip()
     if not code:
         print_null_input()
         return
@@ -327,7 +321,7 @@ def _wireless_pair() -> None:
 
 
 def _wireless_connect(config: AppConfig) -> None:
-    addr = ask("[cyan]Address[/cyan] [dim](IP:port or IP, default :5555)[/dim]> ").strip()
+    addr = ask("[bold cyan]Address[/bold cyan] [dim](IP:port or IP, default :5555)[/dim]> ").strip()
     if not addr:
         print_null_input()
         return
@@ -344,59 +338,47 @@ def _wireless_connect(config: AppConfig) -> None:
 
 
 def _wireless_tcpip() -> None:
-    port = ask("[cyan]Port[/cyan] [dim](Enter=5555)[/dim]> ").strip() or "5555"
+    port = ask("[bold cyan]Port[/bold cyan] [dim](Enter=5555)[/dim]> ").strip() or "5555"
     if not port.isdigit():
         print_error("Port must be a number.")
         return
-    if not confirm("Restart adbd in TCP/IP listening mode?"):
+    if not confirm("Restart adb in TCP/IP listening mode?"):
         return
     with task_status("[info]Switching to TCP/IP mode…[/info]"):
         r = adb(["tcpip", port])
     out = (r.stdout + r.stderr).strip()
     if r.returncode == 0:
-        print_success(out or f"adbd now listening on TCP port {port}.")
+        print_success(out or f"adb now listening on TCP port {port}.")
     else:
         print_error(out or "failed")
 
 
 def _wireless_usb() -> None:
-    if not confirm("Switch adbd back to USB mode?"):
+    if not confirm("Switch adb back to USB mode?"):
         return
     with task_status("[info]Switching to USB mode…[/info]"):
         r = adb(["usb"])
     out = (r.stdout + r.stderr).strip()
     if r.returncode == 0:
-        print_success(out or "adbd now listening on USB.")
+        print_success(out or "adb now listening on USB.")
     else:
         print_error(out or "failed")
 
 
-def wireless_menu(config: AppConfig) -> None:
-    items = [
-        "Pair Device",
-        "Connect to Device",
-        "Enable TCP/IP Mode",
-        "Switch Back to USB",
-    ]
+def wireless_pair() -> None:
+    _wireless_pair()
 
-    def _render() -> None:
-        print_submenu("Wireless ADB", items)
 
-    _render()
-    while True:
-        choice = ask("[red]\\[Wireless ADB][/red] > ").strip().lower()
-        action = parse_submenu_choice(choice, config, _render)
-        if action == "exit":
-            return
-        if action == "redraw":
-            continue
-        if choice == "1":
-            _wireless_pair()
-        elif choice == "2":
-            _wireless_connect(config)
-        elif choice == "3":
-            _wireless_tcpip()
-        elif choice == "4":
-            _wireless_usb()
-        else:
-            print_error("Invalid selection")
+def wireless_connect(config: AppConfig) -> None:
+    _wireless_connect(config)
+
+
+def wireless_tcpip() -> None:
+    _wireless_tcpip()
+
+
+def wireless_usb() -> None:
+    _wireless_usb()
+
+
+

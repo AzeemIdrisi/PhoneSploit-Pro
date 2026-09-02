@@ -17,8 +17,7 @@ from modules.console import (
     print_info,
     confirm,
     task_status,
-    print_submenu,
-    parse_submenu_choice,
+    submenu_row,
     ensure_config_dir,
     adb,
     adb_output,
@@ -208,48 +207,36 @@ def _clipboard_set(text: str) -> tuple[bool, str | None]:
     return False, last_err or lout or "Clipboard set failed."
 
 
-def clipboard_menu(config: AppConfig) -> None:
-    items = ["Read Clipboard", "Set Clipboard", "Clear Clipboard"]
+def clipboard_read(config: AppConfig) -> None:
+    content, err = _clipboard_get()
+    if err:
+        print_error(err)
+    elif content:
+        console.print(Panel(content, title="[bold cyan]Clipboard[/bold cyan]", border_style="bold cyan"))
+    else:
+        console.print(Panel("[dim]empty[/dim]", title="[bold cyan]Clipboard[/bold cyan]", border_style="bold cyan"))
 
-    def _render() -> None:
-        print_submenu("Clipboard", items)
 
-    _render()
-    while True:
-        choice = ask("[red]\\[Clipboard][/red] > ").strip().lower()
-        action = parse_submenu_choice(choice, config, _render)
-        if action == "exit":
-            return
-        if action == "redraw":
-            continue
-        if choice == "1":
-            content, err = _clipboard_get()
-            if err:
-                print_error(err)
-            elif content:
-                console.print(Panel(content, title="Clipboard", border_style="cyan"))
-            else:
-                console.print(Panel("[dim]empty[/dim]", title="Clipboard", border_style="cyan"))
-        elif choice == "2":
-            text = ask("[cyan]Text to copy to clipboard[/cyan]> ")
-            if not text:
-                print_error("Null input")
-                continue
-            ok, err = _clipboard_set(text)
-            if ok:
-                print_success("Clipboard updated.")
-            else:
-                print_error(err or "failed")
-        elif choice == "3":
-            if not confirm("Clear the clipboard?"):
-                continue
-            ok, err = _clipboard_set("")
-            if ok:
-                print_success("Clipboard cleared.")
-            else:
-                print_error(err or "failed")
-        else:
-            print_error("Invalid selection")
+def clipboard_set(config: AppConfig) -> None:
+    text = ask("[bold cyan]Text to copy to clipboard[/bold cyan]> ")
+    if not text:
+        print_error("Null input")
+        return
+    ok, err = _clipboard_set(text)
+    if ok:
+        print_success("Clipboard updated.")
+    else:
+        print_error(err or "failed")
+
+
+def clipboard_clear(config: AppConfig) -> None:
+    if not confirm("Clear the clipboard?"):
+        return
+    ok, err = _clipboard_set("")
+    if ok:
+        print_success("Clipboard cleared.")
+    else:
+        print_error(err or "failed")
 
 
 def get_location(config: AppConfig) -> None:
@@ -291,7 +278,7 @@ def get_location(config: AppConfig) -> None:
         return
 
     table = Table(title="Last Known Location", show_header=True, header_style="bold cyan")
-    table.add_column("Provider", style="yellow")
+    table.add_column("Provider", style="bold yellow")
     table.add_column("Latitude", style="white")
     table.add_column("Longitude", style="white")
     for provider, lat, lng in rows[:25]:
@@ -355,7 +342,7 @@ def get_identifiers(config: AppConfig) -> None:
     imei_display = imei or "[yellow]Not accessible via ADB shell on this Android version[/yellow]"
 
     table = Table(title="Device Identifiers", show_header=True, header_style="bold cyan")
-    table.add_column("Property", style="yellow")
+    table.add_column("Property", style="bold yellow")
     table.add_column("Value", style="white")
     table.add_row("IMEI", imei_display)
     table.add_row("Serial", serial or "[dim]N/A[/dim]")
@@ -366,67 +353,56 @@ def get_identifiers(config: AppConfig) -> None:
 
 
 def usage_stats(config: AppConfig) -> None:
-    items = ["Last 1 day", "Last 7 days", "All time"]
+    submenu_row("Last 1 day", "Last 7 days", "All time")
+    window = ask("[prompt]> [/prompt]").strip().lower()
+    days_map = {"1": 1, "2": 7, "3": None}
+    if window not in days_map:
+        print_error("Invalid selection")
+        return
+    days = days_map[window]
+    cutoff_ms = 0 if days is None else int((time.time() - days * 86400) * 1000)
 
-    def _render() -> None:
-        print_submenu("App Usage Statistics", items)
+    with task_status("[info]Collecting app usage statistics…[/info]"):
+        raw = adb_output(["shell", "dumpsys", "usagestats"])
 
-    _render()
-    while True:
-        window = ask("[red]\\[Usage Stats][/red] > ").strip().lower()
-        action = parse_submenu_choice(window, config, _render)
-        if action == "exit":
-            return
-        if action == "redraw":
+    entries: list[tuple[str, int, int]] = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if "lastTimeUsed" not in line:
             continue
-        days_map = {"1": 1, "2": 7, "3": None}
-        if window not in days_map:
-            print_error("Invalid selection")
+        pkg = line.split()[0] if line.split() else ""
+        last_m = re.search(r"lastTimeUsed=(\d+)", line)
+        if not last_m:
             continue
-        days = days_map[window]
-        cutoff_ms = 0 if days is None else int((time.time() - days * 86400) * 1000)
-
-        with task_status("[info]Collecting app usage statistics…[/info]"):
-            raw = adb_output(["shell", "dumpsys", "usagestats"])
-
-        entries: list[tuple[str, int, int]] = []
-        for line in raw.splitlines():
-            line = line.strip()
-            if "lastTimeUsed" not in line:
-                continue
-            pkg = line.split()[0] if line.split() else ""
-            last_m = re.search(r"lastTimeUsed=(\d+)", line)
-            if not last_m:
-                continue
-            last_used = int(last_m.group(1))
-            if last_used < cutoff_ms:
-                continue
-            fg_m = re.search(r"totalTimeInForeground=(\d+)", line)
-            vis_m = re.search(r"totalTimeVisible=(\d+)", line)
-            visible = int(fg_m.group(1)) if fg_m else (int(vis_m.group(1)) if vis_m else 0)
-            entries.append((pkg, last_used, visible))
-
-        entries.sort(key=lambda e: e[1], reverse=True)
-        if not entries:
-            console.print(raw[:4000] or "[dim]No usage data available.[/dim]")
+        last_used = int(last_m.group(1))
+        if last_used < cutoff_ms:
             continue
+        fg_m = re.search(r"totalTimeInForeground=(\d+)", line)
+        vis_m = re.search(r"totalTimeVisible=(\d+)", line)
+        visible = int(fg_m.group(1)) if fg_m else (int(vis_m.group(1)) if vis_m else 0)
+        entries.append((pkg, last_used, visible))
 
-        label = {1: "1 day", 2: "7 days", 3: "all time"}.get(int(window), "all time")
-        table = Table(
-            title=f"App Usage ({label}, most recent first)",
-            show_header=True,
-            header_style="bold cyan",
+    entries.sort(key=lambda e: e[1], reverse=True)
+    if not entries:
+        console.print(raw[:4000] or "[dim]No usage data available.[/dim]")
+        return
+
+    label = {1: "1 day", 2: "7 days", 3: "all time"}.get(int(window), "all time")
+    table = Table(
+        title=f"App Usage ({label}, most recent first)",
+        show_header=True,
+        header_style="bold cyan",
+    )
+    table.add_column("Package", style="bold yellow")
+    table.add_column("Last Used", style="white")
+    table.add_column("Foreground Time", style="white")
+    now = time.time()
+    for pkg, last_used, visible in entries[:40]:
+        ago_min = max(0, int((now - last_used / 1000) / 60))
+        table.add_row(
+            pkg,
+            f"{ago_min} min ago",
+            f"{visible // 60000} min",
         )
-        table.add_column("Package", style="yellow")
-        table.add_column("Last Used", style="white")
-        table.add_column("Foreground Time", style="white")
-        now = time.time()
-        for pkg, last_used, visible in entries[:40]:
-            ago_min = max(0, int((now - last_used / 1000) / 60))
-            table.add_row(
-                pkg,
-                f"{ago_min} min ago",
-                f"{visible // 60000} min",
-            )
-        console.print(table)
-        print_info(f"{min(len(entries), 40)} of {len(entries)} packages shown (first 40).")
+    console.print(table)
+    print_info(f"{min(len(entries), 40)} of {len(entries)} packages shown (first 40).")
