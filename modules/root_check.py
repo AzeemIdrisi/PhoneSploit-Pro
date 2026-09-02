@@ -44,7 +44,7 @@ def root_heuristics(config: AppConfig) -> None:
         magisk_pkg = (r_pkg.stdout + r_pkg.stderr).strip()
 
     table = Table(title="Root / build heuristics", show_header=True, header_style="bold cyan")
-    table.add_column("Check", style="yellow", no_wrap=True)
+    table.add_column("Check", style="bold yellow", no_wrap=True)
     table.add_column("Result", style="white")
 
     for k, v in props.items():
@@ -65,8 +65,8 @@ def root_heuristics(config: AppConfig) -> None:
     console.print(
         Panel(
             f"[bold]{verdict}[/bold]\n[dim]{detail}[/dim]",
-            title="[bold]Assessment[/bold]",
-            border_style="cyan",
+            title="[bold cyan]Assessment[/bold cyan]",
+            border_style="bold cyan",
         )
     )
 

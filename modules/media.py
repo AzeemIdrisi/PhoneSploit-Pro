@@ -97,7 +97,7 @@ def screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration_raw = ask("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_raw = ask("[bold cyan]Duration (seconds)[/bold cyan]> ").strip()
     duration_sec = _parse_positive_duration_seconds(duration_raw)
     if duration_sec is None:
         return
@@ -149,7 +149,7 @@ def anonymous_screenrecord(config: AppConfig) -> None:
     file_name = f"vid-{_timestamp()}.mp4"
     remote = f"/sdcard/{file_name}"
 
-    duration_raw = ask("[cyan]Duration (seconds)[/cyan]> ").strip()
+    duration_raw = ask("[bold cyan]Duration (seconds)[/bold cyan]> ").strip()
     duration_sec = _parse_positive_duration_seconds(duration_raw)
     if duration_sec is None:
         return
@@ -195,7 +195,7 @@ def anonymous_screenrecord(config: AppConfig) -> None:
 
 
 def _push_and_open_media(config: AppConfig, label: str, intent_type: str) -> None:
-    location = ask(f"[yellow]{label} path on computer[/yellow]> ").strip()
+    location = ask(f"[bold yellow]{label} path on computer[/bold yellow]> ").strip()
 
     if not location:
         print_null_input()
@@ -209,7 +209,7 @@ def _push_and_open_media(config: AppConfig, label: str, intent_type: str) -> Non
         return
 
     if not confirm(
-        f"Copy [cyan]{file_path.name}[/cyan] to /sdcard/? "
+        f"Copy [bold cyan]{file_path.name}[/bold cyan] to /sdcard/? "
         "An existing file with the same name may be overwritten."
     ):
         return
@@ -268,13 +268,13 @@ def _select_camera_facing() -> str | None:
 
 def record_audio(config: AppConfig, mode: str) -> None:
     console.print(
-        "[red]\\[Notice][/red] [cyan]Requires Android 11+[/cyan]"
+        "[bold red]\\[Notice][/bold red] [bold cyan]Requires Android 11+[/bold cyan]"
     )
     with task_status("[info]Detecting Android version…[/info]"):
         android_ver = _check_android_version()
 
     if android_ver is None:
-        print_error("No connected device found.\n[green] Going back to Main Menu[/green]")
+        print_error("No connected device found.\n[bold green] Going back to Main Menu[/bold green]")
         return
 
     if android_ver < 11:
@@ -311,7 +311,7 @@ def record_audio(config: AppConfig, mode: str) -> None:
             cmd.append(audio_flag)
         subprocess.run(cmd)
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
 
     if mode == "device":
@@ -327,9 +327,9 @@ def mirror(config: AppConfig) -> None:
     elif mode == "2":
         subprocess.run(scrcpy_argv(config, ["-m", "1024", "-b", "1M"]))
     elif mode == "3":
-        size_in = ask("[cyan]Size limit[/cyan] [dim](e.g. 1024)[/dim]> ").strip()
-        bitrate_in = ask("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 2)[/dim]> ").strip()
-        fps_in = ask("[cyan]Max FPS[/cyan] [dim](e.g. 15)[/dim]> ").strip()
+        size_in = ask("[bold cyan]Size limit[/bold cyan] [dim](e.g. 1024)[/dim]> ").strip()
+        bitrate_in = ask("[bold cyan]Bitrate (Mbps)[/bold cyan] [dim](e.g. 2)[/dim]> ").strip()
+        fps_in = ask("[bold cyan]Max FPS[/bold cyan] [dim](e.g. 15)[/dim]> ").strip()
 
         extra: list[str] = []
         if size_in:
@@ -340,17 +340,17 @@ def mirror(config: AppConfig) -> None:
             extra += [f"--max-fps={fps_in}"]
         subprocess.run(scrcpy_argv(config, extra))
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
 
 
 def camera_live(config: AppConfig) -> None:
-    console.print("[red]\\[Notice][/red] [cyan]Requires Android 12+ and scrcpy camera support[/cyan]")
+    console.print("[bold red]\\[Notice][/bold red] [bold cyan]Requires Android 12+ and scrcpy camera support[/bold cyan]")
     with task_status("[info]Detecting Android version…[/info]"):
         android_ver = _check_android_version()
 
     if android_ver is None:
-        print_error("No connected device found.\n[green] Going back to Main Menu[/green]")
+        print_error("No connected device found.\n[bold green] Going back to Main Menu[/bold green]")
         return
 
     if android_ver < 12:
@@ -372,7 +372,7 @@ def camera_live(config: AppConfig) -> None:
     }
     orientation = rotation_map.get(rotation_choice)
     if orientation is None:
-        print_error("Invalid rotation\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid rotation\n[bold green] Going back to Main Menu[/bold green]")
         return
 
     submenu_row("Default", "Fast (720p / 15 FPS)", "Custom")
@@ -392,9 +392,9 @@ def camera_live(config: AppConfig) -> None:
     elif mode == "2":
         args += ["--camera-size=1280x720", "--camera-fps=15", "-b", "4M"]
     elif mode == "3":
-        size_in = ask("[cyan]Camera size[/cyan] [dim](e.g. 1280x720, Enter=default)[/dim]> ").strip()
-        fps_in = ask("[cyan]Camera FPS[/cyan] [dim](e.g. 30, Enter=default)[/dim]> ").strip()
-        bitrate_in = ask("[cyan]Bitrate (Mbps)[/cyan] [dim](e.g. 4, Enter=default)[/dim]> ").strip()
+        size_in = ask("[bold cyan]Camera size[/bold cyan] [dim](e.g. 1280x720, Enter=default)[/dim]> ").strip()
+        fps_in = ask("[bold cyan]Camera FPS[/bold cyan] [dim](e.g. 30, Enter=default)[/dim]> ").strip()
+        bitrate_in = ask("[bold cyan]Bitrate (Mbps)[/bold cyan] [dim](e.g. 4, Enter=default)[/dim]> ").strip()
 
         if size_in:
             args.append(f"--camera-size={size_in}")
@@ -403,7 +403,7 @@ def camera_live(config: AppConfig) -> None:
         if bitrate_in:
             args += ["-b", f"{bitrate_in}M"]
     else:
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
 
     console.print("\n[dim]Opening Camera Live window. Close the scrcpy window or press Ctrl+C to stop.[/dim]\n")
@@ -411,12 +411,12 @@ def camera_live(config: AppConfig) -> None:
 
 
 def stream_audio(config: AppConfig, mode: str) -> None:
-    console.print("[red]\\[Notice][/red] [cyan]Requires Android 11+[/cyan]")
+    console.print("[bold red]\\[Notice][/bold red] [bold cyan]Requires Android 11+[/bold cyan]")
     with task_status("[info]Detecting Android version…[/info]"):
         android_ver = _check_android_version()
 
     if android_ver is None:
-        print_error("No connected device found.\n[green] Going back to Main Menu[/green]")
+        print_error("No connected device found.\n[bold green] Going back to Main Menu[/bold green]")
         return
 
     if android_ver < 11:
@@ -428,3 +428,37 @@ def stream_audio(config: AppConfig, mode: str) -> None:
         subprocess.run(scrcpy_argv(config, ["--no-video", "--audio-source=mic"]))
     else:
         subprocess.run(scrcpy_argv(config, ["--no-video"]))
+
+
+def set_wallpaper(config: AppConfig) -> None:
+    location = ask("[bold cyan]Image path on computer[/bold cyan]> ").strip().strip("'\"")
+    if not location:
+        print_null_input()
+        return
+    src = Path(location)
+    if not src.is_file():
+        print_error("This file does not exist.")
+        return
+    if not confirm("Push this image to the device and open the wallpaper picker?"):
+        return
+    remote = f"/sdcard/wallpaper-{datetime.now().strftime('%Y%m%d%H%M%S')}{src.suffix.lower()}"
+    with task_status("[info]Pushing image…[/info]"):
+        push = adb(["push", str(src), remote])
+    if push.returncode != 0:
+        print_error((push.stdout + push.stderr).strip() or "adb push failed.")
+        return
+    with task_status("[info]Opening wallpaper picker…[/info]"):
+        adb(
+            [
+                "shell",
+                "am",
+                "start",
+                "-a",
+                "android.intent.action.ATTACH_DATA",
+                "-d",
+                f"file://{remote}",
+                "-t",
+                "image/*",
+            ]
+        )
+    print_success("Wallpaper picker opened. Choose the app (e.g. Wallpapers) to apply it.")

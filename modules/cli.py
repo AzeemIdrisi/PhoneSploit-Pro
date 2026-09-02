@@ -9,7 +9,18 @@ from rich.panel import Panel
 
 from modules import banner, color
 from modules.config import AppConfig
-from modules.console import console, confirm, print_error, set_adb_executable, ask
+from modules.menu import MAIN_ITEMS, MenuItem
+from modules.console import (
+    console,
+    print_error,
+    set_adb_executable,
+    ask,
+    render_main_menu,
+    render_submenu_screen,
+    submenu_prompt,
+    parse_submenu_choice,
+    clear_terminal,
+)
 from modules.tools import (
     resolve_external_tools,
     require_adb,
@@ -94,8 +105,8 @@ def _run_dependency_installer(config: AppConfig, component_keys: list[str]) -> N
         )
 
     console.print(
-        "[dim]If tools are still not detected, open a new terminal and run PhoneSploit Pro again "
-        "(PATH may need a refresh).[/dim]"
+        "[bold dim]If tools are still not detected, open a new terminal and run PhoneSploit Pro again "
+        "(PATH may need a refresh).[/bold dim]"
     )
 
 
@@ -107,26 +118,28 @@ def check_packages(config: AppConfig) -> None:
 
         names = [name for name, _ in missing]
         items = "\n".join(
-            f"  [bold yellow]{i + 1}.[/bold yellow] [white]{name}[/white]"
+            f"  [bold yellow]{i + 1}.[/bold yellow] [bold white]{name}[/bold white]"
             for i, name in enumerate(names)
         )
         console.print(
             Panel(
-                f"[red]The following required tools are NOT installed:[/red]\n\n{items}\n\n"
-                "[cyan]Install them manually (see README) or use the automatic installer.[/cyan]",
+                f"[bold red]The following required tools are NOT installed:[/bold red]\n\n{items}\n\n"
+                "[bold cyan]Install them manually (see README) or use the automatic installer.[/bold cyan]",
                 title="[bold red]Missing Dependencies[/bold red]",
-                border_style="red",
+                border_style="bold red",
             )
         )
 
         prompt = (
-            "\n[yellow]Press [bold]I[/bold] to install missing tools automatically · "
-            "[bold]Y[/bold] continue anyway · [bold]N[/bold] exit[/yellow] > "
+            "\n[bold yellow]Press [bold]I[/bold] to install missing tools automatically · "
+            "[bold]Y[/bold] continue anyway · [bold]N[/bold] exit[/bold yellow] > "
         )
         choice = ask(prompt).strip().lower()
 
         while choice not in ("i", "y", "n", "", "yes", "no"):
-            choice = ask("[red]Invalid choice![/red] Press I, Y, or N > ").strip().lower()
+            choice = ask("[bold red]Invalid choice![/bold red] Press I, Y, or N > ").strip().lower()
+
+        os.system(config.clear_cmd)
 
         if choice in ("n", "no"):
             raise SystemExit(0)
@@ -157,13 +170,21 @@ _selected_banner: str = ""
 
 def _pick_banner() -> str:
     c = random.choice(color.color_list)
-    return f"[bold {c}]{random.choice(banner.banner_list)}[/bold {c}]"
+    return f"[{c}]{random.choice(banner.banner_list)}[/{c}]"
 
 
 def display_menu(config: AppConfig) -> None:
     global _selected_banner
     console.print(_selected_banner)
-    console.print(banner.menu[config.page_number])
+    console.print()
+    entries: list[tuple[int, str]] = [
+        (i + 1, item.display_label) for i, item in enumerate(all_menu_items())
+    ]
+    render_main_menu(entries)
+
+
+def all_menu_items() -> list[MenuItem]:
+    return list(MAIN_ITEMS)
 
 
 def clear_screen(config: AppConfig) -> None:
@@ -171,54 +192,241 @@ def clear_screen(config: AppConfig) -> None:
     display_menu(config)
 
 
-def change_page(config: AppConfig, direction: str) -> None:
-    if direction == "p" and config.page_number > 0:
-        config.page_number -= 1
-    elif direction == "n" and config.page_number < 4:
-        config.page_number += 1
-    clear_screen(config)
-
-
 # ---------------------------------------------------------------------------
-# Misc actions
+# Feature handlers registry
 # ---------------------------------------------------------------------------
 
-def update_me(config: AppConfig) -> None:
-    if not confirm(
-        "Run [cyan]git fetch[/cyan] and [cyan]git rebase[/cyan] to update PhoneSploit-Pro? "
-        "Uncommitted local changes may conflict or be lost."
-    ):
-        return
-    console.print("[yellow]Updating PhoneSploit-Pro...[/yellow]")
-    console.print("[green]Fetching latest updates from GitHub...[/green]")
-    fetch = subprocess.run(
-        ["git", "fetch"],
-        capture_output=True,
-        text=True,
+def _build_handlers() -> dict[str, object]:
+    from modules import (
+        app_manager,
+        communication,
+        connection,
+        data_extraction,
+        device,
+        display,
+        extras,
+        file_manager,
+        input_control,
+        media,
+        port_forward,
+        root_check,
+        security,
+        wifi_utils,
     )
-    if fetch.returncode != 0:
-        detail = (fetch.stdout + fetch.stderr).strip() or f"exit code {fetch.returncode}"
-        print_error(f"git fetch failed: {detail}")
-        return
 
-    console.print("[green]Applying changes...[/green]")
-    rebase = subprocess.run(
-        ["git", "rebase"],
-        capture_output=True,
-        text=True,
-    )
-    if rebase.returncode != 0:
-        detail = (rebase.stdout + rebase.stderr).strip() or f"exit code {rebase.returncode}"
-        print_error(f"git rebase failed: {detail}")
-        console.print(
-            "[yellow]If rebase stopped with conflicts, fix the files, then run "
-            "[cyan]git rebase --continue[/cyan]. To give up and restore the previous state, run "
-            "[cyan]git rebase --abort[/cyan].[/yellow]"
-        )
-        return
+    return {
+        "connect": connection.connect,
+        "list_devices": connection.list_devices,
+        "scan_network": connection.scan_network,
+        "disconnect": connection.disconnect,
+        "stop_adb": connection.stop_adb,
+        "restart_adb": connection.restart_adb,
+        "metasploit": security.hack,
+        "mirror": media.mirror,
+        "shell": device.get_shell,
+        "send_sms": communication.send_sms,
+        "open_link": communication.open_link,
+        "wireless_pair": lambda c: connection.wireless_pair(),
+        "wireless_connect": connection.wireless_connect,
+        "wireless_tcpip": lambda c: connection.wireless_tcpip(),
+        "wireless_usb": lambda c: connection.wireless_usb(),
+        "screenshot": media.get_screenshot,
+        "screenrecord": media.screenrecord,
+        "anon_screenshot": media.anonymous_screenshot,
+        "anon_screenrecord": media.anonymous_screenrecord,
+        "camera_live": media.camera_live,
+        "stream_mic": lambda c: media.stream_audio(c, "mic"),
+        "record_mic": lambda c: media.record_audio(c, "mic"),
+        "stream_device_audio": lambda c: media.stream_audio(c, "device"),
+        "record_device_audio": lambda c: media.record_audio(c, "device"),
+        "open_photo": media.open_photo,
+        "open_audio": media.open_audio,
+        "open_video": media.open_video,
+        "set_wallpaper": media.set_wallpaper,
+        "keycode_text": input_control.keycode_text,
+        "keycode_home": lambda c: input_control.keycode(c, "3", "Home"),
+        "keycode_back": lambda c: input_control.keycode(c, "4", "Back"),
+        "keycode_recent": lambda c: input_control.keycode(c, "187", "Recent apps"),
+        "keycode_power": lambda c: input_control.keycode(c, "26", "Power"),
+        "keycode_dpad_up": lambda c: input_control.keycode(c, "19", "DPAD up"),
+        "keycode_dpad_down": lambda c: input_control.keycode(c, "20", "DPAD down"),
+        "keycode_dpad_left": lambda c: input_control.keycode(c, "21", "DPAD left"),
+        "keycode_dpad_right": lambda c: input_control.keycode(c, "22", "DPAD right"),
+        "keycode_delete": lambda c: input_control.keycode(c, "67", "Delete"),
+        "keycode_enter": lambda c: input_control.keycode(c, "66", "Enter"),
+        "keycode_vol_up": lambda c: input_control.keycode(c, "24", "Volume up"),
+        "keycode_vol_down": lambda c: input_control.keycode(c, "25", "Volume down"),
+        "keycode_media_play": lambda c: input_control.keycode(c, "126", "Media play"),
+        "keycode_media_pause": lambda c: input_control.keycode(c, "127", "Media pause"),
+        "keycode_tab": lambda c: input_control.keycode(c, "61", "Tab"),
+        "keycode_esc": lambda c: input_control.keycode(c, "111", "Esc"),
+        "unlock": device.unlock_device,
+        "lock": device.lock_device,
+        "reboot": lambda c: device.reboot(c, "system"),
+        "reboot_advanced": lambda c: device.reboot(c, "advanced"),
+        "power_off": device.power_off,
+        "screen_stay_on": extras.screen_stay_on,
+        "device_info": device.get_device_info,
+        "battery_info": device.battery_info,
+        "dump_sms": data_extraction.dump_sms,
+        "dump_contacts": data_extraction.dump_contacts,
+        "dump_call_logs": data_extraction.dump_call_logs,
+        "clipboard_read": data_extraction.clipboard_read,
+        "clipboard_set": data_extraction.clipboard_set,
+        "clipboard_clear": data_extraction.clipboard_clear,
+        "location": data_extraction.get_location,
+        "identifiers": data_extraction.get_identifiers,
+        "pull_file": file_manager.pull_file,
+        "push_file": file_manager.push_file,
+        "list_files": file_manager.list_files,
+        "copy_whatsapp": file_manager.copy_whatsapp,
+        "copy_screenshots": file_manager.copy_screenshots,
+        "copy_camera": file_manager.copy_camera,
+        "install_app": app_manager.install_app,
+        "uninstall_app": app_manager.uninstall_app,
+        "launch_app": app_manager.launch_app,
+        "list_apps": app_manager.list_apps,
+        "install_split_apks": extras.install_split_apks,
+        "extract_apk": app_manager.extract_apk,
+        "force_stop_app": extras.force_stop_app,
+        "restart_app": extras.restart_app,
+        "clear_app_data": extras.clear_app_data,
+        "grant_revoke": extras.grant_revoke_permission,
+        "usage_stats": data_extraction.usage_stats,
+        "disable_app": app_manager.disable_app,
+        "enable_app": app_manager.enable_app,
+        "suspend_app": app_manager.suspend_app,
+        "unsuspend_app": app_manager.unsuspend_app,
+        "battery_whitelist": app_manager.battery_whitelist,
+        "battery_unwhitelist": app_manager.battery_unwhitelist,
+        "battery_whitelist_show": app_manager.battery_whitelist_show,
+        "set_home_app": app_manager.set_home_app,
+        "show_home_app": app_manager.show_home_app,
+        "developer_settings": extras.developer_settings,
+        "locale_read": extras.locale_read,
+        "mock_battery_set": device.mock_battery_set,
+        "mock_battery_unplug": device.mock_battery_unplug,
+        "mock_battery_plug": device.mock_battery_plug,
+        "mock_battery_reset": device.mock_battery_reset,
+        "mock_battery_status": device.mock_battery_status,
+        "display_view": display.show_current_settings,
+        "display_resolution": display.set_resolution,
+        "display_density": display.set_density,
+        "display_scaling": display.toggle_scaling,
+        "display_reset": display.reset_all,
+        "sound_volume_show": extras.sound_volume_show,
+        "sound_volume_set": extras.sound_volume_set,
+        "sound_brightness": extras.sound_brightness,
+        "sound_timeout": extras.sound_timeout,
+        "sound_dnd": extras.sound_dnd,
+        "notif_post": extras.notif_post,
+        "notif_expand": extras.notif_expand,
+        "notif_expand_qs": extras.notif_expand_qs,
+        "notif_collapse": extras.notif_collapse,
+        "wifi_status": wifi_utils.wifi_status_dump,
+        "wlan_ip": wifi_utils.wlan_ip,
+        "wifi_toggle": wifi_utils.wifi_toggle,
+        "ping": wifi_utils.ping_connectivity,
+        "saved_wifi": wifi_utils.saved_wifi_networks,
+        "nearby_wifi": wifi_utils.nearby_wifi_scan,
+        "hotspot_start": wifi_utils.hotspot_start,
+        "hotspot_stop": wifi_utils.hotspot_stop,
+        "radio_data": extras.radio_data,
+        "radio_bluetooth": extras.radio_bluetooth,
+        "radio_nfc": extras.radio_nfc,
+        "radio_airplane": extras.radio_airplane,
+        "port_forward_add": port_forward.port_forward_add,
+        "port_forward_reverse": port_forward.port_forward_reverse,
+        "port_forward_list": port_forward.port_forward_list,
+        "port_forward_remove": port_forward.port_forward_remove,
+        "port_forward_remove_all": port_forward.port_forward_remove_all,
+        "logcat_snippet": extras.save_logcat_snippet,
+        "live_logcat": extras.live_logcat,
+        "network_snapshot": extras.network_snapshot,
+        "root_heuristics": root_check.root_heuristics,
+    }
 
-    console.print("[cyan]Please restart PhoneSploit-Pro.[/cyan]")
-    config.run = False
+
+_HANDLERS: dict[str, object] | None = None
+
+
+def _handlers() -> dict[str, object]:
+    global _HANDLERS
+    if _HANDLERS is None:
+        _HANDLERS = _build_handlers()
+    return _HANDLERS
+
+
+def _check_require(require: str | None, config: AppConfig) -> bool:
+    if require is None or require == "adb":
+        return require_adb(config)
+    if require == "scrcpy":
+        return require_scrcpy(config)
+    if require == "nmap":
+        return require_nmap(config)
+    if require == "metasploit":
+        if not require_adb(config):
+            return False
+        return require_metasploit(config)
+    return True
+
+
+def _run_handler(config: AppConfig, item: MenuItem) -> None:
+    handler = _handlers().get(item.id)
+    if handler is None:
+        print_error(f"No handler registered for '{item.id}'.")
+        return
+    handler(config)  # type: ignore[operator]
+
+
+def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> None:
+    """Interactive hub submenu loop."""
+    assert hub.children is not None
+    labels = [child.display_label for child in hub.children]
+    crumbs = breadcrumb + [hub.label]
+    columns = 2 if len(labels) > 6 else 1
+
+    def _render(*, clear: bool = False) -> None:
+        if clear:
+            clear_terminal(config)
+        render_submenu_screen(hub.label, labels, breadcrumb=crumbs, columns=columns)
+
+    _render(clear=True)
+    prompt = submenu_prompt(crumbs)
+    while True:
+        choice = ask(prompt).strip().lower()
+        action = parse_submenu_choice(choice, config, lambda: _render())
+        if action == "exit":
+            return
+        if action == "redraw":
+            continue
+        if not choice.isdigit():
+            print_error("Invalid selection")
+            continue
+        idx = int(choice)
+        if idx < 1 or idx > len(hub.children):
+            print_error("Invalid selection")
+            continue
+        child = hub.children[idx - 1]
+        if child.is_hub:
+            run_hub(config, child, crumbs)
+            _render(clear=True)
+            continue
+        if not _check_require(child.requires, config):
+            continue
+        _run_handler(config, child)
+        console.print()
+        _render()
+
+
+def _dispatch_item(config: AppConfig, item: MenuItem) -> None:
+    if item.is_hub:
+        run_hub(config, item, ["Main Menu"])
+        clear_screen(config)
+        return
+    if not _check_require(item.requires, config):
+        return
+    _run_handler(config, item)
 
 
 # ---------------------------------------------------------------------------
@@ -226,283 +434,28 @@ def update_me(config: AppConfig) -> None:
 # ---------------------------------------------------------------------------
 
 def main(config: AppConfig) -> None:
-    from modules import (
-        connection, device, app_manager, file_manager,
-        media, data_extraction, communication, security, input_control,
-        extras, port_forward, wifi_utils, root_check, display,
-    )
+    option = ask("[bold red]\\[Main Menu][/bold red] > ").strip().lower()
 
-    console.print("[dim]  99:[/dim] Clear   [dim]0:[/dim] Exit")
-    option = ask("[red]\\[Main Menu][/red] > ").strip().lower()
+    if option == "0":
+        config.run = False
+        console.print("\n[bold white]Exiting...[/bold white]\n")
+        return
+    if option == "99":
+        clear_screen(config)
+        return
+    if not option.isdigit():
+        console.print("\n[bold red]Invalid selection![/bold red]\n")
+        return
 
-    match option:
-        case "p":
-            change_page(config, "p")
-        case "n":
-            change_page(config, "n")
-        case "0":
-            config.run = False
-            console.print("\n[white]Exiting...[/white]\n")
-        case "99":
-            clear_screen(config)
-        case "1":
-            if not require_adb(config):
-                return
-            connection.connect(config)
-        case "2":
-            if not require_adb(config):
-                return
-            connection.list_devices(config)
-        case "3":
-            if not require_nmap(config):
-                return
-            connection.scan_network(config)
-        case "4":
-            if not require_adb(config):
-                return
-            connection.disconnect(config)
-        case "5":
-            if not require_adb(config):
-                return
-            connection.stop_adb(config)
-        case "6":
-            if not require_adb(config):
-                return
-            if not require_metasploit(config):
-                return
-            security.hack(config)
-        case "7":
-            if not require_scrcpy(config):
-                return
-            media.mirror(config)
-        case "8":
-            if not require_adb(config):
-                return
-            media.get_screenshot(config)
-        case "9":
-            if not require_adb(config):
-                return
-            media.screenrecord(config)
-        case "10":
-            if not require_adb(config):
-                return
-            media.anonymous_screenshot(config)
-        case "11":
-            if not require_adb(config):
-                return
-            media.anonymous_screenrecord(config)
-        case "12":
-            if not require_scrcpy(config):
-                return
-            media.camera_live(config)
-        case "13":
-            if not require_scrcpy(config):
-                return
-            media.stream_audio(config, "mic")
-        case "14":
-            if not require_scrcpy(config):
-                return
-            media.record_audio(config, "mic")
-        case "15":
-            if not require_scrcpy(config):
-                return
-            media.stream_audio(config, "device")
-        case "16":
-            if not require_scrcpy(config):
-                return
-            media.record_audio(config, "device")
-        case "17":
-            if not require_adb(config):
-                return
-            data_extraction.dump_sms(config)
-        case "18":
-            if not require_adb(config):
-                return
-            data_extraction.dump_contacts(config)
-        case "19":
-            if not require_adb(config):
-                return
-            data_extraction.dump_call_logs(config)
-        case "20":
-            if not require_adb(config):
-                return
-            device.get_shell(config)
-        case "21":
-            if not require_adb(config):
-                return
-            communication.send_sms(config)
-        case "22":
-            if not require_adb(config):
-                return
-            communication.open_link(config)
-        case "23":
-            if not require_adb(config):
-                return
-            media.open_photo(config)
-        case "24":
-            if not require_adb(config):
-                return
-            media.open_audio(config)
-        case "25":
-            if not require_adb(config):
-                return
-            media.open_video(config)
-        case "26":
-            if not require_adb(config):
-                return
-            file_manager.pull_file(config)
-        case "27":
-            if not require_adb(config):
-                return
-            file_manager.push_file(config)
-        case "28":
-            if not require_adb(config):
-                return
-            file_manager.list_files(config)
-        case "29":
-            if not require_adb(config):
-                return
-            file_manager.copy_whatsapp(config)
-        case "30":
-            if not require_adb(config):
-                return
-            file_manager.copy_screenshots(config)
-        case "31":
-            if not require_adb(config):
-                return
-            file_manager.copy_camera(config)
-        case "32":
-            if not require_adb(config):
-                return
-            app_manager.install_app(config)
-        case "33":
-            if not require_adb(config):
-                return
-            app_manager.uninstall_app(config)
-        case "34":
-            if not require_adb(config):
-                return
-            app_manager.launch_app(config)
-        case "35":
-            if not require_adb(config):
-                return
-            app_manager.list_apps(config)
-        case "36":
-            if not require_adb(config):
-                return
-            extras.install_split_apks(config)
-        case "37":
-            if not require_adb(config):
-                return
-            app_manager.extract_apk(config)
-        case "38":
-            if not require_adb(config):
-                return
-            extras.force_stop_app(config)
-        case "39":
-            if not require_adb(config):
-                return
-            extras.restart_app(config)
-        case "40":
-            if not require_adb(config):
-                return
-            extras.clear_app_data(config)
-        case "41":
-            if not require_adb(config):
-                return
-            extras.grant_revoke_permission(config)
-        case "42":
-            if not require_adb(config):
-                return
-            input_control.use_keycode(config)
-        case "43":
-            if not require_adb(config):
-                return
-            device.unlock_device(config)
-        case "44":
-            if not require_adb(config):
-                return
-            device.lock_device(config)
-        case "45":
-            if not require_adb(config):
-                return
-            device.get_device_info(config)
-        case "46":
-            if not require_adb(config):
-                return
-            device.battery_info(config)
-        case "47":
-            if not require_adb(config):
-                return
-            device.reboot(config, "system")
-        case "48":
-            if not require_adb(config):
-                return
-            device.reboot(config, "advanced")
-        case "49":
-            if not require_adb(config):
-                return
-            device.power_off(config)
-        case "50":
-            if not require_adb(config):
-                return
-            extras.save_logcat_snippet(config)
-        case "51":
-            if not require_adb(config):
-                return
-            extras.live_logcat(config)
-        case "52":
-            if not require_adb(config):
-                return
-            extras.network_snapshot(config)
-        case "53":
-            if not require_adb(config):
-                return
-            extras.developer_settings(config)
-        case "54":
-            if not require_adb(config):
-                return
-            extras.locale_read(config)
-        case "55":
-            if not require_adb(config):
-                return
-            extras.screen_stay_on(config)
-        case "56":
-            if not require_adb(config):
-                return
-            root_check.root_heuristics(config)
-        case "57":
-            if not require_adb(config):
-                return
-            wifi_utils.wifi_status_dump(config)
-        case "58":
-            if not require_adb(config):
-                return
-            wifi_utils.wlan_ip(config)
-        case "59":
-            if not require_adb(config):
-                return
-            wifi_utils.wifi_toggle(config)
-        case "60":
-            if not require_adb(config):
-                return
-            wifi_utils.ping_connectivity(config)
-        case "61":
-            if not require_adb(config):
-                return
-            wifi_utils.saved_wifi_networks(config)
-        case "62":
-            if not require_adb(config):
-                return
-            port_forward.port_forward_menu(config)
-        case "63":
-            if not require_adb(config):
-                return
-            display.display_menu(config)
-        case "64":
-            update_me(config)
-        case _:
-            console.print("\n[red]Invalid selection![/red]\n")
+    item = None
+    try:
+        item = all_menu_items()[int(option) - 1]
+    except (ValueError, IndexError):
+        pass
+    if item is None:
+        console.print("\n[bold red]Invalid selection![/bold red]\n")
+        return
+    _dispatch_item(config, item)
 
 
 # ---------------------------------------------------------------------------
@@ -514,6 +467,7 @@ def run() -> None:
     from modules import connection
 
     config = AppConfig()
+    os.system("cls" if platform.system() == "Windows" else "clear")
     start(config)
 
     _selected_banner = _pick_banner()
@@ -525,4 +479,4 @@ def run() -> None:
             main(config)
         except KeyboardInterrupt:
             config.run = False
-            console.print("\n[white]Exiting...[/white]\n")
+            console.print("\n[bold white]Exiting...[/bold white]\n")

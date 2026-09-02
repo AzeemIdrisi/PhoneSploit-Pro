@@ -17,7 +17,7 @@ from modules.console import (
 
 
 def get_shell(config: AppConfig) -> None:
-    console.print("[cyan]Opening interactive ADB shell…[/cyan] [dim](exit shell to return)[/dim]")
+    console.print("[bold cyan]Opening interactive ADB shell…[/bold cyan] [dim](exit shell to return)[/dim]")
     exe = get_adb_executable()
     if not exe:
         print_error("ADB not available.")
@@ -70,9 +70,81 @@ def battery_info(config: AppConfig) -> None:
     console.print(table)
 
 
+def _print_battery_mock_status() -> None:
+    with task_status("[info]Reading battery state…[/info]"):
+        raw = adb_output(["shell", "dumpsys", "battery"])
+    keys = ("level", "status", "AC powered", "USB powered", "Wireless powered")
+    table = Table(title="Battery Mock Status", show_header=True, header_style="bold cyan")
+    table.add_column("Property", style="bold yellow")
+    table.add_column("Value", style="white")
+    for line in raw.splitlines():
+        line = line.strip()
+        if ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        key = key.strip()
+        if key in keys:
+            table.add_row(key, value.strip())
+    console.print(table)
+
+
+def mock_battery_set(config: AppConfig) -> None:
+    raw = ask("[bold cyan]Level[/bold cyan] [dim](0-100)[/dim]> ").strip()
+    if not raw.isdigit() or not 0 <= int(raw) <= 100:
+        print_error("Enter a number between 0 and 100.")
+        return
+    with task_status("[info]Setting battery level…[/info]"):
+        r = adb(["shell", "dumpsys", "battery", "set", "level", raw])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "Battery level set.")
+        _print_battery_mock_status()
+    else:
+        print_error(out or "failed")
+
+
+def mock_battery_unplug(config: AppConfig) -> None:
+    with task_status("[info]Simulating unplugged…[/info]"):
+        r = adb(["shell", "dumpsys", "battery", "unplug"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "Unplugged simulated.")
+        _print_battery_mock_status()
+    else:
+        print_error(out or "failed")
+
+
+def mock_battery_plug(config: AppConfig) -> None:
+    with task_status("[info]Simulating plugged (charging)…[/info]"):
+        adb(["shell", "dumpsys", "battery", "set", "ac", "1"])
+        adb(["shell", "dumpsys", "battery", "set", "usb", "1"])
+        r = adb(["shell", "dumpsys", "battery", "set", "status", "2"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "Plugged / charging simulated.")
+        _print_battery_mock_status()
+    else:
+        print_error(out or "failed")
+
+
+def mock_battery_reset(config: AppConfig) -> None:
+    with task_status("[info]Resetting battery readings…[/info]"):
+        r = adb(["shell", "dumpsys", "battery", "reset"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "Battery readings reset.")
+        _print_battery_mock_status()
+    else:
+        print_error(out or "failed")
+
+
+def mock_battery_status(config: AppConfig) -> None:
+    _print_battery_mock_status()
+
+
 def reboot(config: AppConfig, key: str) -> None:
     print_warning("Restarting will disconnect the device.")
-    choice = ask("[white]Continue? [bold]Y / N[/bold][/white] > ").lower()
+    choice = ask("[bold white]Continue? [bold]Y / N[/bold][/bold white] > ").lower()
     while choice not in ("y", "n", ""):
         choice = ask("[error]Invalid![/error] Y or N > ").lower()
     if choice == "n":
@@ -86,7 +158,7 @@ def reboot(config: AppConfig, key: str) -> None:
         mode = ask("[prompt]> [/prompt]")
         cmd_map = {"1": "recovery", "2": "bootloader", "3": "fastboot"}
         if mode not in cmd_map:
-            print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+            print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
             return
         with task_status(f"[info]Rebooting to {cmd_map[mode]}…[/info]"):
             adb(["reboot", cmd_map[mode]])
@@ -94,7 +166,7 @@ def reboot(config: AppConfig, key: str) -> None:
 
 def power_off(config: AppConfig) -> None:
     print_warning("Powering off will disconnect the device.")
-    choice = ask("[white]Continue? [bold]Y / N[/bold][/white] > ").lower()
+    choice = ask("[bold white]Continue? [bold]Y / N[/bold][/bold white] > ").lower()
     while choice not in ("y", "n", ""):
         choice = ask("[error]Invalid![/error] Y or N > ").lower()
     if choice == "n":
@@ -105,7 +177,7 @@ def power_off(config: AppConfig) -> None:
 
 def unlock_device(config: AppConfig) -> None:
     password = ask(
-        "[yellow]Password or Enter for blank[/yellow]> "
+        "[bold yellow]Password or Enter for blank[/bold yellow]> "
     )
     with task_status("[info]Sending unlock sequence…[/info]"):
         adb(["shell", "input", "keyevent", "26"])

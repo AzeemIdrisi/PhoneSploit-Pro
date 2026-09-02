@@ -16,7 +16,7 @@ export default function Features() {
   return (
     <Section id="features" className="relative">
       <div className="max-w-4xl mx-auto text-center mb-16">
-        <Badge variant="info" className="mb-4 inline-block">60+ Features</Badge>
+        <Badge variant="info" className="mb-4 inline-block">75+ Features</Badge>
         <h2 className="section-title">Powerful Features for Android Security Testing</h2>
         <p className="section-subtitle mx-auto">
           Comprehensive toolkit covering device control, data extraction, media streaming, app management, network analysis, and automated exploitation.
@@ -68,7 +68,7 @@ export default function Features() {
 
       <div className="mt-12 text-center">
         <p className="text-primary-400 mb-4">
-          And many more features... <span className="text-primary-500">60+ total</span>
+          And many more features... <span className="text-primary-500">75+ total</span>
         </p>
         <a
           href="https://github.com/AzeemIdrisi/PhoneSploit-Pro#features"

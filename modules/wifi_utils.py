@@ -207,7 +207,7 @@ def wifi_status_dump(config: AppConfig) -> None:
     with task_status("[info]Reading WiFi service…[/info]"):
         raw = adb_output(["shell", "dumpsys", "wifi"])
     if mode not in ("", "1", "2"):
-        print_error("Invalid selection\n[green] Going back to Main Menu[/green]")
+        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
         return
     if mode == "2":
         out_dir = ensure_config_dir(config, "pull_location")
@@ -253,9 +253,9 @@ def wlan_ip(config: AppConfig) -> None:
 
 
 def wifi_toggle(config: AppConfig) -> None:
-    if not confirm("[yellow]Toggle WiFi radio via svc wifi?[/yellow]"):
+    if not confirm("[bold yellow]Toggle WiFi radio via svc wifi?[/bold yellow]"):
         return
-    mode = ask("[cyan]Type[/cyan] [dim]enable[/dim] or [dim]disable[/dim]> ").strip().lower()
+    mode = ask("[bold cyan]Type[/bold cyan] [dim]enable[/dim] or [dim]disable[/dim]> ").strip().lower()
     if mode not in ("enable", "disable"):
         print_error("Enter enable or disable.")
         return
@@ -268,7 +268,7 @@ def wifi_toggle(config: AppConfig) -> None:
 
 
 def ping_connectivity(config: AppConfig) -> None:
-    host = ask("[cyan]Host to ping[/cyan] [dim](default 8.8.8.8)[/dim]> ").strip() or "8.8.8.8"
+    host = ask("[bold cyan]Host to ping[/bold cyan] [dim](default 8.8.8.8)[/dim]> ").strip() or "8.8.8.8"
     with task_status(f"[info]ping {host}…[/info]"):
         r = adb(["shell", "ping", "-c", "4", host])
     console.print((r.stdout + r.stderr).strip())
@@ -284,7 +284,7 @@ def saved_wifi_networks(config: AppConfig) -> None:
     if not ssids:
         print_error(
             "Could not detect saved networks from this device. "
-            "Use [cyan]58[/cyan] and save full [bold]dumpsys wifi[/bold] to inspect OEM format, "
+            "Use [bold cyan]58[/bold cyan] and save full [bold]dumpsys wifi[/bold] to inspect OEM format, "
             "or ensure at least one Wi-Fi network is saved."
         )
         return
@@ -296,7 +296,7 @@ def saved_wifi_networks(config: AppConfig) -> None:
         header_style="bold cyan",
     )
     table.add_column("#", style="bold green", justify="right")
-    table.add_column("SSID", style="white")
+    table.add_column("SSID", style="bold white")
     for i, s in enumerate(ssids, 1):
         table.add_row(str(i), s)
     console.print(table)
@@ -305,3 +305,86 @@ def saved_wifi_networks(config: AppConfig) -> None:
         "[dim]If the list includes nearby scan SSIDs, ignore those; "
         "saved-profile detection varies by ROM.[/dim]"
     )
+
+
+def _parse_scan_results(raw: str) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if "=" not in line or "BSSID" not in line:
+            continue
+        entry: dict[str, str] = {}
+        for token in line.split("|"):
+            token = token.strip()
+            if "=" not in token:
+                continue
+            key, _, value = token.partition("=")
+            entry[key.strip().lower()] = value.strip().strip('"')
+        if entry.get("bssid") or entry.get("ssid"):
+            entry.setdefault("ssid", "")
+            rows.append(entry)
+    return rows
+
+
+def nearby_wifi_scan(config: AppConfig) -> None:
+    with task_status("[info]Triggering Wi-Fi scan…[/info]"):
+        scan = adb(["shell", "cmd", "wifi", "start-scan"])
+    scan_out = (scan.stdout + scan.stderr).strip()
+    if scan.returncode != 0 or any(
+        t in scan_out.lower() for t in ("unknown command", "exception", "denied")
+    ):
+        print_error(scan_out or "Wi-Fi scanning not supported on this device/ROM.")
+        return
+    console.print("[bold dim]Waiting for scan to complete…[/bold dim]")
+    with task_status("[info]Reading scan results…[/info]"):
+        raw = adb_output(["shell", "cmd", "wifi", "list-scan-results"])
+    rows = _parse_scan_results(raw)
+    if not rows:
+        console.print(raw[:3000] or "[bold yellow]No scan results returned. Enable Wi-Fi and retry.[/bold yellow]")
+        return
+    table = Table(title="Nearby Wi-Fi Networks", show_header=True, header_style="bold cyan")
+    table.add_column("SSID", style="bold yellow")
+    table.add_column("BSSID", style="white")
+    table.add_column("Freq (MHz)", style="white", justify="right")
+    table.add_column("Signal (dBm)", style="white", justify="right")
+    table.add_column("Capabilities", style="dim white")
+    for entry in rows:
+        table.add_row(
+            entry.get("ssid") or "[dim]Hidden[/dim]",
+            entry.get("bssid") or "—",
+            entry.get("frequency") or "—",
+            entry.get("signal") or entry.get("signal strength") or "—",
+            entry.get("capabilities") or "—",
+        )
+    console.print(table)
+    print_success(f"{len(rows)} network(s) found.")
+
+
+def hotspot_start(config: AppConfig) -> None:
+    if not confirm("Start a local-only hotspot on the device?"):
+        return
+    with task_status("[info]Starting local hotspot…[/info]"):
+        r = adb(["shell", "cmd", "wifi", "start-local-only-hotspot"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0 and not any(
+        t in out.lower()
+        for t in ("error", "exception", "unknown command", "denied", "permission")
+    ):
+        print_success(out or "Local hotspot started.")
+        if out:
+            console.print(f"[dim]{out}[/dim]")
+    else:
+        print_error(
+            out
+            or "Local hotspot is not available (may need location permission or a supported ROM)."
+        )
+
+
+def hotspot_stop(config: AppConfig) -> None:
+    with task_status("[info]Stopping local hotspot…[/info]"):
+        r = adb(["shell", "cmd", "wifi", "stop-local-only-hotspot"])
+    out = (r.stdout + r.stderr).strip()
+    if r.returncode == 0:
+        print_success(out or "Local hotspot stopped.")
+    else:
+        print_error(out or "failed to stop hotspot")

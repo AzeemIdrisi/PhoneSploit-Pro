@@ -1,16 +1,20 @@
+import os
 import re
+import shutil
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
 from typing import Literal
 
 from rich.console import Console
+from rich.text import Text
 from rich.theme import Theme
 
 from modules.config import AppConfig
 
 _theme = Theme(
     {
-        "info": "cyan",
+        "info": "bold cyan",
         "success": "bold green",
         "warning": "bold yellow",
         "error": "bold red",
@@ -32,31 +36,198 @@ def task_status(message: str):
 
 def submenu_row(*labels: str) -> None:
     """Compact one-line submenu: 1) …  2) …"""
-    parts = [f"[dim]{i}[/dim] {text}" for i, text in enumerate(labels, 1)]
+    parts = [f"[bold white]{i}.[/bold white] [bold green]{text}[/bold green]" for i, text in enumerate(labels, 1)]
     console.print("  " + "   ".join(parts))
 
 
-_ConfigDirAttr = Literal["pull_location", "screenshot_location", "screenrecord_location"]
+SubmenuAction = Literal["exit", "redraw", "proceed"]
+
+_SUBMENU_COL_WIDTH = 42
 
 
-def ensure_config_dir(
+def _compute_menu_layout(needed_width: int) -> tuple[int, int]:
+    """Return (columns, column_width). The main menu is fixed at 3 columns."""
+    term_width = shutil.get_terminal_size().columns
+    gaps = (3 - 1) * 2
+    cw = max(needed_width, (term_width - gaps) // 3)
+    return 3, cw
+
+
+def _pad_markup(markup: str, width: int) -> str:
+    """Pad Rich markup to a visible column width (ignores escape codes)."""
+    pad = max(0, width - len(Text.from_markup(markup).plain))
+    return markup + " " * pad
+
+
+def _format_menu_entry(number: int, label: str) -> str:
+    return f"[bold white]{number}.[/bold white] [bold green]{label}[/bold green]"
+
+
+def _cell_text(number: int, label: str, width: int) -> Text:
+    """Rich Text cell exactly `width` plain chars wide, number in white, label in green.
+    Labels longer than the column width are elided so they never wrap into a
+    neighbouring grid cell."""
+    num_part = f"{number:>2}. "
+    t = Text(num_part, style="bold white")
+    avail = max(0, width - len(num_part))
+    if len(label) > avail:
+        label = label[: max(0, avail - 1)] + "…"
+    t.append(label, style="bold green")
+    t.append(" " * max(0, width - len(t.plain)))
+    return t
+
+
+def _render_menu_grid(labels: list[str], *, columns: int = 1) -> None:
+    """Render numbered menu rows in one or two columns."""
+    if not labels:
+        return
+    if columns <= 1 or len(labels) <= 6:
+        for i, label in enumerate(labels, 1):
+            console.print(f"    {_format_menu_entry(i, label)}")
+        return
+
+    half = (len(labels) + 1) // 2
+    left = labels[:half]
+    right = labels[half:]
+    for row in range(half):
+        left_part = _pad_markup(_format_menu_entry(row + 1, left[row]), _SUBMENU_COL_WIDTH)
+        if row < len(right):
+            right_part = _pad_markup(
+                _format_menu_entry(half + row + 1, right[row]), _SUBMENU_COL_WIDTH
+            )
+            console.print(f"    {left_part}{right_part}")
+        else:
+            console.print(f"    {left_part}")
+
+
+def clear_terminal(config: AppConfig) -> None:
+    os.system(config.clear_cmd)
+
+
+def submenu_label(label: str) -> str:
+    """Append › for items that open a nested submenu."""
+    return label if label.endswith(" ›") else f"{label} ›"
+
+
+def _format_submenu_header(breadcrumb: list[str]) -> str:
+    """Build header: PhoneSploit Pro · Hub · Nested (skip Main Menu)."""
+    parts = [p for p in breadcrumb if p != "Main Menu"]
+    trail = " · ".join(parts)
+    return f"\n  [bold cyan]PhoneSploit Pro[/bold cyan]  ·  [bold white]{trail}[/bold white]\n"
+
+
+def render_submenu_screen(
+    title: str,
+    items: list[str],
+    *,
+    breadcrumb: list[str] | None = None,
+    columns: int | None = None,
+) -> None:
+    """Unified submenu layout."""
+    if breadcrumb:
+        console.print(_format_submenu_header(breadcrumb))
+    else:
+        console.print(f"\n  [bold cyan]PhoneSploit Pro[/bold cyan]  ·  [bold white]{title}[/bold white]\n")
+    col_count = columns if columns is not None else (2 if len(items) > 6 else 1)
+    _render_menu_grid(items, columns=col_count)
+    console.print("\n  [bold white]0:[/bold white] Back    [bold white]99:[/bold white] Clear")
+
+
+def render_main_menu(page_items: list[tuple[int, str]]) -> None:
+    """Render the single-page main menu (adaptive columns, 10/10/10/3 when wide enough)."""
+    n = len(page_items)
+    ncols, cw = _compute_menu_layout(n)
+    per_col = [n // ncols] * ncols
+    for i in range(n % ncols):
+        per_col[i] += 1
+    offsets = [0]
+    for s in per_col:
+        offsets.append(offsets[-1] + s)
+    max_rows = max(per_col)
+    gap = Text("  ")
+    for row in range(max_rows):
+        cells: list[Text] = []
+        for col in range(ncols):
+            idx = offsets[col] + row
+            if idx < n:
+                num, label = page_items[idx]
+                cells.append(_cell_text(num, label, cw))
+            else:
+                cells.append(Text(" " * cw))
+        console.print(Text.join(gap, cells))
+
+    console.print()
+    console.print("  [bold dim]99:[/bold dim] Clear   [bold dim]0:[/bold dim] Exit")
+
+
+def submenu_prompt(breadcrumb: list[str]) -> str:
+    trail = " › ".join(breadcrumb)
+    return f"[bold red]\\[{trail}][/bold red] > "
+
+
+def print_submenu(
+    title: str,
+    items: list[str],
+    *,
+    config: AppConfig | None = None,
+    clear: bool = False,
+    breadcrumb: list[str] | None = None,
+    parent_title: str | None = None,
+) -> None:
+    """Draw a submenu screen; pass config + clear=True to wipe the terminal first."""
+    if clear and config is not None:
+        clear_terminal(config)
+    crumbs = breadcrumb or (
+        ["Main Menu", title] if parent_title is None else [parent_title, title]
+    )
+    render_submenu_screen(title, items, breadcrumb=crumbs)
+
+
+def parse_submenu_choice(
+    choice: str,
     config: AppConfig,
-    field: _ConfigDirAttr,
-    default: str = "Downloaded-Files",
-) -> Path:
-    """If config field empty, one-line prompt; mkdir; return Path."""
-    val = getattr(config, field)
-    if not val:
-        val = (
-            ask(
-                f"[yellow]Output folder[/yellow] [dim](Enter={default})[/dim]> "
-            ).strip()
-            or default
-        )
-        setattr(config, field, val)
-    p = Path(val)
-    p.mkdir(parents=True, exist_ok=True)
-    return p
+    reprint_fn: Callable[[], None],
+    *,
+    back_label: str = "Back",
+) -> SubmenuAction:
+    """Handle 0 (exit submenu) and 99 (clear + reprint)."""
+    if choice == "0":
+        clear_terminal(config)
+        return "exit"
+    if choice == "99":
+        clear_terminal(config)
+        reprint_fn()
+        return "redraw"
+    return "proceed"
+
+
+def run_submenu_loop(
+    config: AppConfig,
+    title: str,
+    items: list[str],
+    breadcrumb: list[str],
+    handler: Callable[[str], bool],
+) -> None:
+    """Loop submenu: clear on enter, run handler per choice, reprint after action."""
+    columns = 2 if len(items) > 6 else 1
+
+    def _render(*, clear: bool = False) -> None:
+        if clear:
+            clear_terminal(config)
+        render_submenu_screen(title, items, breadcrumb=breadcrumb, columns=columns)
+
+    _render(clear=True)
+    prompt = submenu_prompt(breadcrumb)
+    while True:
+        choice = ask(prompt).strip().lower()
+        action = parse_submenu_choice(choice, config, lambda: _render())
+        if action == "exit":
+            return
+        if action == "redraw":
+            continue
+        if handler(choice):
+            console.print()
+            _render(clear=True)
 
 
 def print_error(msg: str) -> None:
@@ -79,15 +250,28 @@ def print_null_input() -> None:
     console.print("[error]Null input[/error]. [green]Returning to menu.[/green]")
 
 
-def ask(prompt: str) -> str:
-    """Styled input prompt that survives terminal line editing.
+def ensure_config_dir(
+    config: AppConfig,
+    field: str,
+    default: str = "Downloaded-Files",
+) -> Path:
+    """If config field empty, one-line prompt; mkdir; return Path."""
+    val = getattr(config, field)
+    if not val:
+        val = (
+            ask(
+                f"[bold yellow]Output folder[/bold yellow] [dim](Enter={default})[/dim]> "
+            ).strip()
+            or default
+        )
+        setattr(config, field, val)
+    p = Path(val)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
 
-    readline redraws the entire line when you edit (backspace, arrow keys), so
-    the prompt must be handed to readline itself via ``input()`` rather than
-    printed beforehand — otherwise the redraw erases it. GNU readline miscounts
-    the width of ANSI escape codes, so those are wrapped in the ``\\x01`` /
-    ``\\x02`` markers readline ignores when measuring the prompt.
-    """
+
+def ask(prompt: str) -> str:
+    """Styled input prompt that survives terminal line editing."""
     rendered = _render_prompt(prompt)
     if _readline_is_gnu():
         rendered = _wrap_ansi_escapes(rendered)
@@ -129,7 +313,7 @@ def _wrap_ansi_escapes(text: str) -> str:
 
 def confirm(prompt: str = "Do you want to continue?") -> bool:
     """Ask Y/N confirmation. Returns True for yes/enter, False for no."""
-    choice = ask(f"\n[white]{prompt}     [bold]Y / N[/bold][/white] > ").lower()
+    choice = ask(f"\n[bold white]{prompt}     Y / N[/bold white] > ").lower()
     while choice not in ("y", "n", ""):
         choice = ask("[error]Invalid choice![/error] Press Y or N > ").lower()
     return choice in ("y", "")

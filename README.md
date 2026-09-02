@@ -1,8 +1,6 @@
 <div align="center">
   
 # PhoneSploit Pro
-  
-### PhoneSploit with Metasploit integration.
 
 An all-in-one hacking tool written in `Python` to remotely exploit Android devices using `ADB` (Android Debug Bridge) and `Metasploit-Framework`.
 
@@ -45,80 +43,188 @@ The goal of this project is to make penetration testing and vulnerability assess
 
 ## Screenshots
 
-![Screenshot Page 1](docs/images/Screenshot-1.png)
-![Screenshot Page 2](docs/images/Screenshot-2.png)
-![Screenshot Page 3](docs/images/Screenshot-3.png)
-![Screenshot Page 4](docs/images/Screenshot-4.png)
-![Screenshot Page 4](docs/images/Screenshot-5.png)
-
----
+## ![Screenshot Page 1](docs/images/Screenshot-1.png)
 
 ## Features
 
-| Feature                                  | Description                                                                                                                                                                                                                                                                                                                                                                  |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Connect a device**                     | Connect to a device remotely using ADB.                                                                                                                                                                                                                                                                                                                                      |
-| **List connected devices**               | Show all devices currently attached to ADB.                                                                                                                                                                                                                                                                                                                                  |
-| **Disconnect all devices**               | Disconnect every ADB session.                                                                                                                                                                                                                                                                                                                                                |
-| **Multi-device selection**               | If several ADB devices are connected (USB or network), choose which device to use for the session (`ANDROID_SERIAL`).                                                                                                                                                                                                                                                        |
-| **Stop ADB server**                      | Stop the ADB server process.                                                                                                                                                                                                                                                                                                                                                 |
-| **Access device shell**                  | Open an interactive shell on the connected device.                                                                                                                                                                                                                                                                                                                           |
-| **Keycodes**                             | Send keycodes to control the device remotely.                                                                                                                                                                                                                                                                                                                                |
-| **Unlock device**                        | Turn the screen on, swipe up, and enter a password when needed.                                                                                                                                                                                                                                                                                                              |
-| **Lock device**                          | Lock the device.                                                                                                                                                                                                                                                                                                                                                             |
-| **Restart / reboot**                     | Restart or reboot the device to `System`, `Recovery`, `Bootloader`, or `Fastboot`.                                                                                                                                                                                                                                                                                           |
-| **Power off**                            | Power off the target device.                                                                                                                                                                                                                                                                                                                                                 |
-| **Screenshot**                           | Take a screenshot and pull it to the computer automatically.                                                                                                                                                                                                                                                                                                                 |
-| **Screen recording**                     | Record the target device’s screen for a specified time and pull the recording to the computer automatically.                                                                                                                                                                                                                                                                 |
-| **Anonymous screenshot / screen record** | Take screenshots or screen recordings and remove the file from the target device afterward.                                                                                                                                                                                                                                                                                  |
-| **Mirror and control**                   | Mirror the screen and control the target device.                                                                                                                                                                                                                                                                                                                             |
-| **List files and folders**               | List all files and folders on the target device.                                                                                                                                                                                                                                                                                                                             |
-| **Download from device**                 | Download a file or folder from the target device.                                                                                                                                                                                                                                                                                                                            |
-| **Send to device**                       | Send a file or folder from the computer to the target device.                                                                                                                                                                                                                                                                                                                |
-| **Copy WhatsApp data**                   | Copy all WhatsApp data to the computer.                                                                                                                                                                                                                                                                                                                                      |
-| **Copy screenshots**                     | Copy all screenshots to the computer.                                                                                                                                                                                                                                                                                                                                        |
-| **Copy camera photos**                   | Copy all camera photos to the computer.                                                                                                                                                                                                                                                                                                                                      |
-| **Camera live**                          | Stream live video from the front or back camera on the target device.                                                                                                                                                                                                                                                                                                        |
-| **Dump SMS**                             | Export all SMS from the device to the computer.                                                                                                                                                                                                                                                                                                                              |
-| **Dump contacts**                        | Export all contacts from the device to the computer.                                                                                                                                                                                                                                                                                                                         |
-| **Dump call logs**                       | Export all call logs from the device to the computer.                                                                                                                                                                                                                                                                                                                        |
-| **Run an app**                           | Launch an application on the device.                                                                                                                                                                                                                                                                                                                                         |
-| **Install APK**                          | Install an APK from the computer to the target device.                                                                                                                                                                                                                                                                                                                       |
-| **Install split APKs**                   | Install apps shipped as multiple APK splits (e.g. split bundles).                                                                                                                                                                                                                                                                                                            |
-| **Uninstall an app**                     | Remove an installed application.                                                                                                                                                                                                                                                                                                                                             |
-| **List installed apps**                  | List all apps installed on the target device.                                                                                                                                                                                                                                                                                                                                |
-| **Extract APK**                          | Extract the APK from an installed app.                                                                                                                                                                                                                                                                                                                                       |
-| **Force-stop app**                       | Force-stop a running application.                                                                                                                                                                                                                                                                                                                                            |
-| **Clear app data**                       | Clear storage/data for a chosen app (factory reset for that app).                                                                                                                                                                                                                                                                                                            |
-| **Restart app**                          | Restart an application (force-stop then relaunch).                                                                                                                                                                                                                                                                                                                           |
-| **Grant / revoke permission**            | Grant or revoke a runtime permission for an app.                                                                                                                                                                                                                                                                                                                             |
-| **Open a link**                          | Open a URL on the target device.                                                                                                                                                                                                                                                                                                                                             |
-| **Display a photo**                      | Show an image or photo on the target device.                                                                                                                                                                                                                                                                                                                                 |
-| **Play audio**                           | Play an audio file on the target device.                                                                                                                                                                                                                                                                                                                                     |
-| **Play video**                           | Play a video on the target device.                                                                                                                                                                                                                                                                                                                                           |
-| **Send SMS**                             | Send SMS messages through the target device.                                                                                                                                                                                                                                                                                                                                 |
-| **Device information**                   | Read device information.                                                                                                                                                                                                                                                                                                                                                     |
-| **Battery information**                  | Read battery status and related details.                                                                                                                                                                                                                                                                                                                                     |
-| **Record microphone audio**              | Record audio from the microphone.                                                                                                                                                                                                                                                                                                                                            |
-| **Stream microphone audio**              | Stream live microphone audio.                                                                                                                                                                                                                                                                                                                                                |
-| **Record device audio**                  | Record internal device audio.                                                                                                                                                                                                                                                                                                                                                |
-| **Stream device audio**                  | Stream live device audio.                                                                                                                                                                                                                                                                                                                                                    |
-| **Hack device completely**               | Automated Metasploit flow: fetch your `IP address` to set `LHOST`; create a payload with `msfvenom`, install it, and run it on the target device; launch and configure **Metasploit-Framework** to obtain a `meterpreter` session. A `meterpreter` session means the device is fully compromised via Metasploit-Framework, and you can run further actions from the session. |
-| **LAN network scan**                     | Discover hosts on the local network to help find a target IP address; probe TCP ports `5555` and `5554` with service detection and show ADB-related fingerprints and hints for likely Android/ADB targets.                                                                                                                                                                   |
-| **TCP port forwarding**                  | Forward TCP ports over ADB, including reverse forwarding.                                                                                                                                                                                                                                                                                                                    |
-| **Save logcat snippet**                  | Capture a slice of `logcat` output and save it to a file on the computer.                                                                                                                                                                                                                                                                                                    |
-| **Live logcat stream**                   | Stream `logcat` live from the device.                                                                                                                                                                                                                                                                                                                                        |
-| **Network snapshot**                     | Show a snapshot of network interfaces and connectivity on the device.                                                                                                                                                                                                                                                                                                        |
-| **Developer settings**                   | Open the system **Developer options** screen on the device.                                                                                                                                                                                                                                                                                                                  |
-| **Read locale**                          | Read locale and language settings from the device.                                                                                                                                                                                                                                                                                                                           |
-| **Screen stay-on**                       | Set `svc power stayon` (stay on over USB, stay on always, or turn stay-on off).                                                                                                                                                                                                                                                                                              |
-| **Wi‑Fi status dump**                    | Dump detailed Wi‑Fi status from the device.                                                                                                                                                                                                                                                                                                                                  |
-| **WLAN IP info**                         | Show WLAN IP addressing information.                                                                                                                                                                                                                                                                                                                                         |
-| **Wi‑Fi radio toggle**                   | Turn the Wi‑Fi radio on or off.                                                                                                                                                                                                                                                                                                                                              |
-| **Ping connectivity**                    | Run ping checks against a host to test connectivity.                                                                                                                                                                                                                                                                                                                         |
-| **Saved Wi‑Fi networks**                 | List saved Wi‑Fi networks known to the device.                                                                                                                                                                                                                                                                                                                               |
-| **Root heuristics**                      | Heuristic checks for common signs of root access.                                                                                                                                                                                                                                                                                                                            |
-| **Set resolution & display size**        | Set screen resolution (`wm size`) from 720p/1080p/2K/4K presets in portrait or landscape, or a custom `WxH`; set display density (`wm density`) from common DPI presets or a custom value. Also manage overscan (`wm overscan`), rotation (`wm set-user-rotation`), display scaling (`wm scaling`) and reset everything to device defaults. |
+The CLI main menu has **2 pages** and **23 top-level entries**. Related tools are grouped into hub submenus (shown with **›** in the menu).
+
+### Page 1 — Connection & control
+
+| Feature                      | Description                                                                                                                                                                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Connect a device**         | Connect to a device remotely using ADB.                                                                                                                                                                                            |
+| **List connected devices**   | Show all devices currently attached to ADB.                                                                                                                                                                                        |
+| **Scan network for devices** | Discover hosts on the local network; probe TCP ports `5555` and `5554` with service detection and show ADB-related fingerprints.                                                                                                   |
+| **Disconnect all devices**   | Disconnect every ADB session.                                                                                                                                                                                                      |
+| **Multi-device selection**   | If several ADB devices are connected (USB or network), choose which device to use for the session (`ANDROID_SERIAL`).                                                                                                              |
+| **Stop ADB server**          | Stop the ADB server process.                                                                                                                                                                                                       |
+| **Hack device completely**   | Automated Metasploit flow: fetch your `IP address` to set `LHOST`; create a payload with `msfvenom`, install it, and run it on the target device; launch and configure **Metasploit-Framework** to obtain a `meterpreter` session. |
+| **Mirror and control**       | Mirror the screen and control the target device.                                                                                                                                                                                   |
+| **Device shell**             | Open an interactive shell on the connected device.                                                                                                                                                                                 |
+| **Camera live stream**       | Stream live video from the front or back camera on the target device.                                                                                                                                                              |
+
+#### Wireless Debugging ›
+
+| Feature                | Description                                                   |
+| ---------------------- | ------------------------------------------------------------- |
+| **Pair device**        | Pair with a device using Wireless Debugging address and code. |
+| **Connect to device**  | Connect over TCP/IP (IP:port).                                |
+| **Enable TCP/IP mode** | Restart adb in TCP/IP listening mode.                         |
+| **Switch back to USB** | Return adb to USB mode.                                       |
+
+#### Screen Capture ›
+
+| Feature                                  | Description                                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Screenshot**                           | Take a screenshot and pull it to the computer automatically.                                                 |
+| **Screen recording**                     | Record the target device’s screen for a specified time and pull the recording to the computer automatically. |
+| **Anonymous screenshot / screen record** | Take screenshots or screen recordings and remove the file from the target device afterward.                  |
+
+#### Audio ›
+
+| Feature                     | Description                       |
+| --------------------------- | --------------------------------- |
+| **Stream microphone audio** | Stream live microphone audio.     |
+| **Record microphone audio** | Record audio from the microphone. |
+| **Stream device audio**     | Stream live device audio.         |
+| **Record device audio**     | Record internal device audio.     |
+
+#### Media ›
+
+| Feature             | Description                                                       |
+| ------------------- | ----------------------------------------------------------------- |
+| **Open URL**        | Open a URL on the target device.                                  |
+| **Display a photo** | Show an image or photo on the target device.                      |
+| **Play audio**      | Play an audio file on the target device.                          |
+| **Play video**      | Play a video on the target device.                                |
+| **Set wallpaper**   | Push an image to the device and open the system wallpaper picker. |
+
+#### Device Control ›
+
+| Feature                        | Description                                                                        |
+| ------------------------------ | ---------------------------------------------------------------------------------- |
+| **Keycodes**                   | Send keycodes to control the device remotely.                                      |
+| **Unlock device**              | Turn the screen on, swipe up, and enter a password when needed.                    |
+| **Lock device**                | Lock the device.                                                                   |
+| **Restart / reboot**           | Restart or reboot the device to `System`, `Recovery`, `Bootloader`, or `Fastboot`. |
+| **Power off**                  | Power off the target device.                                                       |
+| **Screen stay-on**             | Set `svc power stayon` (stay on over USB, stay on always, or turn stay-on off).    |
+| **Send SMS**                   | Send SMS messages through the target device.                                       |
+| **Post a notification**        | Post a custom notification on the device.                                          |
+| **Expand notifications panel** | Expand the notification shade.                                                     |
+| **Expand quick settings**      | Expand the quick-settings panel.                                                   |
+| **Collapse panel**             | Collapse the notification or quick-settings panel.                                 |
+
+### Page 2 — Data, apps & network
+
+#### Device Data ›
+
+| Feature                       | Description                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------ |
+| **Dump SMS**                  | Export all SMS from the device to the computer.                                |
+| **Dump contacts**             | Export all contacts from the device to the computer.                           |
+| **Dump call logs**            | Export all call logs from the device to the computer.                          |
+| **Read clipboard**            | Read the current device clipboard contents.                                    |
+| **Set clipboard**             | Set text on the device clipboard.                                              |
+| **Clear clipboard**           | Clear the device clipboard.                                                    |
+| **GPS / location**            | Retrieve the device's last-known GPS location (latitude, longitude, provider). |
+| **IMEI / device identifiers** | Read IMEI, Android ID, serial number, and other hardware/software identifiers. |
+
+#### File Manager ›
+
+| Feature                    | Description                                                   |
+| -------------------------- | ------------------------------------------------------------- |
+| **List files and folders** | List all files and folders on the target device.              |
+| **Download from device**   | Download a file or folder from the target device.             |
+| **Send to device**         | Send a file or folder from the computer to the target device. |
+| **Copy WhatsApp data**     | Copy all WhatsApp data to the computer.                       |
+| **Copy screenshots**       | Copy all screenshots to the computer.                         |
+| **Copy camera photos**     | Copy all camera photos to the computer.                       |
+
+#### App Manager ›
+
+| Feature                               | Description                                                             |
+| ------------------------------------- | ----------------------------------------------------------------------- |
+| **Run an app**                        | Launch an application on the device.                                    |
+| **Install APK**                       | Install an APK from the computer to the target device.                  |
+| **Install split APKs**                | Install apps shipped as multiple APK splits (e.g. split bundles).       |
+| **Uninstall an app**                  | Remove an installed application.                                        |
+| **List installed apps**               | List all apps installed on the target device.                           |
+| **Extract APK**                       | Extract the APK from an installed app.                                  |
+| **Force-stop app**                    | Force-stop a running application.                                       |
+| **Clear app data**                    | Clear storage/data for a chosen app (factory reset for that app).       |
+| **Restart app**                       | Restart an application (force-stop then relaunch).                      |
+| **Grant / revoke permission**         | Grant or revoke a runtime permission for an app.                        |
+| **App usage statistics**              | Show foreground app usage stats over 1 day / 7 days / all time.         |
+| **Disable app**                       | Disable a system or user app.                                           |
+| **Enable app**                        | Re-enable a previously disabled app.                                    |
+| **Suspend app**                       | Suspend an app (icon greyed out, no data usage).                        |
+| **Unsuspend app**                     | Unsuspend a suspended app.                                              |
+| **Whitelist battery optimization**    | Add an app to the Doze battery-optimization whitelist.                  |
+| **Un-whitelist battery optimization** | Remove an app from the battery-optimization whitelist.                  |
+| **Show battery whitelist**            | List apps whitelisted from battery optimization.                        |
+| **Set default home app**              | Change the default launcher/home app to any installed launcher package. |
+| **Show current home app**             | Display the current default launcher/home app.                          |
+
+#### Device Info ›
+
+| Feature                 | Description                                                             |
+| ----------------------- | ----------------------------------------------------------------------- |
+| **Device information**  | Read device information.                                                |
+| **Battery information** | Read battery status and related details.                                |
+| **Developer settings**  | Open the system **Developer options** screen on the device.             |
+| **Read locale**         | Read locale and language settings from the device.                      |
+| **Mock battery**        | Fake a battery level, simulate plugged or unplugged, or reset readings. |
+
+#### Display Settings ›
+
+| Feature                        | Description                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| **View display settings**      | Show current resolution, density, and related display values.                 |
+| **Set resolution**             | Set screen resolution (`wm size`) from presets or a custom `WxH`.             |
+| **Set display size / density** | Set display density (`wm density`) from common DPI presets or a custom value. |
+| **Toggle display scaling**     | Enable or disable display scaling.                                            |
+| **Reset resolution & density** | Reset display settings to device defaults.                                    |
+| **Screen brightness**          | Set screen brightness.                                                        |
+| **Screen timeout**             | Set screen timeout duration.                                                  |
+
+#### Sound Settings ›
+
+| Feature                 | Description                             |
+| ----------------------- | --------------------------------------- |
+| **Show media volume**   | Display the current media volume level. |
+| **Set media volume**    | Set the device media volume.            |
+| **Do Not Disturb mode** | Enable or disable Do Not Disturb mode.  |
+
+#### Wi-Fi ›
+
+| Feature                  | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| **Wi‑Fi status dump**    | Dump detailed Wi‑Fi status from the device.                                  |
+| **WLAN IP info**         | Show WLAN IP addressing information.                                         |
+| **Wi‑Fi radio toggle**   | Turn the Wi‑Fi radio on or off.                                              |
+| **Saved Wi‑Fi networks** | List saved Wi‑Fi networks known to the device.                               |
+| **Nearby Wi‑Fi scan**    | Scan and list nearby Wi‑Fi networks with SSID, BSSID, frequency, and signal. |
+| **Start local hotspot**  | Start a local-only Wi‑Fi hotspot directly from the device.                   |
+| **Stop local hotspot**   | Stop the local Wi‑Fi hotspot.                                                |
+
+#### Network Tools ›
+
+| Feature                 | Description                                               |
+| ----------------------- | --------------------------------------------------------- |
+| **Ping connectivity**   | Run ping checks against a host to test connectivity.      |
+| **Radio toggles**       | Toggle mobile data, Bluetooth, NFC, and airplane mode.    |
+| **TCP port forwarding** | Forward TCP ports over ADB, including reverse forwarding. |
+
+#### Diagnostics ›
+
+| Feature                 | Description                                                               |
+| ----------------------- | ------------------------------------------------------------------------- |
+| **Save logcat snippet** | Capture a slice of `logcat` output and save it to a file on the computer. |
+| **Live logcat stream**  | Stream `logcat` live from the device.                                     |
+| **Network snapshot**    | Show a snapshot of network interfaces and connectivity on the device.     |
+| **Root heuristics**     | Heuristic checks for common signs of root access.                         |
 
 ---
 
