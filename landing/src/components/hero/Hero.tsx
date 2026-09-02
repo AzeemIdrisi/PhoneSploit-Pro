@@ -56,12 +56,20 @@ export default function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="mt-6 text-lg sm:text-xl lg:text-2xl text-primary-300 max-w-2xl mx-auto text-balance"
+            transition={{ delay: 0.35, duration: 0.6 }}
+            className="mt-6 text-xl sm:text-2xl lg:text-3xl font-semibold text-white max-w-2xl mx-auto text-balance"
           >
-            All-in-one hacking tool to remotely exploit Android devices using
-            ADB & Metasploit-Framework. Automated Meterpreter sessions in one
-            click.
+            The Swiss Army knife for Android. Own the device.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="mt-4 text-lg sm:text-xl text-primary-300 max-w-2xl mx-auto text-balance"
+          >
+            An all-in-one hacking tool to remotely take over Android devices
+            using ADB, scrcpy, Nmap, and Metasploit-Framework.
           </motion.p>
 
           <motion.div
