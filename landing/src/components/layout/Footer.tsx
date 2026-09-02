@@ -22,9 +22,8 @@ export default function Footer() {
               <span className="text-white">Pro</span>
             </a>
             <p className="text-primary-300 max-w-md text-balance">
-              All-in-one hacking tool to remotely exploit Android devices using
-              ADB and Metasploit-Framework. Automated Meterpreter sessions,
-              device control, data extraction, and more.
+              An all-in-one hacking tool to remotely take over Android devices
+              using ADB, scrcpy, Nmap, and Metasploit-Framework.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-primary-400">
               <div className="flex items-center gap-2">
