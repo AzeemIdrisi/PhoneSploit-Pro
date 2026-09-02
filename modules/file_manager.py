@@ -23,12 +23,12 @@ def list_files(config: AppConfig) -> None:
 
     entries = [e.strip() for e in raw.splitlines() if e.strip()]
     if not entries:
-        console.print("[yellow]No files found.[/yellow]")
+        console.print("[bold yellow]No files found.[/bold yellow]")
         return
 
     table = Table(title="/sdcard/ Contents", show_header=True, header_style="bold cyan")
     table.add_column("#", style="bold green", justify="right")
-    table.add_column("Name", style="white")
+    table.add_column("Name", style="bold white")
 
     for i, entry in enumerate(entries, 1):
         table.add_row(str(i), entry)
@@ -38,7 +38,7 @@ def list_files(config: AppConfig) -> None:
 
 def pull_file(config: AppConfig) -> None:
     console.print(
-        "[cyan]Path under /sdcard/[/cyan] [dim](e.g. Download/sample.jpg)[/dim]"
+        "[bold cyan]Path under /sdcard/[/bold cyan] [dim](e.g. Download/sample.jpg)[/dim]"
     )
     location = ask("[prompt]> /sdcard/[/prompt]").strip()
 
@@ -52,7 +52,7 @@ def pull_file(config: AppConfig) -> None:
         return
 
     if not confirm(
-        f"Download [cyan]{full_path}[/cyan] from the device? "
+        f"Download [bold cyan]{full_path}[/bold cyan] from the device? "
         "A local file with the same name may be overwritten."
     ):
         return
@@ -75,7 +75,7 @@ def pull_file(config: AppConfig) -> None:
 
 
 def push_file(config: AppConfig) -> None:
-    location = ask("[cyan]File path on computer[/cyan] > ").strip()
+    location = ask("[bold cyan]File path on computer[/bold cyan] > ").strip()
 
     if not location:
         print_null_input()
@@ -89,13 +89,13 @@ def push_file(config: AppConfig) -> None:
         return
 
     if not confirm(
-        f"Upload [cyan]{file_path.name}[/cyan] to the device? "
+        f"Upload [bold cyan]{file_path.name}[/bold cyan] to the device? "
         "An existing file at the destination path may be overwritten."
     ):
         return
 
     destination = ask(
-        "[cyan]Destination under /sdcard/[/cyan] [dim](e.g. Documents)[/dim]> "
+        "[bold cyan]Destination under /sdcard/[/bold cyan] [dim](e.g. Documents)[/dim]> "
     ).strip()
 
     with task_status(f"[info]Pushing {file_path.name}…[/info]"):

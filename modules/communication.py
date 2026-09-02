@@ -4,20 +4,20 @@ from modules.console import console, print_error, print_success, print_null_inpu
 
 def send_sms(config: AppConfig) -> None:
     console.print(
-        "[red]\\[Warning][/red] [cyan]BETA — tested on Android 12 only.[/cyan]"
+        "[bold red]\\[Warning][/bold red] [bold cyan]BETA — tested on Android 12 only.[/bold cyan]"
     )
     number = ask(
-        "[yellow]Phone + country code[/yellow] [dim](e.g. +91…)[/dim]> "
+        "[bold yellow]Phone + country code[/bold yellow] [dim](e.g. +91…)[/dim]> "
     ).strip()
 
     if not number:
         print_null_input()
         return
 
-    message = ask("[yellow]Message[/yellow]> ").strip()
+    message = ask("[bold yellow]Message[/bold yellow]> ").strip()
 
     if not confirm(
-        f"Send SMS to [cyan]{number}[/cyan]? May incur charges."
+        f"Send SMS to [bold cyan]{number}[/bold cyan]? May incur charges."
     ):
         return
 
@@ -41,14 +41,14 @@ def send_sms(config: AppConfig) -> None:
 
 def open_link(config: AppConfig) -> None:
     url = ask(
-        "[yellow]URL[/yellow] [dim](e.g. https://github.com)[/dim]> "
+        "[bold yellow]URL[/bold yellow] [dim](e.g. https://github.com)[/dim]> "
     ).strip()
 
     if not url:
         print_null_input()
         return
 
-    if not confirm(f"Open on device? [cyan]{url}[/cyan]"):
+    if not confirm(f"Open on device? [bold cyan]{url}[/bold cyan]"):
         return
 
     with task_status(f"[info]Opening URL…[/info]"):
