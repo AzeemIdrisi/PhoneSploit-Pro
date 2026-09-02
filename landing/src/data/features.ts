@@ -49,7 +49,7 @@ export const features: Feature[] = [
   { id: 'location', name: 'GPS / Location', description: "Retrieve the device's last-known GPS location (latitude, longitude, provider)", icon: 'MapPin', category: 'device' },
   { id: 'identifiers', name: 'IMEI / Identifiers', description: 'Read IMEI, Android ID, serial number, and other hardware/software identifiers', icon: 'Fingerprint', category: 'device' },
   { id: 'mock-battery', name: 'Mock Battery', description: 'Fake a battery level, simulate plugged or unplugged, or reset readings', icon: 'Battery', category: 'device' },
-  { id: 'display-size', name: 'Set Resolution & Display Size', description: 'Set screen resolution (wm size) from 720p/1080p/2K/4K presets or custom WxH; set display density (wm density); manage overscan, rotation, scaling, and reset to defaults', icon: 'MonitorIcon', category: 'device' },
+  { id: 'display-size', name: 'Set Resolution & Display Size', description: 'Set screen resolution (wm size) from 720p/1080p/2K/4K presets or custom WxH; set display density (wm density); toggle display scaling; and reset to defaults', icon: 'MonitorIcon', category: 'device' },
   { id: 'sound-display', name: 'Sound & Display', description: 'Set media volume, screen brightness, screen timeout, and Do Not Disturb mode', icon: 'Volume2', category: 'device' },
   { id: 'notifications', name: 'Notifications', description: 'Post a notification, expand or collapse the notification panel and quick settings', icon: 'Bell', category: 'device' },
 
