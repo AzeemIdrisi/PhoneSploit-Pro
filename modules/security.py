@@ -4,7 +4,7 @@ from pathlib import Path
 
 from modules.config import AppConfig
 from modules import banner
-from modules.console import console, confirm, adb, task_status, get_adb_executable, ask
+from modules.console import console, confirm, adb, task_status, get_adb_executable, ask, go_back_to_main_menu
 from modules.connection import get_ip_address, is_valid_ipv4
 
 
@@ -17,7 +17,7 @@ def hack(config: AppConfig) -> None:
     choice = ask("[prompt]> [/prompt]")
 
     if choice != "":
-        console.print("[bold green]Returning to Main Menu.[/bold green]")
+        go_back_to_main_menu(config, "Attack cancelled")
         return
 
     os.system(config.clear_cmd)

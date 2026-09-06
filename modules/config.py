@@ -10,6 +10,7 @@ class AppConfig:
     screenrecord_location: str = ""
     pull_location: str = ""
     run: bool = True
+    return_to_main: bool = False
     adb_path: str | None = None
     msfvenom_path: str | None = None
     msfconsole_path: str | None = None

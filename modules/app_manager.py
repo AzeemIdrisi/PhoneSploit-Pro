@@ -10,7 +10,8 @@ from modules.console import (
     print_null_input,
     confirm,
     task_status,
-    submenu_row,
+    show_options,
+    go_back_to_main_menu,
     ensure_config_dir,
     adb,
     adb_output,
@@ -24,12 +25,12 @@ def _list_third_party_apps() -> list[str]:
     return [line.replace("package:", "").strip() for line in raw.splitlines() if line.strip()]
 
 
-def select_package_from_list() -> str | None:
+def select_package_from_list(config: AppConfig) -> str | None:
     """Display numbered third-party app list; return package name or None."""
-    return _select_app_from_list()
+    return _select_app_from_list(config)
 
 
-def _select_app_from_list() -> str | None:
+def _select_app_from_list(config: AppConfig) -> str | None:
     """Display numbered app list, return selected package name or None."""
     app_list = _list_third_party_apps()
     if not app_list:
@@ -46,11 +47,11 @@ def _select_app_from_list() -> str | None:
     console.print(table)
     selection = ask("[prompt]Enter Selection > [/prompt]")
     if not selection.isdigit():
-        print_error("Expected an Integer Value\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config, "Expected an Integer Value")
         return None
     idx = int(selection)
     if idx < 1 or idx > len(app_list):
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return None
     return app_list[idx - 1]
 
@@ -86,11 +87,15 @@ def install_app(config: AppConfig) -> None:
 
 
 def uninstall_app(config: AppConfig) -> None:
-    submenu_row("Select from app list", "Enter package name manually")
+    show_options(
+        config,
+        "Uninstall an App",
+        ["Select from app list", "Enter package name manually"],
+    )
     mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
-        package_name = _select_app_from_list()
+        package_name = _select_app_from_list(config)
         if not package_name:
             return
     elif mode == "2":
@@ -101,7 +106,7 @@ def uninstall_app(config: AppConfig) -> None:
             print_null_input()
             return
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
     if not confirm(
@@ -121,11 +126,15 @@ def uninstall_app(config: AppConfig) -> None:
 
 
 def launch_app(config: AppConfig) -> None:
-    submenu_row("Select from app list", "Enter package name manually")
+    show_options(
+        config,
+        "Run an App",
+        ["Select from app list", "Enter package name manually"],
+    )
     mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
-        package_name = _select_app_from_list()
+        package_name = _select_app_from_list(config)
         if not package_name:
             return
     elif mode == "2":
@@ -136,7 +145,7 @@ def launch_app(config: AppConfig) -> None:
             print_null_input()
             return
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
     with task_status(f"[info]Launching {package_name}…[/info]"):
@@ -145,7 +154,11 @@ def launch_app(config: AppConfig) -> None:
 
 
 def list_apps(config: AppConfig) -> None:
-    submenu_row("Third-party packages only", "All packages")
+    show_options(
+        config,
+        "List Installed Apps",
+        ["Third-party packages only", "All packages"],
+    )
     mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
@@ -158,7 +171,7 @@ def list_apps(config: AppConfig) -> None:
             app_list = [line.replace("package:", "").strip() for line in raw.splitlines() if line.strip()]
         title = "All Installed Packages"
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
     table = Table(title=title, show_header=True, header_style="bold cyan")
@@ -172,11 +185,15 @@ def list_apps(config: AppConfig) -> None:
 
 
 def extract_apk(config: AppConfig) -> None:
-    submenu_row("Select from app list", "Enter package name manually")
+    show_options(
+        config,
+        "Extract APK from Installed App",
+        ["Select from app list", "Enter package name manually"],
+    )
     mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
-        package_name = _select_app_from_list()
+        package_name = _select_app_from_list(config)
         if not package_name:
             return
     elif mode == "2":
@@ -187,7 +204,7 @@ def extract_apk(config: AppConfig) -> None:
             print_null_input()
             return
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
     if not confirm(
@@ -250,7 +267,7 @@ def _list_all_apps() -> list[str]:
     return [line.replace("package:", "").strip() for line in raw.splitlines() if line.strip()]
 
 
-def _select_app_from_packages(app_list: list[str], title: str) -> str | None:
+def _select_app_from_packages(config: AppConfig, app_list: list[str], title: str) -> str | None:
     if not app_list:
         console.print("[bold yellow]No apps found.[/bold yellow]")
         return None
@@ -262,28 +279,36 @@ def _select_app_from_packages(app_list: list[str], title: str) -> str | None:
     console.print(table)
     selection = ask("[prompt]Enter Selection > [/prompt]")
     if not selection.isdigit():
-        print_error("Expected an Integer Value")
+        go_back_to_main_menu(config, "Expected an Integer Value")
         return None
     idx = int(selection)
     if idx < 1 or idx > len(app_list):
-        print_error("Invalid selection")
+        go_back_to_main_menu(config)
         return None
     return app_list[idx - 1]
 
 
-def prompt_package(*, include_system: bool = False) -> str | None:
+def prompt_package(config: AppConfig, title: str = "Select App", *, include_system: bool = False) -> str | None:
     """Pick a package from third-party list, all packages, or manual entry."""
     if include_system:
-        submenu_row("Third-party apps", "All packages", "Enter package name manually")
+        show_options(
+            config,
+            title,
+            ["Third-party apps", "All packages", "Enter package name manually"],
+        )
     else:
-        submenu_row("Third-party apps", "Enter package name manually")
+        show_options(
+            config,
+            title,
+            ["Third-party apps", "Enter package name manually"],
+        )
     mode = ask("[prompt]> [/prompt]").strip()
     if mode == "1":
-        return _select_app_from_list()
+        return _select_app_from_list(config)
     if mode == "2" and include_system:
         with task_status("[info]Fetching all packages…[/info]"):
             apps = _list_all_apps()
-        return _select_app_from_packages(apps, "All Installed Packages")
+        return _select_app_from_packages(config, apps, "All Installed Packages")
     manual_mode = "3" if include_system else "2"
     if mode == manual_mode:
         pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
@@ -301,7 +326,7 @@ def _pm_report(r: object, verb_past: str) -> None:
 
 
 def disable_app(config: AppConfig) -> None:
-    pkg = prompt_package(include_system=True)
+    pkg = prompt_package(config, "Disable App", include_system=True)
     if not pkg:
         return
     if not confirm(f"[bold yellow]Disable[/bold yellow] [cyan]{pkg}[/cyan]? (can be re-enabled later)"):
@@ -311,7 +336,7 @@ def disable_app(config: AppConfig) -> None:
 
 
 def enable_app(config: AppConfig) -> None:
-    pkg = prompt_package(include_system=True)
+    pkg = prompt_package(config, "Enable App", include_system=True)
     if not pkg:
         return
     if not confirm(f"[bold green]Enable[/bold green] [cyan]{pkg}[/cyan]?"):
@@ -321,7 +346,7 @@ def enable_app(config: AppConfig) -> None:
 
 
 def suspend_app(config: AppConfig) -> None:
-    pkg = prompt_package(include_system=True)
+    pkg = prompt_package(config, "Suspend App", include_system=True)
     if not pkg:
         return
     if not confirm(f"[bold yellow]Suspend[/bold yellow] [cyan]{pkg}[/cyan]?"):
@@ -331,7 +356,7 @@ def suspend_app(config: AppConfig) -> None:
 
 
 def unsuspend_app(config: AppConfig) -> None:
-    pkg = prompt_package(include_system=True)
+    pkg = prompt_package(config, "Unsuspend App", include_system=True)
     if not pkg:
         return
     if not confirm(f"[bold green]Unsuspend[/bold green] [cyan]{pkg}[/cyan]?"):
@@ -347,7 +372,7 @@ def battery_whitelist_show(config: AppConfig) -> None:
 
 
 def battery_whitelist(config: AppConfig) -> None:
-    pkg = prompt_package(include_system=True)
+    pkg = prompt_package(config, "Battery Whitelist", include_system=True)
     if not pkg:
         return
     if not confirm(f"Whitelist [bold cyan]{pkg}[/bold cyan] (ignore battery optimizations)?"):
@@ -357,7 +382,7 @@ def battery_whitelist(config: AppConfig) -> None:
 
 
 def battery_unwhitelist(config: AppConfig) -> None:
-    pkg = prompt_package(include_system=True)
+    pkg = prompt_package(config, "Battery Un-whitelist", include_system=True)
     if not pkg:
         return
     if not confirm(f"Un-whitelist [bold cyan]{pkg}[/bold cyan] (ignore battery optimizations)?"):
@@ -389,7 +414,7 @@ def set_home_app(config: AppConfig) -> None:
     show_home_app(config)
     pkg = ask("[bold cyan]Launcher package name[/bold cyan] [dim](e.g. com.android.launcher3)[/dim]> ").strip()
     if not pkg:
-        print_error("Null input")
+        print_null_input()
         return
     with task_status("[info]Resolving launcher activity…[/info]"):
         resolved = adb_output(

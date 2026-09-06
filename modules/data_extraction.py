@@ -17,7 +17,7 @@ from modules.console import (
     print_info,
     confirm,
     task_status,
-    submenu_row,
+    show_options,
     ensure_config_dir,
     adb,
     adb_output,
@@ -220,7 +220,7 @@ def clipboard_read(config: AppConfig) -> None:
 def clipboard_set(config: AppConfig) -> None:
     text = ask("[bold cyan]Text to copy to clipboard[/bold cyan]> ")
     if not text:
-        print_error("Null input")
+        print_null_input()
         return
     ok, err = _clipboard_set(text)
     if ok:
@@ -353,7 +353,11 @@ def get_identifiers(config: AppConfig) -> None:
 
 
 def usage_stats(config: AppConfig) -> None:
-    submenu_row("Last 1 day", "Last 7 days", "All time")
+    show_options(
+        config,
+        "App Usage Statistics",
+        ["Last 1 day", "Last 7 days", "All time"],
+    )
     window = ask("[prompt]> [/prompt]").strip().lower()
     days_map = {"1": 1, "2": 7, "3": None}
     if window not in days_map:
