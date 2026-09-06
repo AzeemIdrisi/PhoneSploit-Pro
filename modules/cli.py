@@ -118,7 +118,7 @@ def check_packages(config: AppConfig) -> None:
 
         names = [name for name, _ in missing]
         items = "\n".join(
-            f"  [bold yellow]{i + 1}.[/bold yellow] [bold white]{name}[/bold white]"
+            f"  [bold yellow]{i + 1:>2}.[/bold yellow] [bold white]{name}[/bold white]"
             for i, name in enumerate(names)
         )
         console.print(
@@ -379,8 +379,10 @@ def _run_handler(config: AppConfig, item: MenuItem) -> None:
     handler(config)  # type: ignore[operator]
 
 
-def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> None:
-    """Interactive hub submenu loop."""
+def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> bool:
+    """Interactive hub submenu loop. Returns True when a handler asked to pop
+    all the way back to the main menu (the caller renders it without
+    clearing so the handler's message stays visible)."""
     assert hub.children is not None
     labels = [child.display_label for child in hub.children]
     crumbs = breadcrumb + [hub.label]
@@ -397,7 +399,7 @@ def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> None:
         choice = ask(prompt).strip().lower()
         action = parse_submenu_choice(choice, config, lambda: _render())
         if action == "exit":
-            return
+            return False
         if action == "redraw":
             continue
         if not choice.isdigit():
@@ -409,24 +411,34 @@ def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> None:
             continue
         child = hub.children[idx - 1]
         if child.is_hub:
-            run_hub(config, child, crumbs)
+            if run_hub(config, child, crumbs):
+                return True
             _render(clear=True)
             continue
         if not _check_require(child.requires, config):
             continue
         _run_handler(config, child)
+        if config.return_to_main:
+            config.return_to_main = False
+            return True
         console.print()
         _render()
 
 
 def _dispatch_item(config: AppConfig, item: MenuItem) -> None:
     if item.is_hub:
-        run_hub(config, item, ["Main Menu"])
-        clear_screen(config)
+        if run_hub(config, item, ["Main Menu"]):
+            display_menu(config)
+        else:
+            clear_screen(config)
         return
     if not _check_require(item.requires, config):
         return
     _run_handler(config, item)
+    config.return_to_main = False
+    # Always re-render (without clearing) so the handler's output stays
+    # visible and the menu is on screen for the next prompt.
+    display_menu(config)
 
 
 # ---------------------------------------------------------------------------
@@ -444,7 +456,7 @@ def main(config: AppConfig) -> None:
         clear_screen(config)
         return
     if not option.isdigit():
-        console.print("\n[bold red]Invalid selection![/bold red]\n")
+        print_error("Invalid selection")
         return
 
     item = None
@@ -453,7 +465,7 @@ def main(config: AppConfig) -> None:
     except (ValueError, IndexError):
         pass
     if item is None:
-        console.print("\n[bold red]Invalid selection![/bold red]\n")
+        print_error("Invalid selection")
         return
     _dispatch_item(config, item)
 

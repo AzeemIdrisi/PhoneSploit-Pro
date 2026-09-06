@@ -12,7 +12,8 @@ from modules.console import (
     open_file_prompt,
     confirm,
     task_status,
-    submenu_row,
+    show_options,
+    go_back_to_main_menu,
     ensure_config_dir,
     adb,
     adb_output,
@@ -255,8 +256,8 @@ def _check_android_version() -> int | None:
         return None
 
 
-def _select_camera_facing() -> str | None:
-    submenu_row("Front camera", "Back camera")
+def _select_camera_facing(config: AppConfig) -> str | None:
+    show_options(config, "Select Camera", ["Front camera", "Back camera"])
     choice = ask("[prompt]> [/prompt]").strip()
     if choice in ("", "1"):
         return "front"
@@ -274,11 +275,11 @@ def record_audio(config: AppConfig, mode: str) -> None:
         android_ver = _check_android_version()
 
     if android_ver is None:
-        print_error("No connected device found.\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config, "No connected device found.")
         return
 
     if android_ver < 11:
-        print_error("Android version too old. Going back to Main Menu.")
+        go_back_to_main_menu(config, "Android version too old.")
         return
 
     console.print(f"[dim]Android {android_ver}[/dim]")
@@ -293,7 +294,7 @@ def record_audio(config: AppConfig, mode: str) -> None:
         audio_flag = ""
         label = "Device Audio"
 
-    submenu_row("Stream & record", "Record only (fast)")
+    show_options(config, f"Record {label}", ["Stream & record", "Record only (fast)"])
     choice = ask("[prompt]> [/prompt]")
 
     save_path = str(Path(save_dir) / file_name)
@@ -311,7 +312,7 @@ def record_audio(config: AppConfig, mode: str) -> None:
             cmd.append(audio_flag)
         subprocess.run(cmd)
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
     if mode == "device":
@@ -319,7 +320,11 @@ def record_audio(config: AppConfig, mode: str) -> None:
 
 
 def mirror(config: AppConfig) -> None:
-    submenu_row("Default (best quality)", "Fast (low bitrate)", "Custom")
+    show_options(
+        config,
+        "Mirror & Control Device",
+        ["Default (best quality)", "Fast (low bitrate)", "Custom"],
+    )
     mode = ask("[prompt]> [/prompt]")
 
     if mode == "1":
@@ -340,7 +345,7 @@ def mirror(config: AppConfig) -> None:
             extra += [f"--max-fps={fps_in}"]
         subprocess.run(scrcpy_argv(config, extra))
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
 
@@ -350,18 +355,23 @@ def camera_live(config: AppConfig) -> None:
         android_ver = _check_android_version()
 
     if android_ver is None:
-        print_error("No connected device found.\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config, "No connected device found.")
         return
 
     if android_ver < 12:
         print_error("Android version too old. Camera Live requires Android 12+.")
         return
 
-    facing = _select_camera_facing()
+    facing = _select_camera_facing(config)
     if facing is None:
         return
 
-    submenu_row("Normal", "Rotate 90", "Rotate 180", "Rotate 270")
+    show_options(
+        config,
+        "Camera Orientation",
+        ["Normal", "Rotate 90", "Rotate 180", "Rotate 270"],
+        breadcrumb=["Main Menu", "Camera Live Stream", "Camera Orientation"],
+    )
     rotation_choice = ask("[prompt]> [/prompt]").strip()
     rotation_map = {
         "": "0",
@@ -372,10 +382,15 @@ def camera_live(config: AppConfig) -> None:
     }
     orientation = rotation_map.get(rotation_choice)
     if orientation is None:
-        print_error("Invalid rotation\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config, "Invalid rotation")
         return
 
-    submenu_row("Default", "Fast (720p / 15 FPS)", "Custom")
+    show_options(
+        config,
+        "Camera Quality",
+        ["Default", "Fast (720p / 15 FPS)", "Custom"],
+        breadcrumb=["Main Menu", "Camera Live Stream", "Camera Quality"],
+    )
     mode = ask("[prompt]> [/prompt]").strip()
 
     args = [
@@ -403,7 +418,7 @@ def camera_live(config: AppConfig) -> None:
         if bitrate_in:
             args += ["-b", f"{bitrate_in}M"]
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
 
     console.print("\n[dim]Opening Camera Live window. Close the scrcpy window or press Ctrl+C to stop.[/dim]\n")
@@ -416,11 +431,11 @@ def stream_audio(config: AppConfig, mode: str) -> None:
         android_ver = _check_android_version()
 
     if android_ver is None:
-        print_error("No connected device found.\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config, "No connected device found.")
         return
 
     if android_ver < 11:
-        print_error("Android version too old. Going back to Main Menu.")
+        go_back_to_main_menu(config, "Android version too old.")
         return
 
     console.print(f"[dim]Android {android_ver} · Ctrl+C to stop[/dim]")
@@ -433,7 +448,7 @@ def stream_audio(config: AppConfig, mode: str) -> None:
 def set_wallpaper(config: AppConfig) -> None:
     location = ask("[bold cyan]Image path on computer[/bold cyan]> ").strip().strip("'\"")
     if not location:
-        print_null_input()
+        go_back_to_main_menu(config, "Null input")
         return
     src = Path(location)
     if not src.is_file():

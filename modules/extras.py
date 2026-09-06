@@ -18,7 +18,8 @@ from modules.console import (
     print_null_input,
     confirm,
     task_status,
-    submenu_row,
+    show_options,
+    go_back_to_main_menu,
     ensure_config_dir,
     adb,
     adb_output,
@@ -28,14 +29,14 @@ from modules.console import (
 
 
 def force_stop_app(config: AppConfig) -> None:
-    submenu_row("Pick from list", "Enter package name")
+    show_options(config, "Force Stop App", ["Pick from list", "Enter package name"])
     mode = ask("[prompt]> [/prompt]")
     if mode == "1":
-        pkg = select_package_from_list()
+        pkg = select_package_from_list(config)
     elif mode == "2":
         pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
     if not pkg:
         return
@@ -50,14 +51,14 @@ def force_stop_app(config: AppConfig) -> None:
 
 
 def clear_app_data(config: AppConfig) -> None:
-    submenu_row("Pick from list", "Enter package name")
+    show_options(config, "Clear App Data", ["Pick from list", "Enter package name"])
     mode = ask("[prompt]> [/prompt]")
     if mode == "1":
-        pkg = select_package_from_list()
+        pkg = select_package_from_list(config)
     elif mode == "2":
         pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
     if not pkg:
         return
@@ -93,10 +94,10 @@ def save_logcat_snippet(config: AppConfig) -> None:
 
 
 def grant_revoke_permission(config: AppConfig) -> None:
-    submenu_row("Grant", "Revoke")
+    show_options(config, "Grant/Revoke Permission", ["Grant", "Revoke"])
     mode = ask("[prompt]> [/prompt]").strip()
     if mode not in ("1", "2"):
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
     pkg = ask("[bold cyan]Package name[/bold cyan]> ").strip()
     perm = ask(
@@ -118,7 +119,7 @@ def grant_revoke_permission(config: AppConfig) -> None:
 
 
 def restart_app(config: AppConfig) -> None:
-    pkg = select_package_from_list()
+    pkg = select_package_from_list(config)
     if not pkg:
         return
     if not confirm(f"Restart [bold yellow]{pkg}[/bold yellow]?"):
@@ -201,7 +202,11 @@ def install_split_apks(config: AppConfig) -> None:
 
 
 def developer_settings(config: AppConfig) -> None:
-    submenu_row("Open Developer Options", "Read global settings", "Write global setting")
+    show_options(
+        config,
+        "Developer Settings",
+        ["Open Developer Options", "Read global settings", "Write global setting"],
+    )
     mode = ask("[prompt]> [/prompt]").strip()
     if mode == "1":
         with task_status("[info]Opening Developer Options…[/info]"):
@@ -237,7 +242,7 @@ def developer_settings(config: AppConfig) -> None:
         key = ask("[bold cyan]Key[/bold cyan] [dim](global namespace)[/dim]> ").strip()
         val = ask("[bold cyan]Value[/bold cyan]> ").strip()
         if not key:
-            print_null_input()
+            go_back_to_main_menu(config, "Null input")
             return
         if not confirm(f"settings put global [bold yellow]{key}[/bold yellow] = [bold cyan]{val}[/bold cyan]?"):
             return
@@ -247,7 +252,7 @@ def developer_settings(config: AppConfig) -> None:
         else:
             print_error((r.stdout + r.stderr).strip())
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
 
 
 def locale_read(config: AppConfig) -> None:
@@ -266,7 +271,11 @@ def locale_read(config: AppConfig) -> None:
 
 
 def screen_stay_on(config: AppConfig) -> None:
-    submenu_row("Stay on USB", "Stay on (all)", "Turn off stay-on")
+    show_options(
+        config,
+        "Screen Stay-On",
+        ["Stay on USB", "Stay on (all)", "Turn off stay-on"],
+    )
     mode = ask("[prompt]> [/prompt]").strip()
     if mode == "1":
         target = "usb"
@@ -275,7 +284,7 @@ def screen_stay_on(config: AppConfig) -> None:
     elif mode == "3":
         target = "false"
     else:
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
     if not confirm(f"Set [bold cyan]svc power stayon {target}[/bold cyan]?"):
         return
@@ -378,7 +387,7 @@ def _toggle_radio(subcommand: str, on: bool) -> bool:
 
 
 def _radio_on_off(config: AppConfig, label: str, subcommand: str) -> None:
-    submenu_row("On", "Off")
+    show_options(config, label, ["On", "Off"])
     state = ask("[prompt]> [/prompt]").strip().lower()
     if state == "0":
         return
@@ -464,7 +473,11 @@ def _set_timeout() -> None:
 
 
 def _set_dnd(config: AppConfig) -> None:
-    submenu_row("Off", "Alarms Only", "Priority Only", "Total Silence")
+    show_options(
+        config,
+        "Do Not Disturb Mode",
+        ["Off", "Alarms Only", "Priority Only", "Total Silence"],
+    )
     choice = ask("[prompt]> [/prompt]").strip()
     modes = {"1": "0", "2": "1", "3": "2", "4": "3"}
     mode = modes.get(choice)
@@ -491,7 +504,7 @@ def notif_post(config: AppConfig) -> None:
     message = ask("[bold cyan]Message[/bold cyan]> ").strip()
     tag = f"phonesploit-{datetime.now().strftime('%H%M%S')}"
     if not title and not message:
-        print_error("Null input")
+        print_null_input()
         return
     with task_status("[info]Posting notification…[/info]"):
         r = adb(

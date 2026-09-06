@@ -10,7 +10,7 @@ from modules.console import (
     print_error,
     print_success,
     task_status,
-    submenu_row,
+    show_options,
     adb,
     ask,
     confirm,
@@ -79,7 +79,11 @@ def show_current_settings(config: AppConfig) -> None:
 
 
 def set_resolution(config: AppConfig) -> None:
-    submenu_row("720p", "1080p", "2K/QHD", "4K UHD", "Custom", "Reset")
+    show_options(
+        config,
+        "Set Resolution",
+        ["720p", "1080p", "2K/QHD", "4K UHD", "Custom", "Reset"],
+    )
     level = ask("[prompt]> [/prompt]").strip()
     if level == "5":
         size = ask("[bold cyan]Resolution[/bold cyan] [dim](WxH, e.g. 1080x1920)[/dim]> ").strip()
@@ -91,17 +95,22 @@ def set_resolution(config: AppConfig) -> None:
     elif level in RESOLUTION_PRESETS:
         preset = RESOLUTION_PRESETS[level]
         label, (portrait, landscape) = next(iter(preset.items()))
-        submenu_row(f"{label} Portrait ({portrait})", f"{label} Landscape ({landscape})")
+        show_options(
+            config,
+            "Screen Orientation",
+            [f"{label} Portrait ({portrait})", f"{label} Landscape ({landscape})"],
+            breadcrumb=["Main Menu", "Set Resolution", "Screen Orientation"],
+        )
         orient = ask("[prompt]> [/prompt]").strip()
         if orient == "1":
             size = portrait
         elif orient == "2":
             size = landscape
         else:
-            print_error("Invalid selection\n[bold green] Going back to Display Menu[/bold green]")
+            print_error("Invalid selection")
             return
     else:
-        print_error("Invalid selection\n[bold green] Going back to Display Menu[/bold green]")
+        print_error("Invalid selection")
         return
     if not confirm(f"Set resolution to [bold cyan]{size}[/bold cyan]?"):
         return
@@ -109,14 +118,18 @@ def set_resolution(config: AppConfig) -> None:
 
 
 def set_density(config: AppConfig) -> None:
-    submenu_row(*(f"{d} DPI" for _, d in DENSITY_PRESETS), "Custom", "Reset")
+    show_options(
+        config,
+        "Set Display Size / Density",
+        [*(f"{d} DPI" for _, d in DENSITY_PRESETS), "Custom", "Reset"],
+    )
     choice = ask("[prompt]> [/prompt]").strip()
     if choice == "7":
         density = ask("[bold cyan]Density[/bold cyan] [dim](DPI, e.g. 420)[/dim]> ").strip()
         if not density:
             return
         if not density.isdigit():
-            print_error("Density must be a number\n[bold green] Going back to Display Menu[/bold green]")
+            print_error("Density must be a number")
             return
     elif choice == "8":
         _run_wm_command("Resetting density", "density", "reset")
@@ -124,7 +137,7 @@ def set_density(config: AppConfig) -> None:
     elif choice.isdigit() and 1 <= int(choice) <= len(DENSITY_PRESETS):
         density = DENSITY_PRESETS[int(choice) - 1][1]
     else:
-        print_error("Invalid selection\n[bold green] Going back to Display Menu[/bold green]")
+        print_error("Invalid selection")
         return
     if not confirm(f"Set density to [bold cyan]{density} DPI[/bold cyan]?"):
         return
@@ -132,14 +145,18 @@ def set_density(config: AppConfig) -> None:
 
 
 def toggle_scaling(config: AppConfig) -> None:
-    submenu_row("Disable scaling", "Enable scaling (auto-fit)")
+    show_options(
+        config,
+        "Toggle Display Scaling",
+        ["Disable scaling", "Enable scaling (auto-fit)"],
+    )
     choice = ask("[prompt]> [/prompt]").strip()
     if choice == "1":
         _run_wm_command("Disabling display scaling", "scaling", "0")
     elif choice == "2":
         _run_wm_command("Enabling display scaling", "scaling", "1")
     else:
-        print_error("Invalid selection\n[bold green] Going back to Display Menu[/bold green]")
+        print_error("Invalid selection")
 
 
 def reset_all(config: AppConfig) -> None:

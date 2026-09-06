@@ -13,6 +13,7 @@ from modules.console import (
     print_null_input,
     confirm,
     task_status,
+    go_back_to_main_menu,
     adb,
     get_adb_executable,
     ask,
@@ -155,7 +156,7 @@ def connect(config: AppConfig) -> None:
         return
 
     if not is_valid_ipv4(ip):
-        print_error("Invalid IPv4 address\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config, "Invalid IPv4 address")
         return
 
     with task_status(f"[info]Connecting to {ip}:5555…[/info]"):

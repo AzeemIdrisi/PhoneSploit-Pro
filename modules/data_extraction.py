@@ -17,32 +17,12 @@ from modules.console import (
     print_info,
     confirm,
     task_status,
-    submenu_row,
+    show_options,
     ensure_config_dir,
     adb,
     adb_output,
     ask,
 )
-
-
-def _adb_command_error(out: str, returncode: int) -> bool:
-    """True when adb/shell rejected the command — not when payload text contains keywords."""
-    if returncode != 0:
-        return True
-    lowered = (out or "").lower()
-    return any(
-        marker in lowered
-        for marker in (
-            "unknown command",
-            "securityexception",
-            "permission denial",
-            "not found",
-            "inaccessible or not found",
-            "java.lang.",
-            "exception:",
-            "usage: cmd clipboard",
-        )
-    )
 
 
 def _adb_failed(out: str, returncode: int = 0) -> bool:
@@ -160,51 +140,23 @@ def _parcel_text(out: str) -> str | None:
 
 
 def _clipboard_get() -> tuple[str | None, str | None]:
-    """Return (content, error_message). content None + error set = denied; ('', None) = empty."""
-    with task_status("[info]Reading clipboard…[/info]"):
-        r = adb(["shell", "cmd", "clipboard", "get"])
-    out = (r.stdout + r.stderr).strip()
-    if not _adb_command_error(out, r.returncode) and r.returncode == 0:
-        return out, None
+    """Return (content, error_message). content None + error set = denied; ('', None) = empty.
 
-    legacy = adb(["shell", "service", "call", "clipboard", "1"])
-    lout = (legacy.stdout + legacy.stderr).strip()
-    if not _adb_command_error(lout, legacy.returncode):
-        text = _parcel_text(lout)
-        if text is not None:
-            return text, None
+    Implemented via the adb-clip helper (app_process + ClipboardManager as
+    com.android.shell). Raw ``cmd clipboard`` / ``service call clipboard``
+    commands are not implemented/stable on modern Android, so they are not
+    attempted here. See modules/clipboard_helper.py.
+    """
+    from modules.clipboard_helper import clip_get
 
-    if any(x in out.lower() for x in ("securityexception", "permission", "denied")):
-        return None, "Shell cannot read clipboard on this Android version."
-    return None, out or lout or "Clipboard read failed."
+    return clip_get()
 
 
 def _clipboard_set(text: str) -> tuple[bool, str | None]:
-    """Return (success, error_message)."""
-    attempts: list[list[str]] = [
-        ["shell", "cmd", "clipboard", "set", text],
-        ["shell", "cmd", "clipboard", "set-text", text],
-    ]
-    last_err = ""
-    for args in attempts:
-        with task_status("[info]Setting clipboard…[/info]"):
-            r = adb(args)
-        out = (r.stdout + r.stderr).strip()
-        if not _adb_command_error(out, r.returncode):
-            return True, None
-        last_err = out
+    """Return (success, error_message). See _clipboard_get for backend notes."""
+    from modules.clipboard_helper import clip_set
 
-    with task_status("[info]Trying legacy clipboard API…[/info]"):
-        legacy = adb(
-            ["shell", "service", "call", "clipboard", "2", "i32", "1", "i32", "1", "s16", text]
-        )
-    lout = (legacy.stdout + legacy.stderr).strip()
-    if not _adb_command_error(lout, legacy.returncode):
-        return True, None
-
-    if any(x in (last_err + lout).lower() for x in ("securityexception", "permission", "denied")):
-        return False, "Shell cannot set clipboard on this Android version."
-    return False, last_err or lout or "Clipboard set failed."
+    return clip_set(text)
 
 
 def clipboard_read(config: AppConfig) -> None:
@@ -220,7 +172,7 @@ def clipboard_read(config: AppConfig) -> None:
 def clipboard_set(config: AppConfig) -> None:
     text = ask("[bold cyan]Text to copy to clipboard[/bold cyan]> ")
     if not text:
-        print_error("Null input")
+        print_null_input()
         return
     ok, err = _clipboard_set(text)
     if ok:
@@ -353,7 +305,11 @@ def get_identifiers(config: AppConfig) -> None:
 
 
 def usage_stats(config: AppConfig) -> None:
-    submenu_row("Last 1 day", "Last 7 days", "All time")
+    show_options(
+        config,
+        "App Usage Statistics",
+        ["Last 1 day", "Last 7 days", "All time"],
+    )
     window = ask("[prompt]> [/prompt]").strip().lower()
     days_map = {"1": 1, "2": 7, "3": None}
     if window not in days_map:

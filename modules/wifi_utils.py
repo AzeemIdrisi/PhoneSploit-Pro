@@ -12,6 +12,8 @@ from modules.console import (
     print_success,
     confirm,
     task_status,
+    show_options,
+    go_back_to_main_menu,
     adb,
     adb_output,
     ensure_config_dir,
@@ -202,12 +204,16 @@ def _collect_saved_ssids() -> tuple[list[str], str]:
 
 
 def wifi_status_dump(config: AppConfig) -> None:
-    console.print("[dim]1) Summary lines   2) Save full dumpsys wifi to file[/dim]")
+    show_options(
+        config,
+        "Wi-Fi Status Dump",
+        ["Summary lines", "Save full dumpsys wifi to file"],
+    )
     mode = ask("[prompt]> [/prompt]").strip()
     with task_status("[info]Reading WiFi service…[/info]"):
         raw = adb_output(["shell", "dumpsys", "wifi"])
     if mode not in ("", "1", "2"):
-        print_error("Invalid selection\n[bold green] Going back to Main Menu[/bold green]")
+        go_back_to_main_menu(config)
         return
     if mode == "2":
         out_dir = ensure_config_dir(config, "pull_location")
