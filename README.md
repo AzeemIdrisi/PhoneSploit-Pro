@@ -27,6 +27,7 @@ An all-in-one hacking tool written in `Python` to remotely take over Android dev
 - [Disclaimer](#disclaimer)
 - [Developer](#developer)
 - [Support](#support)
+- [Attribution](#attribution)
 
 ---
 
@@ -473,6 +474,20 @@ If you like my work, you can support me via:
 <a href="https://paypal.me/AzeemIdrisi" target="_blank"> <kbd> <img
         src="https://github.com/AzeemIdrisi/AzeemIdrisi/blob/main/docs/paypal-button-blue.png" alt="PayPal"
         width="147"></a> <a href="https://www.buymeacoffee.com/AzeemIdrisi" target="_blank"> <kbd> <img src="https://github.com/AzeemIdrisi/AzeemIdrisi/blob/main/docs/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
+
+---
+
+## Attribution
+
+PhoneSploit Pro is built upon and gratefully acknowledges the contributions of the following open-source projects:
+
+- [`adb`](https://developer.android.com/studio/command-line/adb) — Android Debug Bridge (ADB)
+- [`metasploit-framework`](https://www.metasploit.com/) — Metasploit-Framework
+- [`scrcpy`](https://github.com/Genymobile/scrcpy) — scrcpy
+- [`nmap`](https://nmap.org/) — Nmap
+- [`adb-clip`](https://github.com/polygraphene/adb-clip) — adb-clip
+- [`rich`](https://github.com/Textualize/rich) — Rich
+- [`python-nmap`](https://pypi.org/project/python-nmap/) — python-nmap
 
 <hr>
 
