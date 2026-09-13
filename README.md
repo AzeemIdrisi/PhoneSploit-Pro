@@ -534,7 +534,7 @@ PhoneSploit Pro is built upon and gratefully acknowledges the contributions of t
 - [`rich`](https://github.com/Textualize/rich) — Rich
 - [`python-nmap`](https://pypi.org/project/python-nmap/) — python-nmap
 - [`mac-vendor-lookup`](https://github.com/bauerj/mac_vendor_lookup) — offline IEEE OUI vendor lookup (Bluetooth devices, nearby Wi‑Fi, Wi‑Fi status, WLAN MAC)
-- [`mccmnc`](https://github.com/jbjulia/mcc-mnc) — offline MCC-MNC operator database (SIM / operator info)
+- [`mccmnc`](https://github.com/jbjulia/mcc-mnc) — MCC-MNC lookup API; PhoneSploit ships a bundled offline snapshot in `data/mccmnc.json` (no runtime download)
 
 <hr>
 

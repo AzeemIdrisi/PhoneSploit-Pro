@@ -19,18 +19,7 @@ from modules.console import (
     ensure_config_dir,
     ask,
 )
-from modules.device import lookup_mac_vendor
-
-_MAC_RE = re.compile(r"(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}")
-
-
-def _annotate_macs(text: str) -> str:
-    def _repl(match: re.Match[str]) -> str:
-        mac = match.group(0)
-        vendor = lookup_mac_vendor(mac)
-        return f"{mac} ({vendor})" if vendor else mac
-
-    return _MAC_RE.sub(_repl, text)
+from modules.mac_vendor import annotate_macs, lookup_mac_vendor
 
 # --- Saved-network parsing (formats vary by Android / OEM) ---
 
@@ -259,7 +248,7 @@ def wifi_status_dump(config: AppConfig) -> None:
         lines = raw.splitlines()[:80]
     console.print("[bold cyan]WiFi (filtered)[/bold cyan]")
     for ln in lines[:120]:
-        console.print(f"  {_annotate_macs(ln)}")
+        console.print(f"  {annotate_macs(ln)}")
 
 
 def wlan_ip(config: AppConfig) -> None:
@@ -270,7 +259,7 @@ def wlan_ip(config: AppConfig) -> None:
     if not out.strip():
         console.print("[dim]No output[/dim]")
         return
-    console.print(_annotate_macs(out))
+    console.print(annotate_macs(out))
 
 
 def wifi_toggle(config: AppConfig) -> None:

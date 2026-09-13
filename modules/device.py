@@ -1,6 +1,7 @@
+import json
 import re
 import subprocess
-from typing import Any
+from pathlib import Path
 
 from rich.table import Table
 
@@ -19,6 +20,12 @@ from modules.console import (
     get_adb_executable,
     ask,
 )
+from modules.mac_vendor import MAC_RE, lookup_mac_vendor
+
+_MCCMNC_DB: dict[str, dict[str, str]] | None = None
+_SKIP_BT_MAC = frozenset({"00:00:00:00:00:00", "FF:FF:FF:FF:FF:FF"})
+_BT_LOCAL_HINTS = ("local address", "adapter address", "identityaddress", "identity address")
+_BT_KEEP_HINTS = ("bond", "paired", "name=", "name:", "alias")
 
 
 def get_shell(config: AppConfig) -> None:
@@ -30,33 +37,62 @@ def get_shell(config: AppConfig) -> None:
     subprocess.run([exe, "shell"])
 
 
-def lookup_mac_vendor(mac: str) -> str | None:
-    """Offline IEEE OUI lookup; returns None if the library is missing or unknown."""
-    mac = (mac or "").strip()
-    if not mac:
-        return None
+def _mccmnc_db() -> dict[str, dict[str, str]]:
+    global _MCCMNC_DB
+    if _MCCMNC_DB is not None:
+        return _MCCMNC_DB
+    merged: dict[str, dict[str, str]] = {}
+    bundled = Path(__file__).resolve().parent.parent / "data" / "mccmnc.json"
     try:
-        from mac_vendor_lookup import MacLookup
+        from mccmnc.mccmnc import JSON_PATH
 
-        return MacLookup().lookup(mac)
+        pkg = Path(JSON_PATH)
+        if pkg.is_file():
+            data = json.loads(pkg.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                merged.update({str(k): v for k, v in data.items() if isinstance(v, dict)})
     except Exception:
+        pass
+    if bundled.is_file():
+        try:
+            data = json.loads(bundled.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                for key, val in data.items():
+                    if isinstance(val, dict):
+                        merged.setdefault(str(key), val)
+        except Exception:
+            pass
+    _MCCMNC_DB = merged
+    return _MCCMNC_DB
+
+
+def _plmns_from_prop(val: str) -> list[str]:
+    out: list[str] = []
+    for chunk in re.split(r"[,;\s]+", val.strip()):
+        digits = re.sub(r"\D", "", chunk)
+        if len(digits) >= 5:
+            out.append(digits)
+    return list(dict.fromkeys(out))
+
+
+def _format_mcc_mnc(plmn: str) -> str | None:
+    db = _mccmnc_db()
+    details = db.get(plmn)
+    if not details:
+        mcc, mnc = plmn[:3], plmn[3:]
+        for key, val in db.items():
+            if str(val.get("MCC")) == mcc and str(val.get("MNC")).lstrip("0") == mnc.lstrip("0"):
+                details = val
+                plmn = key
+                break
+    if not details:
         return None
-
-
-def _lookup_mcc_mnc(plmn: str) -> list[dict[str, Any]]:
-    plmn = re.sub(r"\D", "", plmn or "")
-    if len(plmn) < 5:
-        return []
-    mcc, mnc = plmn[:3], plmn[3:]
-    try:
-        from mccmnc import find_matches
-
-        matches = find_matches(user_mcc=mcc, user_mnc=mnc)
-        if not matches:
-            return []
-        return [m if isinstance(m, dict) else {"raw": str(m)} for m in matches]
-    except Exception:
-        return []
+    country = str(details.get("COUNTRY") or details.get("ISO") or "").strip()
+    network = str(details.get("NETWORK") or "").strip()
+    iso = str(details.get("ISO") or "").strip()
+    parts = [p for p in (network, country) if p]
+    suffix = f" ({plmn[:3]} {plmn[3:]}" + (f", {iso}" if iso else "") + ")"
+    return (", ".join(parts) + suffix) if parts else plmn
 
 
 def _access_style(access: str) -> str:
@@ -90,31 +126,100 @@ def _collect_imei() -> str | None:
 
 
 def _parse_accounts(raw: str) -> list[dict[str, str]]:
-    rows: list[dict[str, str]] = []
+    typed: list[dict[str, str]] = []
+    emails: list[str] = []
     email_re = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
     for line in raw.splitlines():
         line = line.strip()
         if "type=" in line.lower() or "Account {" in line:
-            acc_type = ""
-            name = ""
             m_type = re.search(r"type=([^,\s}]+)", line)
             m_name = re.search(r"name=([^,}]+)", line)
-            if m_type:
-                acc_type = m_type.group(1).strip()
-            if m_name:
-                name = m_name.group(1).strip()
-            if acc_type or name:
-                rows.append({"type": acc_type, "name": name})
-        for email in email_re.findall(line):
-            rows.append({"type": "(email in dump)", "name": email})
-    dedup: list[dict[str, str]] = []
+            acc_type = m_type.group(1).strip() if m_type else ""
+            name = m_name.group(1).strip() if m_name else ""
+            if acc_type and name:
+                typed.append({"type": acc_type, "name": name})
+        emails.extend(email_re.findall(line))
+
     seen: set[tuple[str, str]] = set()
-    for r in rows:
-        key = (r.get("type", ""), r.get("name", ""))
-        if key not in seen:
-            seen.add(key)
-            dedup.append(r)
-    return dedup
+    out: list[dict[str, str]] = []
+    named_emails = {r["name"].lower() for r in typed if "@" in r["name"]}
+    for row in typed:
+        key = (row["type"].lower(), row["name"].lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(row)
+    for email in emails:
+        if email.lower() in named_emails:
+            continue
+        key = ("(email)", email.lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        named_emails.add(email.lower())
+        out.append({"type": "(email in dump)", "name": email})
+    return out
+
+
+def _bt_device_name(line: str) -> str:
+    for pat in (
+        r'name\s*[=:]\s*"([^"]+)"',
+        r"name\s*[=:]\s*'([^']+)'",
+        r"alias\s*[=:]\s*\"([^\"]+)\"",
+        r"name\s*[=:]\s*(.+)$",
+        r"alias\s*[=:]\s*(.+)$",
+    ):
+        m = re.search(pat, line, re.I)
+        if m:
+            name = m.group(1).strip().strip('"')
+            name = re.split(r"\s+(?:alias|type|address|bond)\s*[=:]", name, maxsplit=1, flags=re.I)[0]
+            return name.strip().strip(",]} ")
+    return ""
+
+
+def _bonded_chunk(raw: str) -> tuple[str, bool]:
+    lines = raw.splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        if re.search(r"bonded\s+devices|paired\s+devices|mbondeddevices", line, re.I):
+            start = i
+            break
+    if start is None:
+        return raw, False
+    collected = [lines[start]]
+    for line in lines[start + 1 :]:
+        if not line.strip():
+            collected.append(line)
+            continue
+        if line[0] not in " \t":
+            has_mac = bool(MAC_RE.search(line))
+            named = bool(_bt_device_name(line)) or any(h in line.lower() for h in _BT_KEEP_HINTS)
+            if not has_mac or not named:
+                break
+        collected.append(line)
+    return "\n".join(collected), True
+
+
+def _parse_bluetooth_devices(raw: str) -> list[dict[str, str]]:
+    chunk, bonded_section = _bonded_chunk(raw)
+    found: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for line in chunk.splitlines():
+        mac_m = MAC_RE.search(line)
+        if not mac_m:
+            continue
+        mac = mac_m.group(0).upper()
+        if mac in _SKIP_BT_MAC or mac in seen:
+            continue
+        low = line.lower()
+        if any(h in low for h in _BT_LOCAL_HINTS):
+            continue
+        name = _bt_device_name(line)
+        if not bonded_section and not name and not any(h in low for h in _BT_KEEP_HINTS):
+            continue
+        seen.add(mac)
+        found.append({"address": mac, "name": name})
+    return found[:50]
 
 
 def get_device_info(config: AppConfig) -> None:
@@ -196,9 +301,10 @@ def sim_operator_info(config: AppConfig) -> None:
     for k, v in values.items():
         table.add_row(k, v or "—")
         if k.endswith("_numeric") and v:
-            matches = _lookup_mcc_mnc(v)
-            if matches:
-                table.add_row("  ↳ MCC-MNC lookup", str(matches[0]))
+            labels = [_format_mcc_mnc(p) for p in _plmns_from_prop(v)]
+            labels = [x for x in labels if x]
+            if labels:
+                table.add_row("  ↳ MCC-MNC lookup", "; ".join(labels))
     console.print(table)
 
 
@@ -207,34 +313,17 @@ def bluetooth_devices(config: AppConfig) -> None:
         raw = adb_output(["shell", "dumpsys", "bluetooth_manager"])
         if not raw.strip():
             raw = adb_output(["shell", "dumpsys", "bluetooth"])
-    devices: list[dict[str, str]] = []
-    mac_re = re.compile(r"([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}")
-    for line in raw.splitlines():
-        if mac_re.search(line):
-            mac = mac_re.search(line).group(0)
-            name = ""
-            m_name = re.search(r"name[=:]\s*([^\s,]+)", line, re.I)
-            if m_name:
-                name = m_name.group(1).strip('"')
-            devices.append({"address": mac, "name": name})
-    dedup: list[dict[str, str]] = []
-    seen_macs: set[str] = set()
-    for d in devices:
-        mac = d["address"].upper()
-        if mac in seen_macs:
-            continue
-        seen_macs.add(mac)
-        dedup.append(d)
-    access = "Available" if dedup else ("Not on this Android" if not raw.strip() else "Restricted")
+    devices = _parse_bluetooth_devices(raw)
+    access = "Available" if devices else ("Not on this Android" if not raw.strip() else "Restricted")
     console.print(f"Access: {_access_style(access)}")
-    if not dedup:
-        print_error("No Bluetooth devices parsed.")
+    if not devices:
+        print_error("No paired/named Bluetooth devices parsed.")
         return
     table = Table(title="Bluetooth devices", show_header=True, header_style="bold cyan")
     table.add_column("Address", style="white")
     table.add_column("Name", style="bold yellow")
     table.add_column("Vendor (OUI)", style="white")
-    for d in dedup[:50]:
+    for d in devices:
         vendor = lookup_mac_vendor(d.get("address", "")) or "—"
         table.add_row(d.get("address", ""), d.get("name", "") or "—", vendor)
     console.print(table)
