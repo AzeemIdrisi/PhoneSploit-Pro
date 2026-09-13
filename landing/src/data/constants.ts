@@ -3,7 +3,7 @@ import githubStats from "./github-stats.json";
 export const navLinks = [
   { href: "#showcase", label: "Showcase" },
   { href: "#features", label: "Features" },
-  { href: "#screenshots", label: "Screenshots" },
+  { href: "#screenshot", label: "Screenshot" },
   { href: "#install", label: "Install" },
   { href: "#compatibility", label: "Compatibility" },
 ];

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -11,8 +11,6 @@ import { GitHubIcon } from '@/components/ui/BrandIcons'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { scrollY } = useScroll()
-  const y = useTransform(scrollY, [0, 100], [0, 1])
   const basePath = getBasePath()
 
   useEffect(() => {
@@ -22,12 +20,11 @@ export default function Header() {
   }, [])
 
   return (
-    <motion.header
+    <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled && 'bg-surface-900/90 backdrop-blur-md border-b border-surface-700 shadow-xl shadow-primary-900/20'
       )}
-      style={{ opacity: y }}
     >
       <nav className="container-custom" aria-label="Main navigation">
         <div className="flex h-16 items-center justify-between">
@@ -100,6 +97,6 @@ export default function Header() {
           </div>
         </motion.div>
       </nav>
-    </motion.header>
+    </header>
   )
 }

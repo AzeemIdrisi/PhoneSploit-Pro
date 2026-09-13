@@ -120,7 +120,7 @@ export default function CTABanner() {
             </div>
             <div className="flex items-center gap-2">
               <GitHubIcon className="h-4 w-4" aria-hidden="true" />
-              <span>MIT Licensed</span>
+              <span>GPL-3.0 Licensed</span>
             </div>
             <div className="flex items-center gap-2">
               <AlertTriangle

@@ -1,5 +1,5 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { getSiteUrl } from "@/lib/utils";
+import { getBasePath, getSiteUrl } from "@/lib/utils";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,6 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const ogImagePath = `${getBasePath()}/screenshots/Screenshot-1.png`;
+
 export const metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: "PhoneSploit Pro — The Android Swiss Army Knife",
@@ -21,7 +23,7 @@ export const metadata = {
   openGraph: {
     title: "PhoneSploit Pro — The Android Swiss Army Knife",
     description: "The Swiss Army knife for Android. Own the device.",
-    images: ["/og-image.png"],
+    images: [ogImagePath],
     type: "website",
   },
   twitter: { card: "summary_large_image" },

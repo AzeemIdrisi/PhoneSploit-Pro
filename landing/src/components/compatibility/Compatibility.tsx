@@ -12,7 +12,7 @@ const osData = [
   { id: 'kali', name: 'Kali Linux', icon: Shield, status: 'supported', version: '2023+', notes: 'Primary dev platform' },
   { id: 'mint', name: 'Linux Mint', icon: Monitor, status: 'supported', version: '21+', notes: 'Fully tested' },
   { id: 'fedora', name: 'Fedora', icon: Monitor, status: 'supported', version: '38+', notes: 'Fully tested' },
-  { id: 'arch', name: 'Arch Linux', icon: Terminal, status: 'supported', version: 'Rolling', notes: 'AUR packages available' },
+  { id: 'arch', name: 'Arch Linux', icon: Terminal, status: 'supported', version: 'Rolling', notes: 'Community tested' },
   { id: 'parrot', name: 'Parrot OS', icon: Shield, status: 'supported', version: '5.0+', notes: 'Fully tested' },
   { id: 'windows11', name: 'Windows 11', icon: Monitor, status: 'partial', version: '22H2+', notes: 'Some features limited' },
   { id: 'termux', name: 'Termux (Android)', icon: Smartphone, status: 'supported', version: 'Latest', notes: 'On-device usage' },

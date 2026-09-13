@@ -19,8 +19,8 @@ An all-in-one hacking tool written in `Python` to remotely take over Android dev
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Requirements](#requirements)
-- [Installing dependencies](#installing-dependencies)
 - [Getting started](#getting-started)
+- [Installing dependencies](#installing-dependencies)
 - [Device setup tutorial](#device-setup-tutorial)
 - [Compatibility](#compatibility)
 - [Installing tools manually](#installing-tools-manually)
@@ -98,7 +98,7 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 | **Stream microphone audio**              | Stream live microphone audio.                                                                                                                                                                                                                                                                                                                                                |
 | **Record device audio**                  | Record internal device audio.                                                                                                                                                                                                                                                                                                                                                |
 | **Stream device audio**                  | Stream live device audio.                                                                                                                                                                                                                                                                                                                                                    |
-| **Hack device completely**               | Automated Metasploit flow: fetch your `IP address` to set `LHOST`; create a payload with `msfvenom`, install it, and run it on the target device; launch and configure **Metasploit-Framework** to obtain a `meterpreter` session. A `meterpreter` session means the device is fully compromised via Metasploit-Framework, and you can run further actions from the session. |
+| **Hack device completely**               | Guided Metasploit flow with pre-flight checks (device, Metasploit, payload status, LPORT); pick **LHOST** from local interfaces or enter a custom IP; optionally **reuse** an installed payload or rebuild; step-by-step progress while `msfvenom` builds the APK, ADB installs and launches it, and **Metasploit-Framework** opens a `meterpreter` handler; optional **uninstall** of the payload when finished. |
 | **LAN network scan**                     | Discover hosts on the local network to help find a target IP address; probe TCP ports `5555` and `5554` with service detection and show ADB-related fingerprints and hints for likely Android/ADB targets.                                                                                                                                                                   |
 | **TCP port forwarding**                  | Forward, reverse, list, remove, or remove all TCP port forwarding rules over ADB.                                                                                                                                                                                                                                                                                            |
 | **Save logcat snippet**                  | Capture a slice of `logcat` output and save it to a file on the computer.                                                                                                                                                                                                                                                                                                    |
@@ -141,38 +141,6 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 - [`metasploit-framework`](https://www.metasploit.com/) — Metasploit-Framework (`msfvenom` and `msfconsole`)
 - [`scrcpy`](https://github.com/Genymobile/scrcpy) — scrcpy
 - [`nmap`](https://nmap.org/) — Nmap
-
----
-
-## Installing dependencies
-
-Use the bundled installer to set up all dependencies automatically. It detects your OS and uses the appropriate package manager.
-
-### Linux / macOS / Termux
-
-```
-chmod +x install.sh
-./install.sh
-```
-
-To install specific tools only: `./install.sh --components adb,nmap,pip`  
-For per-component prompts: `./install.sh --interactive`
-
-### Windows
-
-Run PowerShell **as Administrator**, then:
-
-```
-Set-ExecutionPolicy -Scope Process Bypass
-.\install.ps1
-```
-
-To install specific tools only: `.\install.ps1 -Components adb,nmap,pip`  
-For per-component prompts: `.\install.ps1 -Interactive`
-
-### From PhoneSploit Pro
-
-If a dependency is missing, the program shows a **Missing Dependencies** warning. Press **`I`** to run the installer, **`Y`** to continue anyway, or **`N`** to exit.
 
 ---
 
@@ -225,6 +193,38 @@ pip install -r requirements.txt
 ```
 python phonesploitpro.py
 ```
+
+---
+
+## Installing dependencies
+
+Use the bundled installer to set up all dependencies automatically. It detects your OS and uses the appropriate package manager.
+
+### Linux / macOS / Termux
+
+```
+chmod +x install.sh
+./install.sh
+```
+
+To install specific tools only: `./install.sh --components adb,nmap,pip`  
+For per-component prompts: `./install.sh --interactive`
+
+### Windows
+
+Run PowerShell **as Administrator**, then:
+
+```
+Set-ExecutionPolicy -Scope Process Bypass
+.\install.ps1
+```
+
+To install specific tools only: `.\install.ps1 -Components adb,nmap,pip`  
+For per-component prompts: `.\install.ps1 -Interactive`
+
+### From PhoneSploit Pro
+
+If a dependency is missing, the program shows a **Missing Dependencies** warning. Press **`I`** to run the installer, **`Y`** to continue anyway, or **`N`** to exit.
 
 ---
 

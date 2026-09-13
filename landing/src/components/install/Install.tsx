@@ -11,52 +11,63 @@ import { Copy, Check, Terminal, Monitor, Smartphone, AlertTriangle, ExternalLink
 import { GitHubIcon } from '@/components/ui/BrandIcons'
 
 const installTabs = [
-  { id: 'linux', label: 'Linux / macOS', icon: Terminal },
-  { id: 'windows', label: 'Windows', icon: Monitor },
-  { id: 'termux', label: 'Termux (Android)', icon: Smartphone },
+  { id: 'linux', label: 'Linux / macOS', icon: Terminal, recommended: true },
+  { id: 'windows', label: 'Windows', icon: Monitor, recommended: false },
+  { id: 'termux', label: 'Termux (Android)', icon: Smartphone, recommended: false },
 ] as const
 
 type InstallTab = typeof installTabs[number]['id']
 
-const installSteps: Record<InstallTab, { title: string; description: string; commands: string[]; prerequisites: string[] }> = {
+const installSteps: Record<
+  InstallTab,
+  {
+    title: string
+    description: string
+    runCommands: string[]
+    depsCommands?: string[]
+    prerequisites: string[]
+  }
+> = {
   linux: {
     title: 'Linux / macOS Installation',
     description: 'Recommended platform with full feature support',
     prerequisites: [
       'Python 3.10 or higher',
       'Git',
-      'Internet connection for downloading dependencies',
+      'ADB, scrcpy, Nmap, and Metasploit (see dependency installer below)',
     ],
-    commands: [
+    runCommands: [
       'git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git',
       'cd PhoneSploit-Pro/',
-      'chmod +x install.sh',
-      './install.sh',
       'python3 -m venv .venv',
       'source .venv/bin/activate',
       'pip install -r requirements.txt',
       'python3 phonesploitpro.py',
     ],
+    depsCommands: [
+      'chmod +x install.sh',
+      './install.sh',
+    ],
   },
   windows: {
     title: 'Windows Installation',
-    description: 'Run PowerShell as Administrator for best results',
+    description: 'Run PowerShell as Administrator when using the dependency installer',
     prerequisites: [
       'Python 3.10+ (from python.org or Microsoft Store)',
       'Git for Windows',
-      'PowerShell 5.1+ (run as Administrator)',
-      'Manual ADB/scrcpy setup required',
+      'Download platform-tools into the project folder before running',
     ],
-    commands: [
+    runCommands: [
       'git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git',
-      'cd PhoneSploit-Pro',
-      'Set-ExecutionPolicy -Scope Process Bypass',
-      '.\\install.ps1',
+      'cd PhoneSploit-Pro/',
       'python -m venv .venv',
       '.\\.venv\\Scripts\\activate',
       'pip install -r requirements.txt',
-      '# Download platform-tools & scrcpy manually, copy to project folder',
       'python phonesploitpro.py',
+    ],
+    depsCommands: [
+      'Set-ExecutionPolicy -Scope Process Bypass',
+      '.\\install.ps1',
     ],
   },
   termux: {
@@ -66,20 +77,20 @@ const installSteps: Record<InstallTab, { title: string; description: string; com
       'Termux app (from F-Droid recommended)',
       'Termux:API addon for device access',
       'Storage permission granted',
-      'Root access optional but recommended',
     ],
-    commands: [
+    runCommands: [
       'pkg update && pkg upgrade',
-      'pkg install python git nmap',
-      'pkg install android-tools  # for ADB',
+      'pkg install python git nmap android-tools',
       'git clone https://github.com/AzeemIdrisi/PhoneSploit-Pro.git',
       'cd PhoneSploit-Pro',
-      'chmod +x install.sh',
-      './install.sh',
       'python -m venv .venv',
       'source .venv/bin/activate',
       'pip install -r requirements.txt',
       'python phonesploitpro.py',
+    ],
+    depsCommands: [
+      'chmod +x install.sh',
+      './install.sh',
     ],
   },
 }
@@ -89,12 +100,44 @@ export default function Install() {
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null)
 
   const current = installSteps[activeTab]
+  const tabMeta = installTabs.find((t) => t.id === activeTab)!
 
   const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text)
-    setCopiedCommand(text)
-    setTimeout(() => setCopiedCommand(null), 2000)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedCommand(text)
+      setTimeout(() => setCopiedCommand(null), 2000)
+    } catch {
+      setCopiedCommand(null)
+    }
   }
+
+  const renderCommandBlock = (commands: string[], startIndex = 0) => (
+    <div className="bg-surface-900/50 rounded-xl border border-surface-700 p-4 font-mono text-sm overflow-x-auto">
+      {commands.map((cmd, i) => (
+        <div
+          key={`${startIndex}-${i}`}
+          className="flex items-start gap-3 py-1.5 border-b last:border-0 border-surface-700 group"
+        >
+          <span className="text-primary-500 shrink-0 mt-0.5">{startIndex + i + 1}.</span>
+          <code className="text-primary-200 flex-1 break-all whitespace-pre-wrap">{cmd}</code>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => copyToClipboard(cmd)}
+            className="h-8 w-8 p-0 shrink-0 opacity-70 hover:opacity-100 sm:opacity-100"
+            aria-label={copiedCommand === cmd ? 'Copied!' : 'Copy command'}
+          >
+            {copiedCommand === cmd ? (
+              <Check className="h-4 w-4 text-accent-500" />
+            ) : (
+              <Copy className="h-4 w-4 text-primary-400" />
+            )}
+          </Button>
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <Section id="install" className="relative">
@@ -102,7 +145,7 @@ export default function Install() {
         <Badge variant="info" className="mb-4 inline-block">Quick Start</Badge>
         <h2 className="section-title">Get Started in Minutes</h2>
         <p className="section-subtitle mx-auto">
-          Automated installer detects your OS and sets up all dependencies. Choose your platform below.
+          Clone the repo, create a virtual environment, install Python requirements, and run. Use the bundled installer when you need ADB, scrcpy, Nmap, or Metasploit.
         </p>
       </div>
 
@@ -150,10 +193,12 @@ export default function Install() {
                 <h3 className="text-xl font-bold text-white">{current.title}</h3>
                 <p className="mt-1 text-primary-400">{current.description}</p>
               </div>
-              <Badge variant="success" className="self-start shrink-0">
-                <Check className="h-3 w-3 mr-1" />
-                Recommended
-              </Badge>
+              {tabMeta.recommended && (
+                <Badge variant="success" className="self-start shrink-0">
+                  <Check className="h-3 w-3 mr-1" />
+                  Recommended
+                </Badge>
+              )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
@@ -175,53 +220,43 @@ export default function Install() {
               <div>
                 <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
                   <Terminal className="h-5 w-5 text-primary-400 shrink-0" />
-                  Installation Commands
+                  Run PhoneSploit Pro
                 </h4>
-                <div className="bg-surface-900/50 rounded-xl border border-surface-700 p-4 font-mono text-sm overflow-x-auto">
-                  {current.commands.map((cmd, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-3 py-1.5 border-b last:border-0 border-surface-700 group"
-                    >
-                      <span className="text-primary-500 shrink-0 mt-0.5">{i + 1}.</span>
-                      <code className="text-primary-200 flex-1 break-all whitespace-pre-wrap">{cmd}</code>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(cmd)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 shrink-0"
-                        aria-label={copiedCommand === cmd ? 'Copied!' : 'Copy command'}
-                      >
-                        {copiedCommand === cmd ? (
-                          <Check className="h-4 w-4 text-accent-500" />
-                        ) : (
-                          <Copy className="h-4 w-4 text-primary-400" />
-                        )}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                {renderCommandBlock(current.runCommands)}
               </div>
             </div>
+
+            {current.depsCommands && current.depsCommands.length > 0 && (
+              <div className="mt-8">
+                <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                  <Terminal className="h-5 w-5 text-primary-400 shrink-0" />
+                  Install dependencies (optional)
+                </h4>
+                <p className="text-sm text-primary-400 mb-3">
+                  Run after cloning if ADB, scrcpy, Nmap, or Metasploit are not already on your PATH.
+                </p>
+                {renderCommandBlock(current.depsCommands, current.runCommands.length)}
+              </div>
+            )}
           </Card>
 
           <Card padding="lg" className="bg-primary-900/20 border-primary-700/50">
             <div className="flex items-start gap-4">
               <GitHubIcon className="h-6 w-6 text-primary-400 shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-white">Run from GitHub (Alternative)</h4>
+                <h4 className="font-semibold text-white">More in the README</h4>
                 <p className="mt-1 text-sm text-primary-300">
-                  Skip local setup? Use GitHub Codespaces or Gitpod for an instant cloud development environment.
+                  Device setup, manual tool installation, compatibility notes, and troubleshooting live in the repository README.
                 </p>
                 <div className="mt-3 flex gap-3">
                   <a
-                    href="https://github.com/AzeemIdrisi/PhoneSploit-Pro"
+                    href="https://github.com/AzeemIdrisi/PhoneSploit-Pro#getting-started"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-secondary text-sm"
                   >
                     <GitHubIcon className="mr-2 h-4 w-4" />
-                    Open Repository
+                    Getting started
                     <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
                   </a>
                 </div>
@@ -232,8 +267,26 @@ export default function Install() {
       </AnimatePresence>
 
       <div className="mt-12 text-center">
-        <p className="text-primary-400 mb-4">
-          Need help? <a href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/issues" target="_blank" rel="noopener noreferrer" className="text-primary-300 hover:text-white underline">Open an issue</a> or check the <a href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/wiki" target="_blank" rel="noopener noreferrer" className="text-primary-300 hover:text-white underline">Wiki</a>
+        <p className="text-primary-400">
+          Need help?{' '}
+          <a
+            href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-300 hover:text-white underline"
+          >
+            Open an issue
+          </a>{' '}
+          or read the{' '}
+          <a
+            href="https://github.com/AzeemIdrisi/PhoneSploit-Pro#getting-started"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-300 hover:text-white underline"
+          >
+            Getting started guide
+          </a>
+          .
         </p>
       </div>
     </Section>

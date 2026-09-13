@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/Button";
 import { Star, ArrowRight, Terminal } from "lucide-react";
 import { GitHubIcon } from "@/components/ui/BrandIcons";
 import { repoInfo } from "@/data/constants";
+import { useReducedMotion } from "@/hooks";
 
 export default function Hero() {
+  const reducedMotion = useReducedMotion();
+
   const scrollToInstall = () => {
     document.getElementById("install")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -20,15 +23,15 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-[calc(100svh-8rem)] flex items-center justify-center overflow-hidden">
-      <TerminalBackground />
+    <section className="relative min-h-[calc(100svh-8rem)] flex items-center justify-center overflow-hidden pb-16">
+      <TerminalBackground reducedMotion={reducedMotion} />
 
-      <div className="relative z-10 container-custom pt-8 pb-20">
+      <div className="relative z-10 container-custom pt-8 pb-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="max-w-4xl text-center"
+          className="max-w-4xl mx-auto text-center"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -118,18 +121,20 @@ export default function Hero() {
             </div>
           </motion.div>
         </motion.div>
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce"
+      {!reducedMotion && (
+        <a
+          href="#showcase"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce text-primary-500 hover:text-primary-400 transition-colors"
+          aria-label="Scroll to showcase"
         >
           <svg
-            className="h-6 w-6 text-primary-500"
+            className="h-6 w-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -138,13 +143,13 @@ export default function Hero() {
               d="M19 14l-7 7m0 0l-7-7m7 7V3"
             />
           </svg>
-        </motion.div>
-      </div>
+        </a>
+      )}
     </section>
   );
 }
 
-function TerminalBackground() {
+function TerminalBackground({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-900/20 via-transparent to-transparent" />
@@ -159,24 +164,32 @@ function TerminalBackground() {
             top: `${10 + i * 15}%`,
             left: `${5 + i * 20}%`,
           }}
-          animate={{
-            x: [0, 20 * (i % 2 === 0 ? 1 : -1), 0],
-            y: [0, 15 * (i % 3 === 0 ? 1 : -1), 0],
-          }}
-          transition={{
-            duration: 15 + i * 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={
+            reducedMotion
+              ? undefined
+              : {
+                  x: [0, 20 * (i % 2 === 0 ? 1 : -1), 0],
+                  y: [0, 15 * (i % 3 === 0 ? 1 : -1), 0],
+                }
+          }
+          transition={
+            reducedMotion
+              ? undefined
+              : {
+                  duration: 15 + i * 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+          }
         />
       ))}
 
-      <TerminalLines />
+      <TerminalLines reducedMotion={reducedMotion} />
     </div>
   );
 }
 
-function TerminalLines() {
+function TerminalLines({ reducedMotion }: { reducedMotion: boolean }) {
   const lines = [
     "> adb connect 192.168.1.100:5555",
     "> connected to 192.168.1.100:5555",
@@ -202,14 +215,22 @@ function TerminalLines() {
         <motion.p
           key={i}
           className="truncate whitespace-pre text-primary-300/20"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: [0, 1, 1, 0], x: 0 }}
-          transition={{
-            delay: i * 0.4,
-            duration: 1.5,
-            repeat: Infinity,
-            repeatDelay: lines.length * 0.4,
-          }}
+          initial={{ opacity: reducedMotion ? 0.15 : 0, x: reducedMotion ? 0 : -20 }}
+          animate={
+            reducedMotion
+              ? { opacity: 0.15, x: 0 }
+              : { opacity: [0, 1, 1, 0], x: 0 }
+          }
+          transition={
+            reducedMotion
+              ? undefined
+              : {
+                  delay: i * 0.4,
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatDelay: lines.length * 0.4,
+                }
+          }
         >
           {line}
         </motion.p>

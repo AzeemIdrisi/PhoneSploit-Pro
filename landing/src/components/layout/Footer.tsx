@@ -1,7 +1,7 @@
 import { Container } from "@/components/ui/Container";
-import { MessageSquare, Star, GitFork } from "lucide-react";
+import { Star, GitFork } from "lucide-react";
 import { GitHubIcon } from "@/components/ui/BrandIcons";
-import { socialLinks, repoInfo } from "@/data/constants";
+import { repoInfo } from "@/data/constants";
 import { getBasePath } from "@/lib/utils";
 
 export default function Footer() {
@@ -34,23 +34,6 @@ export default function Footer() {
                 <GitFork className="h-4 w-4" />
                 <span>{repoInfo.forksFormatted} Forks</span>
               </div>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {socialLinks.map((link) => {
-                const Icon = getIcon(link.icon);
-                return (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-primary-300 bg-surface-800/50 border border-surface-700 hover:bg-primary-900/30 hover:text-white hover:border-primary-700 transition-all"
-                  >
-                    <Icon className="h-4 w-4" />
-                    {link.label}
-                  </a>
-                );
-              })}
             </div>
           </div>
 
@@ -147,20 +130,11 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-surface-700">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-primary-500 text-sm text-center md:text-left">
-              Copyright © {currentYear} Azeem Idrisi. Licensed under MIT
-              License.
+              Copyright © {currentYear} Azeem Idrisi. Licensed under GPL-3.0.
             </p>
           </div>
         </div>
       </Container>
     </footer>
   );
-}
-
-function getIcon(name: string) {
-  const icons: Record<string, React.ComponentType<{ className?: string }>> = {
-    github: GitHubIcon,
-    "message-square": MessageSquare,
-  };
-  return icons[name] || GitHubIcon;
 }
