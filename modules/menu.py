@@ -424,3 +424,50 @@ def total_features() -> int:
         else:
             count += 1
     return count
+
+
+@dataclass(frozen=True)
+class MenuSearchHit:
+    """A menu entry matched by search, with its breadcrumb path."""
+
+    item: MenuItem
+    path: str
+
+
+def _collect_search_hits(
+    item: MenuItem,
+    path_parts: list[str],
+    query: str,
+    hits: list[MenuSearchHit],
+) -> None:
+    label = item.label.lower()
+    if query in label:
+        hits.append(MenuSearchHit(item=item, path=" › ".join(path_parts)))
+    if item.is_hub and item.children:
+        child_path = path_parts + [item.label]
+        for child in item.children:
+            _collect_search_hits(child, child_path, query, hits)
+
+
+def search_menu_items(
+    query: str,
+    *,
+    max_results: int = 20,
+) -> tuple[list[MenuSearchHit], int]:
+    """Case-insensitive substring search over top-level items and hub leaves."""
+    q = query.strip().lower()
+    if not q:
+        return [], 0
+    hits: list[MenuSearchHit] = []
+    for top in MAIN_ITEMS:
+        if top.is_hub:
+            hub_path = [top.label]
+            if q in top.label.lower():
+                hits.append(MenuSearchHit(item=top, path=top.label))
+            for child in top.children or ():
+                _collect_search_hits(child, hub_path, q, hits)
+        else:
+            if q in top.label.lower():
+                hits.append(MenuSearchHit(item=top, path=top.label))
+    total = len(hits)
+    return hits[:max_results], total

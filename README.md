@@ -151,6 +151,23 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 > [!IMPORTANT]
 > **PhoneSploit Pro** requires Python version **3.10 or higher**. Please update Python before running the program.
 
+### Navigation
+
+From the main menu and submenus you can use:
+
+| Input | Action |
+| ----- | ------ |
+| **Number** | Run a feature or open a submenu |
+| **0** | Exit (main menu) or go back (submenu) |
+| **99** | Clear the screen and redraw the menu |
+| **ESC** | Go back in submenus; cancel a text prompt |
+| **Ctrl+L** | Clear the screen (same as **99**) |
+| **/** *query* | Search all features from the **main menu** only (e.g. `/logcat`) |
+| **Ctrl+C** | Cancel input or return to the menu (does not exit the app) |
+| **Ctrl+D** | Exit the app (empty prompt on main menu or submenu) |
+
+On **Termux**, the main menu footer lists **0**, **99**, and **`/` search**; submenus show **0** and **99** only. On desktop, the main menu footer lists shortcuts with **`/` search last**; hub footers omit search. **0** and **99** still work on desktop but are not shown in the footer. The active ADB device serial is shown in the menu prompt when a device is selected.
+
 ### Linux and macOS
 
 Make sure all [required](#requirements) software is installed.
