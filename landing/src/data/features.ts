@@ -207,6 +207,14 @@ export const features: Feature[] = [
   { id: 'local-hotspot', name: 'Local hotspot', description: 'Start or stop a local-only Wi-Fi hotspot directly from the device.', icon: 'Wifi', category: 'network' },
   { id: 'wireless-adb', name: 'Wireless ADB setup', description: 'Pair, connect, switch to TCP/IP, or switch back to USB — all wireless ADB commands.', icon: 'Bluetooth', category: 'network' },
   { id: 'root-check', name: 'Root heuristics', description: 'Heuristic checks for common signs of root access.', icon: 'Shield', category: 'network' },
+  {
+    id: 'vulnerability-analysis',
+    name: 'Vulnerability analysis (HARDAX)',
+    description:
+      'Read-only HARDAX audit over ADB: full device scan, CVE/patch indicators, hardening checks, app surface, and saved HTML/JSON reports.',
+    icon: 'ShieldCheck',
+    category: 'network',
+  },
 
   // Exploitation
   { id: 'hack-device', name: 'Hack device completely', description: 'Automated Metasploit flow: create payload with msfvenom, install and run it, launch Metasploit-Framework for a meterpreter session.', icon: 'Zap', category: 'exploit' },

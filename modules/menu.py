@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-Require = Literal["adb", "scrcpy", "nmap", "metasploit"] | None
+Require = Literal["adb", "scrcpy", "nmap", "metasploit", "hardax", "none"] | None
 
 
 @dataclass(frozen=True)
@@ -343,6 +343,18 @@ HUB_DIAGNOSTICS = MenuItem(
     ),
 )
 
+HUB_VULNERABILITY = MenuItem(
+    id="hub_vulnerability",
+    label="Vulnerability Analysis",
+    children=(
+        _leaf("vuln_full_audit", "Full Device Audit", "hardax"),
+        _leaf("vuln_patch_cve", "Security Patch & CVE Exposure", "hardax"),
+        _leaf("vuln_hardening", "Hardening & Config Checks", "hardax"),
+        _leaf("vuln_app_surface", "App Attack Surface", "hardax"),
+        _leaf("vuln_export_report", "Export Last Report", "none"),
+    ),
+)
+
 # ---------------------------------------------------------------------------
 # Single-page main menu
 # ---------------------------------------------------------------------------
@@ -381,6 +393,7 @@ MAIN_ITEMS: tuple[MenuItem, ...] = (
     HUB_NETWORK_TESTING,
     HUB_KEYCODES,
     HUB_DIAGNOSTICS,
+    HUB_VULNERABILITY,
     HUB_PORT_FORWARD,
     _leaf("developer_settings", "Developer Settings"),
     _leaf("set_wallpaper", "Set Wallpaper"),

@@ -18,8 +18,10 @@ Usage: ./install.sh [options]
 
   --yes, -y              Non-interactive: assume yes for prompts (except sudo/password). Default on.
   --interactive          Ask yes/no per component instead of installing everything.
-  --components LIST      Comma-separated: adb,metasploit,scrcpy,nmap,pip
-                         If omitted, all of the above are installed.
+  --components LIST      Comma-separated: adb,metasploit,scrcpy,nmap,hardax,pip
+                         If omitted: adb, metasploit, scrcpy, nmap, and pip
+                         (HARDAX is installed via pip / requirements.txt).
+                         Use hardax alone to reinstall HARDAX without other tools.
   --skip-pip             Do not run pip install -r requirements.txt
   -h, --help             Show this help
 
@@ -66,6 +68,12 @@ have_adb() { have_cmd adb; }
 have_nmap() { have_cmd nmap; }
 have_scrcpy() { have_cmd scrcpy; }
 have_metasploit() { have_cmd msfconsole && have_cmd msfvenom; }
+have_hardax() {
+  have_cmd hardax && return 0
+  local venv="$SCRIPT_DIR/.venv"
+  [[ -x "$venv/bin/hardax" ]] && return 0
+  return 1
+}
 
 have_pip_reqs() {
   local venv="$SCRIPT_DIR/.venv"
@@ -101,6 +109,10 @@ skip_components_already_present() {
   if [[ "$want_metasploit" -eq 1 ]] && have_metasploit; then
     warn "Metasploit already installed (msfconsole, msfvenom); skipping."
     want_metasploit=0
+  fi
+  if [[ "$want_hardax" -eq 1 ]] && have_hardax; then
+    warn "HARDAX already installed; skipping."
+    want_hardax=0
   fi
   if [[ "$want_pip" -eq 1 ]] && have_pip_reqs; then
     warn "Python dependencies already installed in .venv; skipping pip."
@@ -327,11 +339,22 @@ install_pip_reqs() {
   "$venv/bin/pip" install -r "$SCRIPT_DIR/requirements.txt"
 }
 
+install_hardax() {
+  local venv="$SCRIPT_DIR/.venv"
+  if [[ ! -d "$venv" ]]; then
+    warn "Creating virtual environment at .venv…"
+    python3 -m venv "$venv"
+  fi
+  warn "Installing HARDAX (Android security auditor) into .venv…"
+  "$venv/bin/pip" install 'hardax>=6.2.0'
+}
+
 # --- Parse desired components (bash 3 compatible; no associative arrays) ---
 want_adb=0
 want_metasploit=0
 want_scrcpy=0
 want_nmap=0
+want_hardax=0
 want_pip=0
 
 set_component() {
@@ -340,6 +363,7 @@ set_component() {
     metasploit) want_metasploit=1 ;;
     scrcpy) want_scrcpy=1 ;;
     nmap) want_nmap=1 ;;
+    hardax) want_hardax=1 ;;
     pip) want_pip=1 ;;
     *) warn "Unknown component ignored: $1" ;;
   esac
@@ -360,12 +384,14 @@ elif [[ "$INTERACTIVE" -eq 1 ]]; then
   prompt_yes "Install Metasploit-Framework (large download)?" && want_metasploit=1
   prompt_yes "Install scrcpy?" && want_scrcpy=1
   prompt_yes "Install Nmap?" && want_nmap=1
+  prompt_yes "Install HARDAX (vulnerability analysis, pip)?" && want_hardax=1
   prompt_yes "Run pip install -r requirements.txt?" && want_pip=1
 else
   want_adb=1
   want_metasploit=1
   want_scrcpy=1
   want_nmap=1
+  want_hardax=0
   want_pip=1
 fi
 
@@ -373,7 +399,7 @@ if [[ "$OS_KIND" = "unknown" ]]; then
   die "Could not detect a supported package manager. Install dependencies manually (README → Installing external tools)."
 fi
 
-if [[ "$want_adb$want_metasploit$want_scrcpy$want_nmap$want_pip" = "00000" ]]; then
+if [[ "$want_adb$want_metasploit$want_scrcpy$want_nmap$want_hardax$want_pip" = "000000" ]]; then
   say "Nothing selected. Exiting."
   exit 0
 fi
@@ -381,7 +407,7 @@ fi
 ensure_python
 skip_components_already_present
 
-if [[ "$want_adb$want_metasploit$want_scrcpy$want_nmap$want_pip" = "00000" ]]; then
+if [[ "$want_adb$want_metasploit$want_scrcpy$want_nmap$want_hardax$want_pip" = "000000" ]]; then
   say "Everything requested is already installed. Exiting."
   exit 0
 fi
@@ -405,6 +431,10 @@ fi
 if [[ "$want_pip" -eq 1 ]] && [[ "$SKIP_PIP" -eq 0 ]]; then
   warn "Installing Python dependencies (pip)…"
   install_pip_reqs
+fi
+if [[ "$want_hardax" -eq 1 ]]; then
+  warn "Installing HARDAX…"
+  install_hardax
 fi
 
 say ""

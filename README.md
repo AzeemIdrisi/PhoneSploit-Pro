@@ -113,6 +113,7 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 | **Ping connectivity**                    | Run ping checks against a host to test connectivity.                                                                                                                                                                                                                                                                                                                         |
 | **Saved Wi‑Fi networks**                 | List saved Wi‑Fi networks known to the device.                                                                                                                                                                                                                                                                                                                               |
 | **Root heuristics**                      | Heuristic checks for common signs of root access.                                                                                                                                                                                                                                                                                                                            |
+| **Vulnerability analysis (HARDAX)**      | Read-only device audit over ADB via [HARDAX](https://github.com/V33RU/hardax): full scan, CVE/patch indicators, hardening (CIS/SELinux/boot/ADB/USB), app surface; Rich summary plus HTML/JSON/XLSX reports under `Downloaded-Files/vuln-reports/`. Installed with `pip install -r requirements.txt`.                                                                          |
 | **Set resolution & display size**        | View current display settings; set screen resolution (`wm size`) from 720p/1080p/2K/4K presets in portrait or landscape, or a custom `WxH`; set display density (`wm density`) from common DPI presets or a custom value; toggle display scaling (`wm scaling`); and reset everything to device defaults.                                                                    |
 | **Clipboard management**                 | Read, set, or clear the device clipboard.                                                                                                                                                                                                                                                                                                                                    |
 | **GPS / location**                       | Retrieve the device's last-known GPS location (latitude, longitude, provider).                                                                                                                                                                                                                                                                                               |
@@ -141,6 +142,7 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 - [`metasploit-framework`](https://www.metasploit.com/) — Metasploit-Framework (`msfvenom` and `msfconsole`)
 - [`scrcpy`](https://github.com/Genymobile/scrcpy) — scrcpy
 - [`nmap`](https://nmap.org/) — Nmap
+- [`hardax`](https://github.com/V33RU/hardax) — HARDAX (**Vulnerability Analysis** hub; listed in `requirements.txt`)
 
 ---
 
@@ -389,6 +391,30 @@ Visit the `scrcpy` GitHub page for the latest installation instructions: [scrcpy
 > [!IMPORTANT]  
 > If `scrcpy` is not available for your Linux distribution (for example **Kali Linux**), you can install it manually ([Linux guide](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md))
 > or build it in a few steps ([Build guide](https://github.com/Genymobile/scrcpy/blob/master/doc/build.md#build-scrcpy)).
+
+### HARDAX (vulnerability analysis)
+
+Included in [`requirements.txt`](requirements.txt) (installed with `pip install -r requirements.txt`). Used by **Vulnerability Analysis** in the menu (configuration audit over ADB; no exploits).
+
+To install or upgrade HARDAX alone:
+
+```
+pip install "hardax>=6.2.0"
+```
+
+Or with the project installer:
+
+```
+./install.sh --components hardax,pip
+```
+
+On Windows (PowerShell):
+
+```
+.\install.ps1 -Components hardax,pip
+```
+
+Upstream: [HARDAX on GitHub](https://github.com/V33RU/hardax) · [PyPI](https://pypi.org/project/hardax/)
 
 ### Nmap
 

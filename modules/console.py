@@ -294,10 +294,21 @@ def confirm(prompt: str = "Do you want to continue?") -> bool:
     return choice in ("y", "")
 
 
+def open_path(opener: str, path: str) -> None:
+    """Open a file with the platform default handler."""
+    try:
+        if os.name == "nt":
+            os.startfile(os.path.normpath(path))  # type: ignore[attr-defined]
+        else:
+            subprocess.run([opener, path], check=False)
+    except OSError:
+        print_error(f"Could not open: {path}")
+
+
 def open_file_prompt(opener: str, path: str) -> None:
     """Ask user if they want to open the resulting file."""
     if confirm("Do you want to open the file?"):
-        subprocess.run([opener, path], check=False)
+        open_path(opener, path)
 
 
 _adb_executable: str | None = None

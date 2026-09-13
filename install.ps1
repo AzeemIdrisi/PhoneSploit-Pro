@@ -96,6 +96,12 @@ function Test-NmapPresent {
     return Test-CommandAvailable "nmap"
 }
 
+function Test-HardaxPresent {
+    if (Test-CommandAvailable "hardax") { return $true }
+    $venvHardax = Join-Path $ScriptDir ".venv\Scripts\hardax.exe"
+    return Test-Path $venvHardax
+}
+
 function Test-PipReqsPresent {
     $req = Join-Path $ScriptDir "requirements.txt"
     $venv = Join-Path $ScriptDir ".venv"
@@ -131,6 +137,10 @@ function Skip-ComponentsAlreadyPresent([hashtable] $Want) {
     if ($Want.metasploit -and (Test-MetasploitPresent)) {
         Write-Info "Metasploit already installed (msfconsole, msfvenom); skipping."
         $Want.metasploit = $false
+    }
+    if ($Want.hardax -and (Test-HardaxPresent)) {
+        Write-Info "HARDAX already installed; skipping."
+        $Want.hardax = $false
     }
     if ($Want.pip -and (Test-PipReqsPresent)) {
         Write-Info "Python dependencies already installed in .venv; skipping pip."
@@ -173,6 +183,7 @@ $want = @{
     metasploit  = $false
     scrcpy      = $false
     nmap        = $false
+    hardax      = $false
     pip         = $false
 }
 
@@ -189,6 +200,7 @@ if ($Components -ne "") {
             "metasploit" { $want.metasploit = $true }
             "scrcpy" { $want.scrcpy = $true }
             "nmap" { $want.nmap = $true }
+            "hardax" { $want.hardax = $true }
             "pip" { $want.pip = $true }
             default { Write-Warn "Unknown component ignored: $k" }
         }
@@ -206,6 +218,7 @@ if ($Components -ne "") {
     $want.metasploit = Ask "Install Metasploit Framework (official MSI, large download)?"
     $want.scrcpy = Ask "Install scrcpy (Chocolatey)?"
     $want.nmap = Ask "Install Nmap (Chocolatey)?"
+    $want.hardax = Ask "Install HARDAX (vulnerability analysis, pip)?"
     $want.pip = Ask "Run pip install -r requirements.txt?"
 }
 else {
@@ -213,6 +226,7 @@ else {
     $want.metasploit = $true
     $want.scrcpy = $true
     $want.nmap = $true
+    $want.hardax = $false
     $want.pip = $true
 }
 
@@ -304,6 +318,21 @@ if ($want.pip -and -not $SkipPip) {
     } else {
         Write-Warn "requirements.txt not found; skipping pip."
     }
+}
+
+if ($want.hardax) {
+    $venv = Join-Path $ScriptDir ".venv"
+    if (-not (Test-Path $venv)) {
+        Write-Info "Creating virtual environment at .venv…"
+        if ($usePyLauncher) {
+            & py -3 -m venv $venv
+        } else {
+            & $pythonExe -m venv $venv
+        }
+    }
+    Write-Info "Installing HARDAX into .venv…"
+    $pip = Join-Path $venv "Scripts\pip.exe"
+    & $pip install "hardax>=6.2.0"
 }
 
 Write-Host ""

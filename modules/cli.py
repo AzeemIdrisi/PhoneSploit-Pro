@@ -22,11 +22,14 @@ from modules.console import (
     clear_terminal,
 )
 from modules.tools import (
+    HARDAX_MIN_VERSION,
+    hardax_version,
     resolve_external_tools,
     require_adb,
     require_metasploit,
     require_nmap,
     require_scrcpy,
+    require_hardax,
 )
 
 
@@ -62,6 +65,13 @@ def _collect_missing_tools(config: AppConfig) -> list[tuple[str, str]]:
         missing.append(("Scrcpy", "scrcpy"))
     if not config.nmap_path:
         missing.append(("Nmap", "nmap"))
+    argv0 = config.hardax_argv0
+    hardax_ok = False
+    if argv0:
+        version = hardax_version(argv0)
+        hardax_ok = version is not None and version >= HARDAX_MIN_VERSION
+    if not hardax_ok:
+        missing.append(("HARDAX", "hardax"))
     return missing
 
 
@@ -211,6 +221,7 @@ def _build_handlers() -> dict[str, object]:
         port_forward,
         root_check,
         security,
+        vulnerability,
         wifi_utils,
     )
 
@@ -344,6 +355,11 @@ def _build_handlers() -> dict[str, object]:
         "live_logcat": extras.live_logcat,
         "network_snapshot": extras.network_snapshot,
         "root_heuristics": root_check.root_heuristics,
+        "vuln_full_audit": vulnerability.full_device_audit,
+        "vuln_patch_cve": vulnerability.patch_and_cve_exposure,
+        "vuln_hardening": vulnerability.hardening_config_checks,
+        "vuln_app_surface": vulnerability.app_attack_surface,
+        "vuln_export_report": vulnerability.export_last_report,
     }
 
 
@@ -358,6 +374,8 @@ def _handlers() -> dict[str, object]:
 
 
 def _check_require(require: str | None, config: AppConfig) -> bool:
+    if require == "none":
+        return True
     if require is None or require == "adb":
         return require_adb(config)
     if require == "scrcpy":
@@ -368,6 +386,10 @@ def _check_require(require: str | None, config: AppConfig) -> bool:
         if not require_adb(config):
             return False
         return require_metasploit(config)
+    if require == "hardax":
+        if not require_adb(config):
+            return False
+        return require_hardax(config)
     return True
 
 
