@@ -229,7 +229,9 @@ HUB_DEVICE_INFO = MenuItem(
     label="Device Information",
     children=(
         _leaf("device_info", "Get Device Information"),
-        _leaf("identifiers", "Get IMEI / Identifiers"),
+        _leaf("device_accounts", "Accounts on Device"),
+        _leaf("device_sim", "SIM / Operator Info"),
+        _leaf("device_bluetooth", "Bluetooth Devices"),
         _leaf("locale_read", "Read Locale"),
     ),
 )

@@ -19,6 +19,18 @@ from modules.console import (
     ensure_config_dir,
     ask,
 )
+from modules.device import lookup_mac_vendor
+
+_MAC_RE = re.compile(r"(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}")
+
+
+def _annotate_macs(text: str) -> str:
+    def _repl(match: re.Match[str]) -> str:
+        mac = match.group(0)
+        vendor = lookup_mac_vendor(mac)
+        return f"{mac} ({vendor})" if vendor else mac
+
+    return _MAC_RE.sub(_repl, text)
 
 # --- Saved-network parsing (formats vary by Android / OEM) ---
 
@@ -247,7 +259,7 @@ def wifi_status_dump(config: AppConfig) -> None:
         lines = raw.splitlines()[:80]
     console.print("[bold cyan]WiFi (filtered)[/bold cyan]")
     for ln in lines[:120]:
-        console.print(f"  {ln}")
+        console.print(f"  {_annotate_macs(ln)}")
 
 
 def wlan_ip(config: AppConfig) -> None:
@@ -255,7 +267,10 @@ def wlan_ip(config: AppConfig) -> None:
         out = adb_output(["shell", "ip", "addr", "show", "wlan0"])
     if "does not exist" in out.lower() or not out.strip():
         out = adb_output(["shell", "ip", "addr"])
-    console.print(out or "[dim]No output[/dim]")
+    if not out.strip():
+        console.print("[dim]No output[/dim]")
+        return
+    console.print(_annotate_macs(out))
 
 
 def wifi_toggle(config: AppConfig) -> None:
@@ -351,13 +366,16 @@ def nearby_wifi_scan(config: AppConfig) -> None:
     table = Table(title="Nearby Wi-Fi Networks", show_header=True, header_style="bold cyan")
     table.add_column("SSID", style="bold yellow")
     table.add_column("BSSID", style="white")
+    table.add_column("Vendor (OUI)", style="white")
     table.add_column("Freq (MHz)", style="white", justify="right")
     table.add_column("Signal (dBm)", style="white", justify="right")
     table.add_column("Capabilities", style="dim white")
     for entry in rows:
+        bssid = entry.get("bssid") or ""
         table.add_row(
             entry.get("ssid") or "[dim]Hidden[/dim]",
-            entry.get("bssid") or "—",
+            bssid or "—",
+            lookup_mac_vendor(bssid) or "—",
             entry.get("frequency") or "—",
             entry.get("signal") or entry.get("signal strength") or "—",
             entry.get("capabilities") or "—",

@@ -1,4 +1,7 @@
+import re
 import subprocess
+from typing import Any
+
 from rich.table import Table
 
 from modules.config import AppConfig
@@ -27,6 +30,93 @@ def get_shell(config: AppConfig) -> None:
     subprocess.run([exe, "shell"])
 
 
+def lookup_mac_vendor(mac: str) -> str | None:
+    """Offline IEEE OUI lookup; returns None if the library is missing or unknown."""
+    mac = (mac or "").strip()
+    if not mac:
+        return None
+    try:
+        from mac_vendor_lookup import MacLookup
+
+        return MacLookup().lookup(mac)
+    except Exception:
+        return None
+
+
+def _lookup_mcc_mnc(plmn: str) -> list[dict[str, Any]]:
+    plmn = re.sub(r"\D", "", plmn or "")
+    if len(plmn) < 5:
+        return []
+    mcc, mnc = plmn[:3], plmn[3:]
+    try:
+        from mccmnc import find_matches
+
+        matches = find_matches(user_mcc=mcc, user_mnc=mnc)
+        if not matches:
+            return []
+        return [m if isinstance(m, dict) else {"raw": str(m)} for m in matches]
+    except Exception:
+        return []
+
+
+def _access_style(access: str) -> str:
+    low = (access or "").lower()
+    if "available" in low:
+        return "[green]Available[/green]"
+    if "restricted" in low:
+        return "[yellow]Restricted[/yellow]"
+    return "[dim]Not on this Android[/dim]"
+
+
+def _collect_imei() -> str | None:
+    from modules.data_extraction import _decoded_imei, _imei_from_dumpsys
+
+    dumpsys = adb_output(["shell", "dumpsys", "iphonesubinfo"])
+    imei = _imei_from_dumpsys(dumpsys) if dumpsys.strip() else None
+    if not imei:
+        imei = _decoded_imei()
+    if not imei:
+        for prop in (
+            "persist.radio.imei",
+            "ril.IMEI",
+            "gsm.imei",
+            "ro.ril.oem.imei",
+        ):
+            val = adb_output(["shell", "getprop", prop]).strip()
+            if val and val.lower() not in ("", "unknown", "null"):
+                imei = val
+                break
+    return imei
+
+
+def _parse_accounts(raw: str) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    email_re = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+    for line in raw.splitlines():
+        line = line.strip()
+        if "type=" in line.lower() or "Account {" in line:
+            acc_type = ""
+            name = ""
+            m_type = re.search(r"type=([^,\s}]+)", line)
+            m_name = re.search(r"name=([^,}]+)", line)
+            if m_type:
+                acc_type = m_type.group(1).strip()
+            if m_name:
+                name = m_name.group(1).strip()
+            if acc_type or name:
+                rows.append({"type": acc_type, "name": name})
+        for email in email_re.findall(line):
+            rows.append({"type": "(email in dump)", "name": email})
+    dedup: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for r in rows:
+        key = (r.get("type", ""), r.get("name", ""))
+        if key not in seen:
+            seen.add(key)
+            dedup.append(r)
+    return dedup
+
+
 def get_device_info(config: AppConfig) -> None:
     props = {
         "Model":            ["getprop", "ro.product.model"],
@@ -44,6 +134,10 @@ def get_device_info(config: AppConfig) -> None:
 
     with task_status("[info]Fetching device information…[/info]"):
         results = {label: adb_output(["shell"] + cmd) for label, cmd in props.items()}
+        imei = _collect_imei()
+        serial = adb_output(["shell", "getprop", "ro.serialno"]).strip()
+        boot_serial = adb_output(["shell", "getprop", "ro.boot.serialno"]).strip()
+        android_id = adb_output(["shell", "settings", "get", "secure", "android_id"]).strip()
 
     table = Table(title="Device Information", show_header=True, header_style="bold cyan")
     table.add_column("Property", style="bold yellow")
@@ -52,6 +146,97 @@ def get_device_info(config: AppConfig) -> None:
     for label, value in results.items():
         table.add_row(label, value or "[dim]N/A[/dim]")
 
+    imei_display = imei or "[yellow]Not accessible via ADB on this Android version[/yellow]"
+    table.add_row("IMEI", imei_display)
+    table.add_row("Serial", serial or "[dim]N/A[/dim]")
+    table.add_row("Boot Serial", boot_serial or "[dim]N/A[/dim]")
+    table.add_row("Android ID", android_id or "[dim]N/A[/dim]")
+
+    console.print(table)
+
+
+def accounts_on_device(config: AppConfig) -> None:
+    if not confirm("List account types/names from dumpsys account (no tokens)?"):
+        return
+    with task_status("[info]Reading accounts…[/info]"):
+        raw = adb_output(["shell", "dumpsys", "account"])
+        rows = _parse_accounts(raw) if raw.strip() else []
+    access = "Available" if rows else "Restricted"
+    console.print(f"Access: {_access_style(access)}")
+    if not rows:
+        print_error("No account data parsed on this device.")
+        return
+    table = Table(title="Accounts on device", show_header=True, header_style="bold cyan")
+    table.add_column("Type", style="bold yellow")
+    table.add_column("Name / hint", style="white")
+    for row in rows:
+        table.add_row(row.get("type", ""), row.get("name", ""))
+    console.print(table)
+
+
+def sim_operator_info(config: AppConfig) -> None:
+    keys = {
+        "sim_operator_alpha": "gsm.sim.operator.alpha",
+        "sim_operator_numeric": "gsm.sim.operator.numeric",
+        "sim_country": "gsm.sim.operator.iso-country",
+        "network_operator_alpha": "gsm.operator.alpha",
+        "network_operator_numeric": "gsm.operator.numeric",
+        "network_country": "gsm.operator.iso-country",
+    }
+    with task_status("[info]Reading SIM / operator props…[/info]"):
+        values: dict[str, str] = {}
+        for label, prop in keys.items():
+            val = adb_output(["shell", "getprop", prop]).strip()
+            values[label] = val if val and val.lower() not in ("", "unknown") else ""
+    access = "Available" if any(values.values()) else "Not on this Android / no SIM"
+    console.print(f"Access: {_access_style(access)}")
+    table = Table(title="SIM / operator", show_header=True, header_style="bold cyan")
+    table.add_column("Property", style="bold yellow")
+    table.add_column("Value", style="white")
+    for k, v in values.items():
+        table.add_row(k, v or "—")
+        if k.endswith("_numeric") and v:
+            matches = _lookup_mcc_mnc(v)
+            if matches:
+                table.add_row("  ↳ MCC-MNC lookup", str(matches[0]))
+    console.print(table)
+
+
+def bluetooth_devices(config: AppConfig) -> None:
+    with task_status("[info]Reading Bluetooth dump…[/info]"):
+        raw = adb_output(["shell", "dumpsys", "bluetooth_manager"])
+        if not raw.strip():
+            raw = adb_output(["shell", "dumpsys", "bluetooth"])
+    devices: list[dict[str, str]] = []
+    mac_re = re.compile(r"([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}")
+    for line in raw.splitlines():
+        if mac_re.search(line):
+            mac = mac_re.search(line).group(0)
+            name = ""
+            m_name = re.search(r"name[=:]\s*([^\s,]+)", line, re.I)
+            if m_name:
+                name = m_name.group(1).strip('"')
+            devices.append({"address": mac, "name": name})
+    dedup: list[dict[str, str]] = []
+    seen_macs: set[str] = set()
+    for d in devices:
+        mac = d["address"].upper()
+        if mac in seen_macs:
+            continue
+        seen_macs.add(mac)
+        dedup.append(d)
+    access = "Available" if dedup else ("Not on this Android" if not raw.strip() else "Restricted")
+    console.print(f"Access: {_access_style(access)}")
+    if not dedup:
+        print_error("No Bluetooth devices parsed.")
+        return
+    table = Table(title="Bluetooth devices", show_header=True, header_style="bold cyan")
+    table.add_column("Address", style="white")
+    table.add_column("Name", style="bold yellow")
+    table.add_column("Vendor (OUI)", style="white")
+    for d in dedup[:50]:
+        vendor = lookup_mac_vendor(d.get("address", "")) or "—"
+        table.add_row(d.get("address", ""), d.get("name", "") or "—", vendor)
     console.print(table)
 
 

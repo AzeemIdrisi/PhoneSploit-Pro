@@ -126,7 +126,7 @@ def dump_call_logs(config: AppConfig) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Clipboard, location, identifiers, usage stats (menu 64–67)
+# Clipboard, location, usage stats
 # ---------------------------------------------------------------------------
 
 def _parcel_text(out: str) -> str | None:
@@ -267,41 +267,6 @@ def _imei_from_dumpsys(raw: str) -> str | None:
         if match:
             return match.group(1)
     return None
-
-
-def get_identifiers(config: AppConfig) -> None:
-    with task_status("[info]Gathering device identifiers…[/info]"):
-        dumpsys = adb_output(["shell", "dumpsys", "iphonesubinfo"])
-        imei = _imei_from_dumpsys(dumpsys) if dumpsys.strip() else None
-        if not imei:
-            imei = _decoded_imei()
-        if not imei:
-            for prop in (
-                "persist.radio.imei",
-                "ril.IMEI",
-                "gsm.imei",
-                "ro.ril.oem.imei",
-            ):
-                val = adb_output(["shell", "getprop", prop]).strip()
-                if val and val.lower() not in ("", "unknown", "null"):
-                    imei = val
-                    break
-        serial = adb_output(["shell", "getprop", "ro.serialno"]).strip()
-        boot_serial = adb_output(["shell", "getprop", "ro.boot.serialno"]).strip()
-        android_id = adb_output(["shell", "settings", "get", "secure", "android_id"]).strip()
-        model = adb_output(["shell", "getprop", "ro.product.model"]).strip()
-
-    imei_display = imei or "[yellow]Not accessible via ADB shell on this Android version[/yellow]"
-
-    table = Table(title="Device Identifiers", show_header=True, header_style="bold cyan")
-    table.add_column("Property", style="bold yellow")
-    table.add_column("Value", style="white")
-    table.add_row("IMEI", imei_display)
-    table.add_row("Serial", serial or "[dim]N/A[/dim]")
-    table.add_row("Boot Serial", boot_serial or "[dim]N/A[/dim]")
-    table.add_row("Android ID", android_id or "[dim]N/A[/dim]")
-    table.add_row("Model", model or "[dim]N/A[/dim]")
-    console.print(table)
 
 
 def usage_stats(config: AppConfig) -> None:

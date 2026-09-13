@@ -1,3 +1,5 @@
 python-nmap==0.7.1
 rich>=14.0.0
 hardax>=6.2.0
+mac-vendor-lookup>=0.1.15
+mccmnc>=3.3
