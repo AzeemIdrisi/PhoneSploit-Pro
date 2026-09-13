@@ -120,6 +120,16 @@ def _format_submenu_header(breadcrumb: list[str]) -> str:
     return f"\n  [bold cyan]PhoneSploit Pro[/bold cyan]  ·  [bold white]{trail}[/bold white]\n"
 
 
+def print_submenu_header(*titles: str) -> None:
+    """Print breadcrumb header for content screens (Main Menu is implied)."""
+    console.print(_format_submenu_header(["Main Menu", *titles]))
+
+
+def print_option_list(labels: list[str] | tuple[str, ...]) -> None:
+    """Numbered option rows matching show_options, without clearing the screen."""
+    _render_menu_grid(list(labels), columns=1)
+
+
 def render_submenu_screen(
     title: str,
     items: list[str],
