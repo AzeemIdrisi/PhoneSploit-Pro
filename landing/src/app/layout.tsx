@@ -1,17 +1,7 @@
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
 import { getBasePath, getSiteUrl } from "@/lib/utils";
+import "./fonts/HarmonyOS_Sans/Black/Black.css";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
 
 const ogImagePath = `${getBasePath()}/screenshots/Screenshot-1.png`;
 
@@ -19,7 +9,7 @@ export const metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: "PhoneSploit Pro — The Android Swiss Army Knife",
   description:
-    "An all-in-one hacking tool to remotely take over Android devices using ADB, scrcpy, Nmap, and Metasploit-Framework.",
+    "All-in-one Android security testing from one menu. ADB, scrcpy, Nmap, and Metasploit-Framework — connect, control, extract, and exploit.",
   openGraph: {
     title: "PhoneSploit Pro — The Android Swiss Army Knife",
     description: "The Swiss Army knife for Android. Own the device.",
@@ -38,9 +28,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} scroll-smooth`}
+      className={`${GeistMono.variable} scroll-smooth`}
     >
-      <body className="bg-surface-900 text-white antialiased">{children}</body>
+      <body className="bg-background text-foreground antialiased">
+        <div className="page-grid" aria-hidden="true" />
+        <div className="noise-bg" aria-hidden="true" />
+        <div className="scanline-effect" aria-hidden="true" />
+        <div className="scanline-sweep" aria-hidden="true" />
+        <div className="relative z-10">{children}</div>
+      </body>
     </html>
   );
 }

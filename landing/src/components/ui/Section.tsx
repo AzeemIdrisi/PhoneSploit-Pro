@@ -10,7 +10,7 @@ export function Section({
   return (
     <section 
       id={id} 
-      className={cn('section', className)} 
+      className={cn('section scroll-mt-28', className)} 
       {...props}
     >
       <Container>{children}</Container>

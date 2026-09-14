@@ -1,0 +1,9 @@
+HarmonyOS Sans Fonts Software is used.
+
+Copyright 2021-2025 Huawei Device Co., Ltd.
+
+HarmonyOS Sans Fonts Software is licensed under the HarmonyOS Sans Fonts
+License Agreement. These files are unmodified copies of HarmonyOS Sans Black
+(Version 2.400) for embedding with this software.
+
+Full agreement: https://developer.huawei.com/consumer/en/design/resource/

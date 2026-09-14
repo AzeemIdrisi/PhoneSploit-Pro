@@ -1,7 +1,6 @@
 import { Container } from "@/components/ui/Container";
 import { Star, GitFork } from "lucide-react";
-import { GitHubIcon } from "@/components/ui/BrandIcons";
-import { repoInfo } from "@/data/constants";
+import { navLinks, repoInfo } from "@/data/constants";
 import { getBasePath } from "@/lib/utils";
 
 export default function Footer() {
@@ -9,46 +8,66 @@ export default function Footer() {
   const basePath = getBasePath();
 
   return (
-    <footer className="border-t border-surface-700 bg-surface-900/50">
+    <footer className="border-t border-white/10 bg-surface-950">
       <Container className="py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          <div className="lg:col-span-2">
+          <div>
             <a
               href={`${basePath}/`}
-              className="flex items-center gap-2 text-2xl font-bold text-white mb-4"
+              className="font-mono text-lg font-bold tracking-widest text-white mb-4 inline-block"
               aria-label="PhoneSploit Pro Home"
             >
-              <span className="text-primary-400">PhoneSploit</span>
-              <span className="text-white">Pro</span>
+              PHONESPLOIT <span className="text-neon-red">PRO</span>
             </a>
-            <p className="text-primary-300 max-w-md text-balance">
-              An all-in-one hacking tool to remotely take over Android devices
-              using ADB, scrcpy, Nmap, and Metasploit-Framework.
+            <p className="text-muted-foreground max-w-md text-sm font-mono leading-relaxed">
+              The Swiss Army knife for Android. One menu for ADB control, scrcpy
+              mirroring, data extraction, and Metasploit — pick a number and
+              run.
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-primary-400">
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-xs font-mono uppercase tracking-widest text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 text-accent-500" />
+                <Star className="h-3.5 w-3.5 text-neon-red" />
                 <span>{repoInfo.starsFormatted} Stars</span>
               </div>
               <div className="flex items-center gap-2">
-                <GitFork className="h-4 w-4" />
+                <GitFork className="h-3.5 w-3.5" />
                 <span>{repoInfo.forksFormatted} Forks</span>
               </div>
+              <span className="text-neon-cyan">GPL-3.0</span>
             </div>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Resources</h4>
+            <h4 className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-4">
+              Product
+            </h4>
             <ul className="space-y-2">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="text-sm font-mono text-muted-foreground hover:text-neon-cyan transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-4">
+              Resources
+            </h4>
+            <ul className="space-y-2 text-sm font-mono">
               <li>
                 <a
                   href="https://github.com/AzeemIdrisi/PhoneSploit-Pro"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-muted-foreground hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <GitHubIcon className="h-4 w-4" />
-                  GitHub Repository
+                  GitHub
                 </a>
               </li>
               <li>
@@ -56,10 +75,9 @@ export default function Footer() {
                   href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-muted-foreground hover:text-white transition-colors"
                 >
-                  <GitHubIcon className="h-4 w-4" />
-                  Report Issues
+                  Issues
                 </a>
               </li>
               <li>
@@ -67,9 +85,8 @@ export default function Footer() {
                   href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/discussions"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-muted-foreground hover:text-white transition-colors"
                 >
-                  <GitHubIcon className="h-4 w-4" />
                   Discussions
                 </a>
               </li>
@@ -78,9 +95,8 @@ export default function Footer() {
                   href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/blob/main/docs/SECURITY.md"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-muted-foreground hover:text-white transition-colors"
                 >
-                  <GitHubIcon className="h-4 w-4" />
                   Security Policy
                 </a>
               </li>
@@ -89,9 +105,8 @@ export default function Footer() {
                   href="https://github.com/AzeemIdrisi/PhoneSploit-Pro/blob/main/CONTRIBUTING.md"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-300 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-muted-foreground hover:text-white transition-colors"
                 >
-                  <GitHubIcon className="h-4 w-4" />
                   Contributing
                 </a>
               </li>
@@ -99,40 +114,40 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Requirements
+            <h4 className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-4">
+              Developer
             </h4>
-            <ul className="space-y-2 text-primary-300 text-sm">
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
-                Python 3.10+
+            <ul className="space-y-2 text-sm font-mono">
+              <li>
+                <a
+                  href="https://github.com/AzeemIdrisi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-neon-cyan transition-colors"
+                >
+                  GitHub
+                </a>
               </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
-                ADB (Android Debug Bridge)
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
-                Metasploit-Framework
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
-                scrcpy
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
-                Nmap
+              <li>
+                <a
+                  href="https://azeemidrisi.github.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-neon-cyan transition-colors"
+                >
+                  Contact
+                </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-surface-700">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-primary-500 text-sm text-center md:text-left">
-              Copyright © {currentYear} Azeem Idrisi. Licensed under GPL-3.0.
-            </p>
-          </div>
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <p className="text-muted text-xs font-mono text-center md:text-left">
+            © {currentYear} Azeem Idrisi · GPL-3.0 · Educational use only ·
+            HarmonyOS Sans Fonts used under HarmonyOS Sans Fonts License
+            Agreement
+          </p>
         </div>
       </Container>
     </footer>
