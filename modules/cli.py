@@ -9,7 +9,7 @@ from rich.panel import Panel
 
 from modules import banner, color
 from modules.config import AppConfig
-from modules.menu import MAIN_ITEMS, MenuItem
+from modules.menu import MAIN_ITEMS, MenuItem, MenuSearchHit, search_menu_items
 from modules.console import (
     console,
     print_error,
@@ -20,13 +20,18 @@ from modules.console import (
     submenu_prompt,
     parse_submenu_choice,
     clear_terminal,
+    read_command,
+    main_menu_prompt,
 )
 from modules.tools import (
+    HARDAX_MIN_VERSION,
+    hardax_version,
     resolve_external_tools,
     require_adb,
     require_metasploit,
     require_nmap,
     require_scrcpy,
+    require_hardax,
 )
 
 
@@ -62,6 +67,13 @@ def _collect_missing_tools(config: AppConfig) -> list[tuple[str, str]]:
         missing.append(("Scrcpy", "scrcpy"))
     if not config.nmap_path:
         missing.append(("Nmap", "nmap"))
+    argv0 = config.hardax_argv0
+    hardax_ok = False
+    if argv0:
+        version = hardax_version(argv0)
+        hardax_ok = version is not None and version >= HARDAX_MIN_VERSION
+    if not hardax_ok:
+        missing.append(("HARDAX", "hardax"))
     return missing
 
 
@@ -211,6 +223,7 @@ def _build_handlers() -> dict[str, object]:
         port_forward,
         root_check,
         security,
+        vulnerability,
         wifi_utils,
     )
 
@@ -275,7 +288,9 @@ def _build_handlers() -> dict[str, object]:
         "clipboard_set": data_extraction.clipboard_set,
         "clipboard_clear": data_extraction.clipboard_clear,
         "location": data_extraction.get_location,
-        "identifiers": data_extraction.get_identifiers,
+        "device_accounts": device.accounts_on_device,
+        "device_sim": device.sim_operator_info,
+        "device_bluetooth": device.bluetooth_devices,
         "pull_file": file_manager.pull_file,
         "push_file": file_manager.push_file,
         "list_files": file_manager.list_files,
@@ -344,6 +359,11 @@ def _build_handlers() -> dict[str, object]:
         "live_logcat": extras.live_logcat,
         "network_snapshot": extras.network_snapshot,
         "root_heuristics": root_check.root_heuristics,
+        "vuln_full_audit": vulnerability.full_device_audit,
+        "vuln_patch_cve": vulnerability.patch_and_cve_exposure,
+        "vuln_hardening": vulnerability.hardening_config_checks,
+        "vuln_app_surface": vulnerability.app_attack_surface,
+        "vuln_export_report": vulnerability.export_last_report,
     }
 
 
@@ -358,6 +378,8 @@ def _handlers() -> dict[str, object]:
 
 
 def _check_require(require: str | None, config: AppConfig) -> bool:
+    if require == "none":
+        return True
     if require is None or require == "adb":
         return require_adb(config)
     if require == "scrcpy":
@@ -368,6 +390,10 @@ def _check_require(require: str | None, config: AppConfig) -> bool:
         if not require_adb(config):
             return False
         return require_metasploit(config)
+    if require == "hardax":
+        if not require_adb(config):
+            return False
+        return require_hardax(config)
     return True
 
 
@@ -377,6 +403,83 @@ def _run_handler(config: AppConfig, item: MenuItem) -> None:
         print_error(f"No handler registered for '{item.id}'.")
         return
     handler(config)  # type: ignore[operator]
+
+
+def _dispatch_search_hit(config: AppConfig, hit: MenuSearchHit) -> None:
+    """Run a hub or leaf chosen from feature search."""
+    item = hit.item
+    if item.is_hub:
+        if run_hub(config, item, ["Main Menu"]):
+            display_menu(config)
+        else:
+            clear_screen(config)
+        return
+    if not _check_require(item.requires, config):
+        display_menu(config)
+        return
+    _run_handler(config, item)
+    config.return_to_main = False
+    display_menu(config)
+
+
+def run_feature_search(config: AppConfig, query: str) -> bool:
+    """Return True if the caller should redraw the main menu."""
+    if not query.strip():
+        return True
+    hits, total = search_menu_items(query)
+    if not hits:
+        print_error(f"No features match \"{query.strip()}\".")
+        return False
+    if total > len(hits):
+        console.print(
+            f"[dim]Showing {len(hits)} of {total} matches — refine “/{query.strip()}” to narrow.[/dim]"
+        )
+    labels = [f"{h.item.display_label} ({h.path})" for h in hits]
+    crumbs = ["Main Menu", "Search"]
+
+    def _render_search() -> None:
+        render_submenu_screen(
+            f"Search: {query.strip()}",
+            labels,
+            breadcrumb=crumbs,
+            columns=1,
+        )
+
+    clear_terminal(config)
+    _render_search()
+    prompt = submenu_prompt(crumbs)
+    while True:
+        cmd = read_command(
+            prompt,
+            config,
+            on_clear=lambda: (clear_terminal(config), _render_search()),
+            allow_esc_back=True,
+            allow_search=False,
+        )
+        if cmd.kind == "eof":
+            config.run = False
+            console.print("\n[bold white]Exiting...[/bold white]\n")
+            return False
+        if cmd.kind in ("back", "cancel"):
+            clear_terminal(config)
+            return True
+        choice = cmd.text.strip().lower()
+        if choice == "0":
+            clear_terminal(config)
+            return True
+        if choice == "99":
+            clear_terminal(config)
+            _render_search()
+            continue
+        if not choice.isdigit():
+            print_error("Invalid selection")
+            continue
+        idx = int(choice)
+        if idx < 1 or idx > len(hits):
+            print_error("Invalid selection")
+            continue
+        _dispatch_search_hit(config, hits[idx - 1])
+        return False
 
 
 def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> bool:
@@ -395,8 +498,29 @@ def run_hub(config: AppConfig, hub: MenuItem, breadcrumb: list[str]) -> bool:
 
     _render(clear=True)
     prompt = submenu_prompt(crumbs)
+
+    def _on_clear() -> None:
+        clear_terminal(config)
+        _render()
+
     while True:
-        choice = ask(prompt).strip().lower()
+        cmd = read_command(
+            prompt,
+            config,
+            on_clear=_on_clear,
+            allow_esc_back=True,
+            allow_search=False,
+        )
+        if cmd.kind == "eof":
+            config.run = False
+            console.print("\n[bold white]Exiting...[/bold white]\n")
+            return False
+        if cmd.kind == "back":
+            clear_terminal(config)
+            return False
+        if cmd.kind == "cancel":
+            continue
+        choice = cmd.text.strip().lower()
         action = parse_submenu_choice(choice, config, lambda: _render())
         if action == "exit":
             return False
@@ -436,8 +560,6 @@ def _dispatch_item(config: AppConfig, item: MenuItem) -> None:
         return
     _run_handler(config, item)
     config.return_to_main = False
-    # Always re-render (without clearing) so the handler's output stays
-    # visible and the menu is on screen for the next prompt.
     display_menu(config)
 
 
@@ -446,28 +568,47 @@ def _dispatch_item(config: AppConfig, item: MenuItem) -> None:
 # ---------------------------------------------------------------------------
 
 def main(config: AppConfig) -> None:
-    option = ask("[bold red]\\[Main Menu][/bold red] > ").strip().lower()
+    while config.run:
+        cmd = read_command(
+            main_menu_prompt(),
+            config,
+            on_clear=lambda: clear_screen(config),
+            esc_noop=True,
+            allow_search=True,
+        )
+        if cmd.kind == "eof":
+            config.run = False
+            console.print("\n[bold white]Exiting...[/bold white]\n")
+            return
+        if cmd.kind in ("back", "cancel"):
+            continue
+        if cmd.kind == "search":
+            if run_feature_search(config, cmd.text):
+                clear_screen(config)
+            continue
 
-    if option == "0":
-        config.run = False
-        console.print("\n[bold white]Exiting...[/bold white]\n")
-        return
-    if option == "99":
-        clear_screen(config)
-        return
-    if not option.isdigit():
-        print_error("Invalid selection")
-        return
+        option = cmd.text.strip().lower()
+        if option == "0":
+            config.run = False
+            console.print("\n[bold white]Exiting...[/bold white]\n")
+            return
+        if option == "99":
+            clear_screen(config)
+            continue
+        if not option.isdigit():
+            print_error("Invalid selection")
+            continue
 
-    item = None
-    try:
-        item = all_menu_items()[int(option) - 1]
-    except (ValueError, IndexError):
-        pass
-    if item is None:
-        print_error("Invalid selection")
+        item = None
+        try:
+            item = all_menu_items()[int(option) - 1]
+        except (ValueError, IndexError):
+            pass
+        if item is None:
+            print_error("Invalid selection")
+            continue
+        _dispatch_item(config, item)
         return
-    _dispatch_item(config, item)
 
 
 # ---------------------------------------------------------------------------
@@ -490,5 +631,8 @@ def run() -> None:
         try:
             main(config)
         except KeyboardInterrupt:
+            console.print("\n[muted]Interrupted — back to menu.[/muted]")
+            clear_screen(config)
+        except EOFError:
             config.run = False
             console.print("\n[bold white]Exiting...[/bold white]\n")

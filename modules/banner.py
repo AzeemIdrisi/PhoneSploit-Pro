@@ -25,29 +25,14 @@ is not permitted without permission.
 For any queries, Contact me at : azeemidrisiofficial@gmail.com
 """
 
-version = "v2.3"
+from pathlib import Path
 
-instruction = """
-This attack will launch Metasploit-Framework    (msfconsole)
-
-Use 'Ctrl + C' to stop at any point
-
-1. Wait until you see:
-
-    [green]meterpreter >      [/green]
-
-2. Then use 'help' command to see all meterpreter commands:
-
-    [green]meterpreter > [yellow]help       [/yellow][/green]
-
-3. To exit meterpreter enter 'exit' or To exit Metasploit enter 'exit -y':
-
-    [green]meterpreter > [yellow]exit       [/yellow][/green]
-
-    [green]msf6 > [yellow]exit -y       [/yellow][/green]
-
-[bold red]\\[PhoneSploit Pro][/bold red]   Press 'Enter' to continue attack / '0' to Go Back to Main Menu
-    """
+_VERSION_FILE = Path(__file__).resolve().parent.parent / "VERSION"
+if not _VERSION_FILE.is_file():
+    raise RuntimeError(f"Missing VERSION file at {_VERSION_FILE}")
+version = _VERSION_FILE.read_text(encoding="utf-8").strip()
+if not version:
+    raise RuntimeError(f"VERSION file is empty: {_VERSION_FILE}")
 
 banner2 = """
         ░█▀▀█ █──█ █▀▀█ █▀▀▄ █▀▀ ░█▀▀▀█ █▀▀█ █── █▀▀█ ─▀─ ▀▀█▀▀ 　 ░█▀▀█ █▀▀█ █▀▀█
@@ -144,16 +129,3 @@ banner_list = [
     banner11,
     banner12,
 ]
-
-instructions_banner = """[bold cyan]
-        ____           __                  __  _
-       /  _/___  _____/ /________  _______/ /(_)___  ____  _____
-       / // __ \\/ ___/ __/ ___/ / / / ___/ __/ / __ \\/ __ \\/ ___/
-     _/ // / / (__  ) /_/ /  / /_/ / /__/ /_/ / /_/ / / / (__  )
-    /___/_/ /_/____/\\__/_/   \\__,_/\\___/\\__/_/\\____/_/ /_/____/
-[/bold cyan]"""
-
-hacking_banner = """[bold green]
-    █░█ ▄▀█ █▀▀ █▄▀ █ █▄░█ █▀▀ ░ ░ ░
-    █▀█ █▀█ █▄▄ █░█ █ █░▀█ █▄█ ▄ ▄ ▄
-[/bold green]"""

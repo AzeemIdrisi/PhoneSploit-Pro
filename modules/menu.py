@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-Require = Literal["adb", "scrcpy", "nmap", "metasploit"] | None
+Require = Literal["adb", "scrcpy", "nmap", "metasploit", "hardax", "none"] | None
 
 
 @dataclass(frozen=True)
@@ -229,7 +229,9 @@ HUB_DEVICE_INFO = MenuItem(
     label="Device Information",
     children=(
         _leaf("device_info", "Get Device Information"),
-        _leaf("identifiers", "Get IMEI / Identifiers"),
+        _leaf("device_accounts", "Accounts on Device"),
+        _leaf("device_sim", "SIM / Operator Info"),
+        _leaf("device_bluetooth", "Bluetooth Devices"),
         _leaf("locale_read", "Read Locale"),
     ),
 )
@@ -343,6 +345,18 @@ HUB_DIAGNOSTICS = MenuItem(
     ),
 )
 
+HUB_VULNERABILITY = MenuItem(
+    id="hub_vulnerability",
+    label="Vulnerability Analysis",
+    children=(
+        _leaf("vuln_full_audit", "Full Device Audit", "hardax"),
+        _leaf("vuln_patch_cve", "Security Patch & CVE Exposure", "hardax"),
+        _leaf("vuln_hardening", "Hardening & Config Checks", "hardax"),
+        _leaf("vuln_app_surface", "App Attack Surface", "hardax"),
+        _leaf("vuln_export_report", "Export Last Report", "none"),
+    ),
+)
+
 # ---------------------------------------------------------------------------
 # Single-page main menu
 # ---------------------------------------------------------------------------
@@ -381,6 +395,7 @@ MAIN_ITEMS: tuple[MenuItem, ...] = (
     HUB_NETWORK_TESTING,
     HUB_KEYCODES,
     HUB_DIAGNOSTICS,
+    HUB_VULNERABILITY,
     HUB_PORT_FORWARD,
     _leaf("developer_settings", "Developer Settings"),
     _leaf("set_wallpaper", "Set Wallpaper"),
@@ -411,3 +426,50 @@ def total_features() -> int:
         else:
             count += 1
     return count
+
+
+@dataclass(frozen=True)
+class MenuSearchHit:
+    """A menu entry matched by search, with its breadcrumb path."""
+
+    item: MenuItem
+    path: str
+
+
+def _collect_search_hits(
+    item: MenuItem,
+    path_parts: list[str],
+    query: str,
+    hits: list[MenuSearchHit],
+) -> None:
+    label = item.label.lower()
+    if query in label:
+        hits.append(MenuSearchHit(item=item, path=" › ".join(path_parts)))
+    if item.is_hub and item.children:
+        child_path = path_parts + [item.label]
+        for child in item.children:
+            _collect_search_hits(child, child_path, query, hits)
+
+
+def search_menu_items(
+    query: str,
+    *,
+    max_results: int = 20,
+) -> tuple[list[MenuSearchHit], int]:
+    """Case-insensitive substring search over top-level items and hub leaves."""
+    q = query.strip().lower()
+    if not q:
+        return [], 0
+    hits: list[MenuSearchHit] = []
+    for top in MAIN_ITEMS:
+        if top.is_hub:
+            hub_path = [top.label]
+            if q in top.label.lower():
+                hits.append(MenuSearchHit(item=top, path=top.label))
+            for child in top.children or ():
+                _collect_search_hits(child, hub_path, q, hits)
+        else:
+            if q in top.label.lower():
+                hits.append(MenuSearchHit(item=top, path=top.label))
+    total = len(hits)
+    return hits[:max_results], total

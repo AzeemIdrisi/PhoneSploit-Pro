@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Screenshot } from '@/data/screenshots'
@@ -12,11 +12,13 @@ interface ScreenshotLightboxProps {
 }
 
 export function ScreenshotLightbox({ screenshot, onClose }: ScreenshotLightboxProps) {
+  const closeRef = useRef<HTMLButtonElement>(null)
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose()
   }, [onClose])
 
   useEffect(() => {
+    closeRef.current?.focus()
     document.addEventListener('keydown', handleKeyDown)
     document.body.style.overflow = 'hidden'
     return () => {
@@ -31,7 +33,7 @@ export function ScreenshotLightbox({ screenshot, onClose }: ScreenshotLightboxPr
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Full size view"
@@ -47,8 +49,10 @@ export function ScreenshotLightbox({ screenshot, onClose }: ScreenshotLightboxPr
       >
         <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
           <button
+            ref={closeRef}
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-surface-900/90 backdrop-blur-sm border border-surface-700 text-primary-300 hover:text-white hover:bg-primary-900/50 hover:border-primary-700 transition-all"
+            className="p-2 bg-background/90 border border-white/20 text-muted-foreground hover:text-white hover:border-neon-red/40 transition-all font-mono"
             aria-label="Close lightbox"
           >
             <X className="h-5 w-5" />
@@ -61,7 +65,7 @@ export function ScreenshotLightbox({ screenshot, onClose }: ScreenshotLightboxPr
             alt={screenshot.alt}
             fill
             sizes="(max-width: 1024px) 100vw, 80vw"
-            className="object-contain max-w-[90vw] max-h-[85vh] rounded-xl"
+            className="object-contain max-w-[90vw] max-h-[85vh]"
             priority
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="

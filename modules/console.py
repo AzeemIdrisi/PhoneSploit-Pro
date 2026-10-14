@@ -1,8 +1,11 @@
 import os
 import re
+import select
 import shutil
 import subprocess
+import sys
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
@@ -120,6 +123,47 @@ def _format_submenu_header(breadcrumb: list[str]) -> str:
     return f"\n  [bold cyan]PhoneSploit Pro[/bold cyan]  ·  [bold white]{trail}[/bold white]\n"
 
 
+def print_submenu_header(*titles: str) -> None:
+    """Print breadcrumb header for content screens (Main Menu is implied)."""
+    console.print(_format_submenu_header(["Main Menu", *titles]))
+
+
+def print_option_list(labels: list[str] | tuple[str, ...]) -> None:
+    """Numbered option rows matching show_options, without clearing the screen."""
+    _render_menu_grid(list(labels), columns=1)
+
+
+def _is_termux() -> bool:
+    if os.environ.get("TERMUX_VERSION"):
+        return True
+    return os.path.isdir("/data/data/com.termux/files/usr")
+
+
+def _print_menu_footer(*, main_menu: bool) -> None:
+    """Termux: typed 0/99. Desktop: keyboard shortcuts only (no 0/99 in footer)."""
+    if _is_termux():
+        if main_menu:
+            console.print(
+                "  [bold dim]0:[/bold dim] Exit  [bold dim]99:[/bold dim] Clear  "
+                "[bold dim]/[/bold dim] Search"
+            )
+        else:
+            console.print(
+                "\n  [bold dim]0:[/bold dim] Back  [bold dim]99:[/bold dim] Clear"
+            )
+        return
+    if main_menu:
+        console.print(
+            "  [bold dim]Ctrl+D[/bold dim] Exit  [bold dim]Ctrl+L[/bold dim] Clear  "
+            "[bold dim]Ctrl+C[/bold dim] Cancel input  [bold dim]/[/bold dim] Search"
+        )
+    else:
+        console.print(
+            "\n  [bold dim]ESC[/bold dim] Back  [bold dim]Ctrl+L[/bold dim] Clear  "
+            "[bold dim]Ctrl+C[/bold dim] Cancel  [bold dim]Ctrl+D[/bold dim] Exit"
+        )
+
+
 def render_submenu_screen(
     title: str,
     items: list[str],
@@ -134,7 +178,7 @@ def render_submenu_screen(
         console.print(f"\n  [bold cyan]PhoneSploit Pro[/bold cyan]  ·  [bold white]{title}[/bold white]\n")
     col_count = columns if columns is not None else (2 if len(items) > 6 else 1)
     _render_menu_grid(items, columns=col_count)
-    console.print("\n  [bold dim]0:[/bold dim] Back    [bold dim]99:[/bold dim] Clear")
+    _print_menu_footer(main_menu=False)
 
 
 def render_main_menu(page_items: list[tuple[int, str]]) -> None:
@@ -161,12 +205,40 @@ def render_main_menu(page_items: list[tuple[int, str]]) -> None:
         console.print(Text.join(gap, cells))
 
     console.print()
-    console.print("  [bold dim]99:[/bold dim] Clear   [bold dim]0:[/bold dim] Exit")
+    _print_menu_footer(main_menu=True)
+
+
+_IPV4_ADB_SERIAL = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?$")
+
+
+def _is_ipv4_adb_serial(serial: str) -> bool:
+    if not _IPV4_ADB_SERIAL.match(serial):
+        return False
+    host = serial.rsplit(":", 1)[0]
+    return all(0 <= int(octet) <= 255 for octet in host.split("."))
+
+
+def format_device_suffix(max_len: int = 14) -> str:
+    """ANDROID_SERIAL in prompts; full IPv4:port, truncated USB serials."""
+    serial = os.environ.get("ANDROID_SERIAL", "").strip()
+    if not serial:
+        return " [dim]no device[/dim]"
+    if _is_ipv4_adb_serial(serial) or len(serial) <= max_len:
+        shown = serial
+    else:
+        head = max(4, (max_len - 1) // 2)
+        tail = max_len - head - 1
+        shown = f"{serial[:head]}…{serial[-tail:]}"
+    return f" [bold cyan]·[/bold cyan] [bold white]{shown}[/bold white]"
+
+
+def main_menu_prompt() -> str:
+    return f"[bold red]\\[Main Menu{format_device_suffix()}][/bold red] > "
 
 
 def submenu_prompt(breadcrumb: list[str]) -> str:
     trail = " › ".join(breadcrumb)
-    return f"[bold red]\\[{trail}][/bold red] > "
+    return f"[bold red]\\[{trail}{format_device_suffix()}][/bold red] > "
 
 
 def parse_submenu_choice(
@@ -212,7 +284,7 @@ def print_info(msg: str) -> None:
 
 
 def print_null_input() -> None:
-    console.print("[error]Null input[/error]. [green]Returning to menu.[/green]")
+    console.print("[muted]Cancelled.[/muted] [green]Returning to menu.[/green]")
 
 
 def ensure_config_dir(
@@ -235,12 +307,269 @@ def ensure_config_dir(
     return p
 
 
-def ask(prompt: str) -> str:
-    """Styled input prompt that survives terminal line editing."""
+CommandKind = Literal["submit", "back", "cancel", "eof", "search"]
+
+
+@dataclass(frozen=True)
+class CommandInput:
+    kind: CommandKind
+    text: str = ""
+
+
+_INPUT_HISTORY: list[str] = []
+_HISTORY_INDEX: int = -1
+_ESC_FOLLOWUP_SEC = 0.08
+
+
+def _stdin_is_tty() -> bool:
+    try:
+        return sys.stdin.isatty()
+    except Exception:
+        return False
+
+
+def _can_raw_read() -> bool:
+    if not _stdin_is_tty():
+        return False
+    if os.name == "nt":
+        try:
+            import msvcrt  # noqa: F401
+        except ImportError:
+            return False
+        return True
+    try:
+        import termios  # noqa: F401
+        import tty  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+def _read_char_unix(timeout: float | None = None) -> str | None:
+    import termios
+    import tty
+
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    try:
+        tty.setcbreak(fd)
+        if timeout is not None:
+            ready, _, _ = select.select([sys.stdin], [], [], timeout)
+            if not ready:
+                return None
+        ch = sys.stdin.read(1)
+        return ch
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+
+def _read_char_windows() -> str:
+    import msvcrt
+
+    ch = msvcrt.getwch()
+    if ch in ("\x00", "\xe0"):
+        msvcrt.getwch()
+        return ""
+    return ch
+
+
+def _read_char_raw(timeout: float | None = None) -> str | None:
+    if os.name == "nt":
+        return _read_char_windows()
+    return _read_char_unix(timeout)
+
+
+def _redraw_input_line(prompt: str, buffer: str) -> None:
+    rendered = _render_prompt(prompt)
+    plain_prompt = Text.from_markup(prompt).plain
+    sys.stdout.write("\r" + " " * (len(plain_prompt) + len(buffer) + 4))
+    sys.stdout.write("\r" + rendered + buffer)
+    sys.stdout.flush()
+
+
+def _read_line_interactive(
+    prompt: str,
+    *,
+    config: AppConfig | None = None,
+    on_clear: Callable[[], None] | None = None,
+    allow_esc_back: bool = False,
+    esc_noop: bool = False,
+    allow_search: bool = False,
+) -> CommandInput:
+    """Raw TTY line editor; returns structured command results."""
+    global _HISTORY_INDEX
+    rendered = _render_prompt(prompt)
+    buffer = ""
+    _HISTORY_INDEX = len(_INPUT_HISTORY)
+
+    sys.stdout.write(rendered)
+    sys.stdout.flush()
+
+    while True:
+        if os.name == "nt":
+            ch = _read_char_raw()
+            if ch is None:
+                ch = ""
+        else:
+            ch = _read_char_raw()
+
+        if ch is None:
+            continue
+
+        if ch == "\x04":  # Ctrl+D
+            if not buffer:
+                sys.stdout.write("\n")
+                sys.stdout.flush()
+                return CommandInput("eof")
+            continue
+
+        if ch == "\x03":  # Ctrl+C
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+            return CommandInput("cancel")
+
+        if ch == "\x0c":  # Ctrl+L
+            if config is not None:
+                clear_terminal(config)
+            if on_clear is not None:
+                on_clear()
+            else:
+                sys.stdout.write(rendered)
+                sys.stdout.flush()
+            _redraw_input_line(prompt, buffer)
+            continue
+
+        if ch in ("\r", "\n"):
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+            text = buffer.strip()
+            if allow_search and text.startswith("/"):
+                return CommandInput("search", text[1:].strip())
+            if buffer and (_HISTORY_INDEX >= len(_INPUT_HISTORY) or _INPUT_HISTORY[-1] != buffer):
+                _INPUT_HISTORY.append(buffer)
+                if len(_INPUT_HISTORY) > 100:
+                    del _INPUT_HISTORY[0]
+            return CommandInput("submit", buffer)
+
+        if ch == "\x7f" or ch == "\b":
+            if buffer:
+                buffer = buffer[:-1]
+                sys.stdout.write("\b \b")
+                sys.stdout.flush()
+            continue
+
+        if ch == "\x1b":
+            if os.name == "nt":
+                if allow_esc_back:
+                    sys.stdout.write("\n")
+                    sys.stdout.flush()
+                    return CommandInput("back")
+                if not esc_noop:
+                    sys.stdout.write("\n")
+                    sys.stdout.flush()
+                    return CommandInput("cancel")
+                continue
+            follow = _read_char_raw(timeout=_ESC_FOLLOWUP_SEC)
+            if follow is None:
+                if allow_esc_back:
+                    sys.stdout.write("\n")
+                    sys.stdout.flush()
+                    return CommandInput("back")
+                if esc_noop:
+                    continue
+                sys.stdout.write("\n")
+                sys.stdout.flush()
+                return CommandInput("cancel")
+            if follow == "[":
+                seq = ""
+                while True:
+                    c = _read_char_raw(timeout=0.05)
+                    if c is None or not c:
+                        break
+                    seq += c
+                    if 0x40 <= ord(c) <= 0x7E:
+                        break
+                if seq.endswith("A") and _INPUT_HISTORY:
+                    _HISTORY_INDEX = max(0, _HISTORY_INDEX - 1)
+                    buffer = _INPUT_HISTORY[_HISTORY_INDEX]
+                    _redraw_input_line(prompt, buffer)
+                elif seq.endswith("B") and _INPUT_HISTORY:
+                    _HISTORY_INDEX = min(len(_INPUT_HISTORY), _HISTORY_INDEX + 1)
+                    buffer = (
+                        _INPUT_HISTORY[_HISTORY_INDEX]
+                        if _HISTORY_INDEX < len(_INPUT_HISTORY)
+                        else ""
+                    )
+                    _redraw_input_line(prompt, buffer)
+            continue
+
+        if len(ch) == 1 and ord(ch) >= 32:
+            buffer += ch
+            sys.stdout.write(ch)
+            sys.stdout.flush()
+    return CommandInput("eof")
+
+
+def _read_line_fallback(prompt: str, *, allow_search: bool = False) -> CommandInput:
     rendered = _render_prompt(prompt)
     if _readline_is_gnu():
         rendered = _wrap_ansi_escapes(rendered)
-    return input(rendered)
+    try:
+        line = input(rendered)
+    except EOFError:
+        return CommandInput("eof")
+    except KeyboardInterrupt:
+        console.print()
+        return CommandInput("cancel")
+    text = line.strip()
+    if allow_search and text.startswith("/"):
+        return CommandInput("search", text[1:].strip())
+    return CommandInput("submit", line)
+
+
+def read_command(
+    prompt: str,
+    config: AppConfig,
+    *,
+    on_clear: Callable[[], None] | None = None,
+    allow_esc_back: bool = False,
+    esc_noop: bool = False,
+    allow_search: bool = False,
+) -> CommandInput:
+    """Menu-oriented line input with hotkeys."""
+    if _can_raw_read():
+        return _read_line_interactive(
+            prompt,
+            config=config,
+            on_clear=on_clear,
+            allow_esc_back=allow_esc_back,
+            esc_noop=esc_noop,
+            allow_search=allow_search,
+        )
+    return _read_line_fallback(prompt, allow_search=allow_search)
+
+
+def ask(prompt: str) -> str:
+    """Styled input prompt that survives terminal line editing."""
+    if _can_raw_read():
+        result = _read_line_interactive(prompt, esc_noop=False)
+        if result.kind in ("cancel", "back"):
+            return ""
+        if result.kind == "eof":
+            return ""
+        if result.kind == "search":
+            return result.text
+        return result.text
+    rendered = _render_prompt(prompt)
+    if _readline_is_gnu():
+        rendered = _wrap_ansi_escapes(rendered)
+    try:
+        return input(rendered)
+    except KeyboardInterrupt:
+        console.print()
+        return ""
+    except EOFError:
+        return ""
 
 
 def _render_prompt(prompt: str) -> str:
@@ -277,17 +606,49 @@ def _wrap_ansi_escapes(text: str) -> str:
 
 
 def confirm(prompt: str = "Do you want to continue?") -> bool:
-    """Ask Y/N confirmation. Returns True for yes/enter, False for no."""
-    choice = ask(f"\n[bold white]{prompt}     Y / N[/bold white] > ").lower()
-    while choice not in ("y", "n", ""):
-        choice = ask("[error]Invalid choice![/error] Press Y or N > ").lower()
-    return choice in ("y", "")
+    """Ask Y/N confirmation. Enter = Yes; N / ESC / Ctrl+C = No."""
+    prompt_markup = (
+        f"\n[bold white]{prompt}     Y / N  [dim][Enter = Yes][/dim][/bold white] > "
+    )
+    while True:
+        if _can_raw_read():
+            result = _read_line_interactive(prompt_markup, esc_noop=False)
+            if result.kind in ("cancel", "back", "eof"):
+                return False
+            choice = result.text.strip().lower()
+        else:
+            rendered = _render_prompt(prompt_markup)
+            if _readline_is_gnu():
+                rendered = _wrap_ansi_escapes(rendered)
+            try:
+                choice = input(rendered).strip().lower()
+            except KeyboardInterrupt:
+                console.print()
+                return False
+            except EOFError:
+                return False
+        if choice in ("y", ""):
+            return True
+        if choice in ("n",):
+            return False
+        prompt_markup = "[error]Invalid choice![/error] Press Y or N > "
+
+
+def open_path(opener: str, path: str) -> None:
+    """Open a file with the platform default handler."""
+    try:
+        if os.name == "nt":
+            os.startfile(os.path.normpath(path))  # type: ignore[attr-defined]
+        else:
+            subprocess.run([opener, path], check=False)
+    except OSError:
+        print_error(f"Could not open: {path}")
 
 
 def open_file_prompt(opener: str, path: str) -> None:
     """Ask user if they want to open the resulting file."""
     if confirm("Do you want to open the file?"):
-        subprocess.run([opener, path], check=False)
+        open_path(opener, path)
 
 
 _adb_executable: str | None = None

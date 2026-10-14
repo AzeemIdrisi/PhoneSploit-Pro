@@ -1,5 +1,7 @@
 import ipaddress
 import os
+import re
+import shutil
 import socket
 import subprocess
 import nmap
@@ -31,6 +33,85 @@ def get_ip_address() -> str | None:
         return ip
     except OSError:
         return None
+
+
+def _parse_ipv4_from_ifconfig(text: str) -> list[str]:
+    found: list[str] = []
+    for match in re.finditer(r"inet (\d+\.\d+\.\d+\.\d+)", text):
+        ip = match.group(1)
+        if not ip.startswith("127."):
+            found.append(ip)
+    return found
+
+
+def _enumerate_interface_ipv4() -> list[str]:
+    """Best-effort list of interface IPv4 addresses (no loopback)."""
+    ips: list[str] = []
+    try:
+        if os.name == "nt":
+            r = subprocess.run(
+                ["ipconfig"],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+            ips.extend(_parse_ipv4_from_ifconfig(r.stdout))
+        else:
+            if shutil.which("ip"):
+                r = subprocess.run(
+                    ["ip", "-4", "-o", "addr", "show"],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                )
+                for line in r.stdout.splitlines():
+                    parts = line.split()
+                    for part in parts:
+                        if "/" in part and part.count(".") == 3:
+                            ip = part.split("/")[0]
+                            if not ip.startswith("127."):
+                                ips.append(ip)
+            elif shutil.which("ifconfig"):
+                r = subprocess.run(
+                    ["ifconfig"],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                )
+                ips.extend(_parse_ipv4_from_ifconfig(r.stdout))
+    except OSError:
+        pass
+    return ips
+
+
+def list_local_ipv4() -> list[str]:
+    """Non-loopback IPv4 addresses; default-route IP first when detectable."""
+    seen: set[str] = set()
+    ordered: list[str] = []
+
+    default = get_ip_address()
+    if default:
+        seen.add(default)
+        ordered.append(default)
+
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            ip = info[4][0]
+            if not ip.startswith("127.") and ip not in seen:
+                seen.add(ip)
+                ordered.append(ip)
+    except OSError:
+        pass
+
+    for ip in _enumerate_interface_ipv4():
+        if ip not in seen and not ip.startswith("127."):
+            seen.add(ip)
+            ordered.append(ip)
+
+    return ordered
 
 
 def _sort_ipv4(hosts: list[str]) -> list[str]:
@@ -86,7 +167,7 @@ def is_valid_ipv4(address: str) -> bool:
         return False
 
 
-def _list_ready_device_serials() -> list[str]:
+def list_ready_device_serials() -> list[str]:
     """Serial numbers of devices in the `device` state (authorized, ready)."""
     exe = get_adb_executable()
     if not exe:
@@ -114,7 +195,7 @@ def prompt_select_device_if_multiple(config: AppConfig) -> None:
         os.environ.pop("ANDROID_SERIAL", None)
         return
 
-    serials = _list_ready_device_serials()
+    serials = list_ready_device_serials()
     if not serials:
         os.environ.pop("ANDROID_SERIAL", None)
         return

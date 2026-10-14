@@ -17,7 +17,7 @@ export function FeatureCard({ feature, index }: FeatureCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ delay: Math.min(index, 8) * 0.04, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       whileHover={{ y: -4, scale: 1.01 }}
     >
       <Card hover padding="lg" className="h-full group">

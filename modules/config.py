@@ -16,3 +16,4 @@ class AppConfig:
     msfconsole_path: str | None = None
     scrcpy_path: str | None = None
     nmap_path: str | None = None
+    hardax_argv0: list[str] | None = None
