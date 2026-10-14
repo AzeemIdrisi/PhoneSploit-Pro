@@ -25,7 +25,14 @@ is not permitted without permission.
 For any queries, Contact me at : azeemidrisiofficial@gmail.com
 """
 
-version = "v2.3"
+from pathlib import Path
+
+_VERSION_FILE = Path(__file__).resolve().parent.parent / "VERSION"
+if not _VERSION_FILE.is_file():
+    raise RuntimeError(f"Missing VERSION file at {_VERSION_FILE}")
+version = _VERSION_FILE.read_text(encoding="utf-8").strip()
+if not version:
+    raise RuntimeError(f"VERSION file is empty: {_VERSION_FILE}")
 
 banner2 = """
         ░█▀▀█ █──█ █▀▀█ █▀▀▄ █▀▀ ░█▀▀▀█ █▀▀█ █── █▀▀█ ─▀─ ▀▀█▀▀ 　 ░█▀▀█ █▀▀█ █▀▀█

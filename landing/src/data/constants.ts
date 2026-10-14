@@ -35,7 +35,7 @@ export const repoInfo = {
   forks: githubStats.forks,
   starsFormatted: githubStats.starsFormatted,
   forksFormatted: githubStats.forksFormatted,
-  version: "v2.3",
+  version: process.env.NEXT_PUBLIC_APP_VERSION ?? "",
 };
 
 export const toolStripItems = ["ADB", "SCRCPY", "NMAP", "METASPLOIT"] as const;

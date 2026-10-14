@@ -7,10 +7,57 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Default non-interactive: install all components; subsidiary prompts (e.g. Homebrew) assume yes.
+VERSION_FILE="$SCRIPT_DIR/VERSION"
+if [[ ! -f "$VERSION_FILE" ]]; then
+  echo "Error: VERSION file not found at $VERSION_FILE" >&2
+  exit 1
+fi
+INSTALLER_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+if [[ -z "$INSTALLER_VERSION" ]]; then
+  echo "Error: VERSION file is empty" >&2
+  exit 1
+fi
+
 YES=1
 COMPONENTS_RAW=""
 SKIP_PIP=0
+INTERACTIVE=0
+
+# --- UI state ---
+STEP_CURRENT=0
+STEP_TOTAL=0
+FAILED_COUNT=0
+declare -a SUMMARY_OK=()
+declare -a SUMMARY_SKIP=()
+declare -a SUMMARY_FAIL=()
+
+# --- Colors (TTY + NO_COLOR) ---
+if [[ -t 1 ]] && [[ -z "${NO_COLOR:-}" ]]; then
+  C_RESET=$'\033[0m'
+  C_BOLD=$'\033[1m'
+  C_DIM=$'\033[2m'
+  C_RED=$'\033[31m'
+  C_GREEN=$'\033[32m'
+  C_YELLOW=$'\033[33m'
+  C_CYAN=$'\033[36m'
+  C_MAGENTA=$'\033[35m'
+  C_WHITE=$'\033[97m'
+else
+  C_RESET="" C_BOLD="" C_DIM="" C_RED="" C_GREEN="" C_YELLOW="" C_CYAN="" C_MAGENTA="" C_WHITE=""
+fi
+
+# Box drawing: UTF-8 locale vs ASCII
+_use_utf8=0
+if [[ "${LANG:-}${LC_ALL:-}" == *[Uu][Tt][Ff]-8* ]]; then
+  _use_utf8=1
+fi
+if [[ "$_use_utf8" -eq 1 ]]; then
+  BOX_TL="╔" BOX_TR="╗" BOX_BL="╚" BOX_BR="╝" BOX_H="═" BOX_V="║"
+  ICON_OK="✓" ICON_FAIL="✗" ICON_SKIP="○" ICON_PENDING="◦" ICON_RUN="▶"
+else
+  BOX_TL="+" BOX_TR="+" BOX_BL="+" BOX_BR="+" BOX_H="=" BOX_V="|"
+  ICON_OK="OK" ICON_FAIL="X" ICON_SKIP="-" ICON_PENDING="." ICON_RUN=">"
+fi
 
 usage() {
   cat <<'EOF'
@@ -32,13 +79,19 @@ Examples:
 EOF
 }
 
-INTERACTIVE=0
-
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --yes|-y) YES=1 ;;
     --interactive) INTERACTIVE=1; YES=0 ;;
-    --components) COMPONENTS_RAW="${2:-}"; shift ;;
+    --components)
+      if [[ $# -lt 2 ]] || [[ "${2:-}" == -* ]] || [[ -z "${2:-}" ]]; then
+        echo "Error: --components requires a comma-separated list (e.g. adb,nmap,pip)." >&2
+        usage
+        exit 1
+      fi
+      COMPONENTS_RAW="$2"
+      shift
+      ;;
     --skip-pip) SKIP_PIP=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
@@ -46,9 +99,152 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-say() { printf '%s\n' "$*"; }
-warn() { printf '[install] %s\n' "$*" >&2; }
-die() { warn "$*"; exit 1; }
+if [[ "$SKIP_PIP" -eq 1 ]]; then
+  export PSP_SKIP_PIP=1
+fi
+
+ui_line() { printf '%s\n' "$*"; }
+ui_die() {
+  printf '%s%s[ERROR]%s %s\n' "$C_BOLD" "$C_RED" "$C_RESET" "$*" >&2
+  exit 1
+}
+
+BANNER_INNER_WIDTH=50
+
+banner_pad() {
+  local plain="$1"
+  local n="${#plain}"
+  local pad=$((BANNER_INNER_WIDTH - n))
+  if [[ "$pad" -lt 0 ]]; then
+    pad=0
+  fi
+  printf '%*s' "$pad" ''
+}
+
+print_banner() {
+  local title="PhoneSploit Pro Auto Installer"
+  local sub="All-in-one dependency setup"
+  local row1="  ${title}"
+  local row2="  ${sub}  ${INSTALLER_VERSION}"
+  ui_line ""
+  ui_line "${C_CYAN}${BOX_TL}$(printf '%*s' "$BANNER_INNER_WIDTH" '' | tr ' ' "${BOX_H}")${BOX_TR}${C_RESET}"
+  ui_line "${C_CYAN}${BOX_V}${C_RESET}  ${C_BOLD}${C_MAGENTA}${title}${C_RESET}$(banner_pad "$row1")${C_CYAN}${BOX_V}${C_RESET}"
+  ui_line "${C_CYAN}${BOX_V}${C_RESET}  ${C_DIM}${sub}${C_RESET}  ${C_YELLOW}${INSTALLER_VERSION}${C_RESET}$(banner_pad "$row2")${C_CYAN}${BOX_V}${C_RESET}"
+  ui_line "${C_CYAN}${BOX_BL}$(printf '%*s' "$BANNER_INNER_WIDTH" '' | tr ' ' "${BOX_H}")${BOX_BR}${C_RESET}"
+  ui_line ""
+}
+
+print_env_block() {
+  local pretty="$1" priv python_ver mode
+  if [[ "$(id -u 2>/dev/null)" -eq 0 ]]; then
+    priv="root"
+  else
+    priv="user (may use sudo)"
+  fi
+  python_ver="$(python3 --version 2>/dev/null || echo 'not found')"
+  if [[ "$INTERACTIVE" -eq 1 ]]; then
+    mode="Interactive"
+  elif [[ -n "$COMPONENTS_RAW" ]]; then
+    mode="Custom components"
+  else
+    mode="Full install (non-interactive)"
+  fi
+  ui_line "${C_BOLD}Environment${C_RESET}"
+  ui_line "  ${C_DIM}OS:${C_RESET}       ${pretty}"
+  ui_line "  ${C_DIM}Python:${C_RESET}   ${python_ver}"
+  ui_line "  ${C_DIM}Privilege:${C_RESET} ${priv}"
+  ui_line "  ${C_DIM}Mode:${C_RESET}     ${mode}"
+  ui_line ""
+}
+
+print_plan() {
+  ui_line "${C_BOLD}Installation plan${C_RESET}"
+  local label status color
+  for entry in "$@"; do
+    label="${entry%%|*}"
+    status="${entry#*|}"
+    case "$status" in
+      pending) color="$C_CYAN"; status="${ICON_PENDING} pending" ;;
+      skip) color="$C_DIM"; status="${ICON_SKIP} already installed" ;;
+      run) color="$C_GREEN"; status="${ICON_RUN} will install" ;;
+      *) color="$C_RESET"; status="$status" ;;
+    esac
+    ui_line "  ${color}${status}${C_RESET}  ${label}"
+  done
+  ui_line ""
+}
+
+step_begin() {
+  local label="$1"
+  STEP_CURRENT=$((STEP_CURRENT + 1))
+  ui_line ""
+  ui_line "${C_BOLD}${C_CYAN}[${STEP_CURRENT}/${STEP_TOTAL}]${C_RESET} ${C_BOLD}${ICON_RUN} ${label}${C_RESET}"
+  ui_line "${C_DIM}────────────────────────────────────────${C_RESET}"
+}
+
+step_ok() {
+  local label="$1"
+  SUMMARY_OK+=("$label")
+  ui_line "${C_GREEN}${ICON_OK}${C_RESET} ${C_BOLD}Done:${C_RESET} ${label}"
+}
+
+step_skip_record() {
+  local label="$1"
+  SUMMARY_SKIP+=("$label")
+}
+
+step_fail() {
+  local label="$1" rc="$2" hint="${3:-}"
+  SUMMARY_FAIL+=("$label")
+  FAILED_COUNT=$((FAILED_COUNT + 1))
+  ui_line "${C_RED}${ICON_FAIL}${C_RESET} ${C_BOLD}Failed:${C_RESET} ${label} ${C_DIM}(exit ${rc})${C_RESET}" >&2
+  if [[ -n "$hint" ]]; then
+    ui_line "  ${C_YELLOW}→${C_RESET} ${hint}" >&2
+  fi
+}
+
+run_step() {
+  local label="$1"
+  shift
+  step_begin "$label"
+  set +e
+  "$@"
+  local rc=$?
+  set -e
+  if [[ $rc -eq 0 ]]; then
+    step_ok "$label"
+  else
+    step_fail "$label" "$rc" "${STEP_HINT:-See messages above or README → Installing external tools.}"
+    STEP_HINT=""
+  fi
+}
+
+print_summary() {
+  ui_line ""
+  ui_line "${C_BOLD}Summary${C_RESET}"
+  if [[ ${#SUMMARY_OK[@]} -gt 0 ]]; then
+    ui_line "  ${C_GREEN}${ICON_OK} Installed (${#SUMMARY_OK[@]}):${C_RESET} ${SUMMARY_OK[*]}"
+  fi
+  if [[ ${#SUMMARY_SKIP[@]} -gt 0 ]]; then
+    ui_line "  ${C_DIM}${ICON_SKIP} Skipped (${#SUMMARY_SKIP[@]}):${C_RESET} ${SUMMARY_SKIP[*]}"
+  fi
+  if [[ ${#SUMMARY_FAIL[@]} -gt 0 ]]; then
+    ui_line "  ${C_RED}${ICON_FAIL} Failed (${#SUMMARY_FAIL[@]}):${C_RESET} ${SUMMARY_FAIL[*]}"
+  fi
+  ui_line ""
+  if [[ "$FAILED_COUNT" -gt 0 ]]; then
+    ui_line "${C_RED}${C_BOLD}Installation completed with errors.${C_RESET} Fix the failed steps and re-run."
+    ui_line ""
+    exit 1
+  fi
+  ui_line "${C_GREEN}${C_BOLD}Installation completed successfully.${C_RESET}"
+  ui_line ""
+  ui_line "If commands are still not found, open a new terminal (PATH updates)."
+  ui_line "Activate the virtual environment and run:"
+  ui_line "  ${C_CYAN}source .venv/bin/activate${C_RESET}"
+  ui_line "  ${C_CYAN}python3 phonesploitpro.py${C_RESET}"
+  ui_line ""
+}
 
 prompt_yes() {
   local msg="$1"
@@ -63,6 +259,33 @@ prompt_yes() {
 }
 
 have_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+IS_ROOT=0
+[[ "$(id -u 2>/dev/null)" -eq 0 ]] && IS_ROOT=1
+
+run_as_root() {
+  if [[ "$IS_ROOT" -eq 1 ]]; then
+    "$@"
+    return $?
+  elif have_cmd sudo; then
+    sudo "$@"
+    return $?
+  else
+    STEP_HINT="Re-run as root or install sudo."
+    ui_line "${C_RED}This step requires root privileges.${C_RESET}" >&2
+    return 1
+  fi
+}
+
+APT_UPDATED=0
+apt_update_once() {
+  if [[ "$APT_UPDATED" -eq 1 ]]; then
+    return 0
+  fi
+  export DEBIAN_FRONTEND=noninteractive
+  run_as_root apt-get update || return 1
+  APT_UPDATED=1
+}
 
 have_adb() { have_cmd adb; }
 have_nmap() { have_cmd nmap; }
@@ -80,7 +303,7 @@ have_pip_reqs() {
   local pip="$venv/bin/pip"
   [[ -d "$venv" && -x "$pip" ]] || return 1
   [[ -f "$SCRIPT_DIR/requirements.txt" ]] || return 0
-  local req line pkg
+  local req pkg
   while IFS= read -r req || [[ -n "$req" ]]; do
     req="${req%%#*}"
     req="$(echo "$req" | tr -d '[:space:]')"
@@ -91,33 +314,6 @@ have_pip_reqs() {
     fi
   done < "$SCRIPT_DIR/requirements.txt"
   return 0
-}
-
-skip_components_already_present() {
-  if [[ "$want_adb" -eq 1 ]] && have_adb; then
-    warn "ADB already installed ($(command -v adb)); skipping."
-    want_adb=0
-  fi
-  if [[ "$want_nmap" -eq 1 ]] && have_nmap; then
-    warn "Nmap already installed ($(command -v nmap)); skipping."
-    want_nmap=0
-  fi
-  if [[ "$want_scrcpy" -eq 1 ]] && have_scrcpy; then
-    warn "scrcpy already installed ($(command -v scrcpy)); skipping."
-    want_scrcpy=0
-  fi
-  if [[ "$want_metasploit" -eq 1 ]] && have_metasploit; then
-    warn "Metasploit already installed (msfconsole, msfvenom); skipping."
-    want_metasploit=0
-  fi
-  if [[ "$want_hardax" -eq 1 ]] && have_hardax; then
-    warn "HARDAX already installed; skipping."
-    want_hardax=0
-  fi
-  if [[ "$want_pip" -eq 1 ]] && have_pip_reqs; then
-    warn "Python dependencies already installed in .venv; skipping pip."
-    want_pip=0
-  fi
 }
 
 detect_os() {
@@ -157,33 +353,64 @@ if [[ "$(uname -s 2>/dev/null)" = "Darwin" ]]; then
   PRETTY_OS="macOS $(sw_vers -productVersion 2>/dev/null || echo '')"
 fi
 
-say ""
-say "PhoneSploit Pro — dependency installer"
-say "Detected environment: ${PRETTY_OS}"
-say ""
-
 ensure_python() {
   if ! have_cmd python3; then
-    die "python3 not found. Install Python 3.10+ (see README), then re-run this script."
+    ui_die "python3 not found. Install Python 3.10+ (see README), then re-run this script."
   fi
-  python3 - <<'PY' || die "Python 3.10 or newer is required."
+  python3 - <<'PY' || ui_die "Python 3.10 or newer is required."
 import sys
 sys.exit(0 if sys.version_info >= (3, 10) else 1)
 PY
 }
 
-ensure_brew() {
-  if have_cmd brew; then
+ensure_venv_module() {
+  if python3 -c "import venv" 2>/dev/null; then
     return 0
   fi
-  warn "Homebrew is not installed (needed on macOS for several tools)."
-  if [[ "$YES" -eq 0 ]]; then
-    if ! prompt_yes "Install Homebrew now (official install script)?"; then
-      die "Homebrew is required on macOS for this installer. Install manually and re-run."
-    fi
+  ui_line "${C_YELLOW}Python venv module missing; installing OS package…${C_RESET}"
+  case "$OS_KIND" in
+    debian)
+      apt_update_once || return 1
+      run_as_root apt-get install -y python3-venv python3-pip || return 1
+      ;;
+    fedora)
+      run_as_root dnf install -y python3 || return 1
+      ;;
+    arch)
+      run_as_root pacman -S --needed --noconfirm python || return 1
+      ;;
+    opensuse)
+      run_as_root zypper --non-interactive install python3 || return 1
+      ;;
+    alpine)
+      run_as_root apk add --no-cache py3-pip py3-virtualenv || return 1
+      ;;
+    macos|termux)
+      ;;
+    *)
+      STEP_HINT="Install python3-venv manually, then re-run."
+      ui_line "${C_RED}Cannot install python3-venv automatically on this OS.${C_RESET}" >&2
+      return 1
+      ;;
+  esac
+  if ! python3 -c "import venv" 2>/dev/null; then
+    STEP_HINT="Install python3-venv manually, then re-run."
+    ui_line "${C_RED}python3-venv still unavailable after package install.${C_RESET}" >&2
+    return 1
   fi
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  # shellcheck disable=SC1091
+}
+
+create_venv_if_needed() {
+  local venv="$SCRIPT_DIR/.venv"
+  if [[ -d "$venv" ]]; then
+    return 0
+  fi
+  ensure_venv_module || return 1
+  ui_line "Creating virtual environment at .venv…"
+  python3 -m venv "$venv" || return 1
+}
+
+shellenv_brew() {
   if [[ -f /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
   elif [[ -f /usr/local/bin/brew ]]; then
@@ -191,37 +418,78 @@ ensure_brew() {
   fi
 }
 
+ensure_brew() {
+  if have_cmd brew; then
+    return 0
+  fi
+  if [[ -f /opt/homebrew/bin/brew ]]; then
+    shellenv_brew
+    have_cmd brew && return 0
+  fi
+  if [[ -f /usr/local/bin/brew ]]; then
+    shellenv_brew
+    have_cmd brew && return 0
+  fi
+  ui_line "${C_YELLOW}Homebrew is not installed (needed on macOS for several tools).${C_RESET}"
+  if [[ "$YES" -eq 0 ]]; then
+    if ! prompt_yes "Install Homebrew now (official install script)?"; then
+      STEP_HINT="Install Homebrew manually and re-run."
+      return 1
+    fi
+  fi
+  local brew_install="/tmp/psp-brew-install.sh"
+  if ! curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" -o "$brew_install"; then
+    STEP_HINT="Check your network connection and try again."
+    ui_line "${C_RED}Failed to download Homebrew install script.${C_RESET}" >&2
+    return 1
+  fi
+  if [[ "$YES" -eq 1 ]]; then
+    NONINTERACTIVE=1 /bin/bash "$brew_install" || { rm -f "$brew_install"; return 1; }
+  else
+    /bin/bash "$brew_install" || { rm -f "$brew_install"; return 1; }
+  fi
+  rm -f "$brew_install"
+  shellenv_brew
+  if ! have_cmd brew; then
+    STEP_HINT="Open a new terminal or add Homebrew to PATH, then re-run."
+    ui_line "${C_RED}Homebrew install finished but brew was not found on PATH.${C_RESET}" >&2
+    return 1
+  fi
+}
+
 install_adb() {
   case "$OS_KIND" in
     debian)
-      sudo apt-get update
-      # Package name is "adb" (Ubuntu universe / Debian main); virtual: android-tools-adb
-      sudo apt-get install -y adb
+      apt_update_once || return 1
+      run_as_root apt-get install -y adb || return 1
       ;;
     fedora)
-      sudo dnf install -y android-tools
+      run_as_root dnf install -y android-tools || return 1
       ;;
     arch)
-      sudo pacman -S --needed --noconfirm android-tools
+      run_as_root pacman -S --needed --noconfirm android-tools || return 1
       ;;
     opensuse)
-      if ! sudo zypper --non-interactive install android-tools; then
-        die "ADB: zypper could not install android-tools. On openSUSE you may need the hardware repo first — see https://software.opensuse.org/package/android-tools"
-      fi
+      run_as_root zypper --non-interactive install android-tools || {
+        STEP_HINT="On openSUSE you may need the hardware repo — see software.opensuse.org/package/android-tools"
+        return 1
+      }
       ;;
     alpine)
-      sudo apk add --no-cache android-tools
+      run_as_root apk add --no-cache android-tools || return 1
       ;;
     macos)
-      ensure_brew
-      brew install android-platform-tools
+      ensure_brew || return 1
+      brew install android-platform-tools || return 1
       ;;
     termux)
-      pkg update -y
-      pkg install -y android-tools
+      pkg update -y || return 1
+      pkg install -y android-tools || return 1
       ;;
     *)
-      die "ADB: unsupported OS for automatic install. See README → Installing external tools → ADB."
+      STEP_HINT="See README → Installing external tools → ADB."
+      ui_line "${C_RED}ADB: unsupported OS for automatic install.${C_RESET}" >&2
+      return 1
       ;;
   esac
 }
@@ -229,31 +497,33 @@ install_adb() {
 install_nmap() {
   case "$OS_KIND" in
     debian)
-      sudo apt-get update
-      sudo apt-get install -y nmap
+      apt_update_once || return 1
+      run_as_root apt-get install -y nmap || return 1
       ;;
     fedora)
-      sudo dnf install -y nmap
+      run_as_root dnf install -y nmap || return 1
       ;;
     arch)
-      sudo pacman -S --needed --noconfirm nmap
+      run_as_root pacman -S --needed --noconfirm nmap || return 1
       ;;
     opensuse)
-      sudo zypper --non-interactive install nmap
+      run_as_root zypper --non-interactive install nmap || return 1
       ;;
     alpine)
-      sudo apk add --no-cache nmap
+      run_as_root apk add --no-cache nmap || return 1
       ;;
     macos)
-      ensure_brew
-      brew install nmap
+      ensure_brew || return 1
+      brew install nmap || return 1
       ;;
     termux)
-      pkg update -y
-      pkg install -y nmap
+      pkg update -y || return 1
+      pkg install -y nmap || return 1
       ;;
     *)
-      die "Nmap: unsupported OS for automatic install. See README → Nmap."
+      STEP_HINT="See README → Nmap."
+      ui_line "${C_RED}Nmap: unsupported OS for automatic install.${C_RESET}" >&2
+      return 1
       ;;
   esac
 }
@@ -261,41 +531,45 @@ install_nmap() {
 install_scrcpy() {
   case "$OS_KIND" in
     debian)
-      sudo apt-get update
-      if ! sudo apt-get install -y scrcpy; then
-        warn "apt could not install scrcpy. On some distros (e.g. Kali) use the scrcpy GitHub docs or build from source."
+      apt_update_once || return 1
+      if ! run_as_root apt-get install -y scrcpy; then
+        STEP_HINT="On some distros (e.g. Kali) build scrcpy from https://github.com/Genymobile/scrcpy"
         return 1
       fi
       ;;
     fedora)
-      sudo dnf install -y scrcpy
+      run_as_root dnf install -y scrcpy || return 1
       ;;
     arch)
-      sudo pacman -S --needed --noconfirm scrcpy
+      run_as_root pacman -S --needed --noconfirm scrcpy || return 1
       ;;
     opensuse)
-      sudo zypper --non-interactive install scrcpy || {
-        warn "zypper scrcpy failed; try building from https://github.com/Genymobile/scrcpy"
+      run_as_root zypper --non-interactive install scrcpy || {
+        STEP_HINT="Try building from https://github.com/Genymobile/scrcpy"
         return 1
       }
       ;;
     alpine)
-      warn "scrcpy on Alpine may need edge/community; see scrcpy GitHub."
-      sudo apk add --no-cache scrcpy 2>/dev/null || return 1
+      run_as_root apk add --no-cache scrcpy 2>/dev/null || {
+        STEP_HINT="scrcpy on Alpine may need edge/community; see scrcpy GitHub."
+        return 1
+      }
       ;;
     macos)
-      ensure_brew
-      brew install scrcpy
+      ensure_brew || return 1
+      brew install scrcpy || return 1
       ;;
     termux)
-      pkg update -y
+      pkg update -y || return 1
       pkg install -y scrcpy || {
-        warn "Termux: scrcpy may be unavailable; see README."
+        STEP_HINT="Termux: scrcpy may be unavailable; see README."
         return 1
       }
       ;;
     *)
-      die "scrcpy: unsupported OS for automatic install. See README → scrcpy."
+      STEP_HINT="See README → scrcpy."
+      ui_line "${C_RED}scrcpy: unsupported OS for automatic install.${C_RESET}" >&2
+      return 1
       ;;
   esac
 }
@@ -303,53 +577,61 @@ install_scrcpy() {
 install_metasploit() {
   case "$OS_KIND" in
     macos)
-      ensure_brew
-      brew install --cask metasploit
+      ensure_brew || return 1
+      brew install --cask metasploit || return 1
       ;;
     debian|fedora|arch|opensuse|alpine)
-      local tmp
-      tmp="$(mktemp -d)"
-      trap 'rm -rf "$tmp"' EXIT
-      curl -fsSL "https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb" \
-        -o "$tmp/msfinstall"
-      chmod 755 "$tmp/msfinstall"
-      warn "Running Rapid7 msfinstall (may prompt for sudo / package manager)…"
-      (cd "$tmp" && sudo ./msfinstall)
+      (
+        set -e
+        tmp="$(mktemp -d)"
+        cleanup() { rm -rf "$tmp"; }
+        trap cleanup EXIT
+        curl -fsSL "https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb" \
+          -o "$tmp/msfinstall"
+        chmod 755 "$tmp/msfinstall"
+        ui_line "Running Rapid7 msfinstall (may prompt for sudo / package manager)…"
+        cd "$tmp"
+        if [[ "$IS_ROOT" -eq 1 ]]; then
+          ./msfinstall
+        elif have_cmd sudo; then
+          sudo ./msfinstall
+        else
+          ui_line "${C_RED}Metasploit install requires root (sudo).${C_RESET}" >&2
+          exit 1
+        fi
+      )
       ;;
     termux)
-      die "Metasploit on Termux is not supported by this script. Use a full Linux desktop or see Metasploit docs."
+      STEP_HINT="Use a full Linux desktop or see Metasploit docs."
+      return 1
       ;;
     *)
-      die "Metasploit: unsupported OS for automatic install. See README → Metasploit-Framework."
+      STEP_HINT="See README → Metasploit-Framework."
+      ui_line "${C_RED}Metasploit: unsupported OS for automatic install.${C_RESET}" >&2
+      return 1
       ;;
   esac
 }
 
 install_pip_reqs() {
   if [[ ! -f "$SCRIPT_DIR/requirements.txt" ]]; then
-    warn "requirements.txt not found; skipping pip."
+    ui_line "${C_YELLOW}requirements.txt not found; skipping pip.${C_RESET}"
     return 0
   fi
+  create_venv_if_needed || return 1
   local venv="$SCRIPT_DIR/.venv"
-  if [[ ! -d "$venv" ]]; then
-    warn "Creating virtual environment at .venv…"
-    python3 -m venv "$venv"
-  fi
-  warn "Installing Python dependencies into .venv…"
-  "$venv/bin/pip" install -r "$SCRIPT_DIR/requirements.txt"
+  ui_line "Installing Python dependencies into .venv…"
+  "$venv/bin/pip" install -r "$SCRIPT_DIR/requirements.txt" || return 1
 }
 
 install_hardax() {
+  create_venv_if_needed || return 1
   local venv="$SCRIPT_DIR/.venv"
-  if [[ ! -d "$venv" ]]; then
-    warn "Creating virtual environment at .venv…"
-    python3 -m venv "$venv"
-  fi
-  warn "Installing HARDAX (Android security auditor) into .venv…"
-  "$venv/bin/pip" install 'hardax>=6.2.0'
+  ui_line "Installing HARDAX (Android security auditor) into .venv…"
+  "$venv/bin/pip" install 'hardax>=6.2.0' || return 1
 }
 
-# --- Parse desired components (bash 3 compatible; no associative arrays) ---
+# --- Components ---
 want_adb=0
 want_metasploit=0
 want_scrcpy=0
@@ -357,29 +639,45 @@ want_nmap=0
 want_hardax=0
 want_pip=0
 
+VALID_COMPONENTS="adb metasploit scrcpy nmap hardax pip"
+
 set_component() {
-  case "$1" in
-    adb) want_adb=1 ;;
-    metasploit) want_metasploit=1 ;;
-    scrcpy) want_scrcpy=1 ;;
-    nmap) want_nmap=1 ;;
-    hardax) want_hardax=1 ;;
-    pip) want_pip=1 ;;
-    *) warn "Unknown component ignored: $1" ;;
+  local p
+  p="$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')"
+  [[ -z "$p" ]] && return 0
+  case "$p" in
+    adb) want_adb=1; return 0 ;;
+    metasploit) want_metasploit=1; return 0 ;;
+    scrcpy) want_scrcpy=1; return 0 ;;
+    nmap) want_nmap=1; return 0 ;;
+    hardax) want_hardax=1; return 0 ;;
+    pip) want_pip=1; return 0 ;;
+    *) return 1 ;;
   esac
 }
 
+print_banner
+
+ensure_python
+
 if [[ -n "$COMPONENTS_RAW" ]]; then
+  unknown=()
   _old_ifs="$IFS"
   IFS=','
   for p in $COMPONENTS_RAW; do
     p="$(echo "$p" | tr -d '[:space:]')"
     [[ -z "$p" ]] && continue
-    set_component "$p"
+    if ! set_component "$p"; then
+      unknown+=("$(echo "$p" | tr '[:upper:]' '[:lower:]')")
+    fi
   done
   IFS="$_old_ifs"
+  if [[ ${#unknown[@]} -gt 0 ]]; then
+    ui_die "Unknown component(s): ${unknown[*]}. Valid: ${VALID_COMPONENTS}"
+  fi
 elif [[ "$INTERACTIVE" -eq 1 ]]; then
-  say "Choose what to install (you can say n to skip each):"
+  print_env_block "$PRETTY_OS"
+  ui_line "${C_BOLD}Choose what to install:${C_RESET}"
   prompt_yes "Install ADB (Android platform tools)?" && want_adb=1
   prompt_yes "Install Metasploit-Framework (large download)?" && want_metasploit=1
   prompt_yes "Install scrcpy?" && want_scrcpy=1
@@ -395,51 +693,114 @@ else
   want_pip=1
 fi
 
+if [[ "${PSP_SKIP_PIP:-}" == "1" ]] || [[ "$SKIP_PIP" -eq 1 ]]; then
+  want_pip=0
+fi
+
 if [[ "$OS_KIND" = "unknown" ]]; then
-  die "Could not detect a supported package manager. Install dependencies manually (README → Installing external tools)."
+  ui_die "Could not detect a supported package manager. Install dependencies manually (README → Installing external tools)."
 fi
 
 if [[ "$want_adb$want_metasploit$want_scrcpy$want_nmap$want_hardax$want_pip" = "000000" ]]; then
-  say "Nothing selected. Exiting."
+  ui_line "Nothing selected. Exiting."
   exit 0
 fi
 
-ensure_python
-skip_components_already_present
-
-if [[ "$want_adb$want_metasploit$want_scrcpy$want_nmap$want_hardax$want_pip" = "000000" ]]; then
-  say "Everything requested is already installed. Exiting."
-  exit 0
+if [[ "$INTERACTIVE" -ne 1 ]] || [[ -n "$COMPONENTS_RAW" ]]; then
+  print_env_block "$PRETTY_OS"
 fi
+
+# Mark already-installed (skip) and build plan
+plan_entries=()
+count_want=0
 
 if [[ "$want_adb" -eq 1 ]]; then
-  warn "Installing ADB…"
-  install_adb
+  if have_adb; then
+    want_adb=0
+    step_skip_record "ADB"
+    plan_entries+=("ADB|skip")
+  else
+    plan_entries+=("ADB|run")
+    count_want=$((count_want + 1))
+  fi
 fi
 if [[ "$want_nmap" -eq 1 ]]; then
-  warn "Installing Nmap…"
-  install_nmap
+  if have_nmap; then
+    want_nmap=0
+    step_skip_record "Nmap"
+    plan_entries+=("Nmap|skip")
+  else
+    plan_entries+=("Nmap|run")
+    count_want=$((count_want + 1))
+  fi
 fi
 if [[ "$want_scrcpy" -eq 1 ]]; then
-  warn "Installing scrcpy…"
-  install_scrcpy || warn "scrcpy install reported an error; see messages above."
+  if have_scrcpy; then
+    want_scrcpy=0
+    step_skip_record "scrcpy"
+    plan_entries+=("scrcpy|skip")
+  else
+    plan_entries+=("scrcpy|run")
+    count_want=$((count_want + 1))
+  fi
 fi
 if [[ "$want_metasploit" -eq 1 ]]; then
-  warn "Installing Metasploit-Framework…"
-  install_metasploit
+  if have_metasploit; then
+    want_metasploit=0
+    step_skip_record "Metasploit"
+    plan_entries+=("Metasploit|skip")
+  else
+    plan_entries+=("Metasploit|run")
+    count_want=$((count_want + 1))
+  fi
 fi
-if [[ "$want_pip" -eq 1 ]] && [[ "$SKIP_PIP" -eq 0 ]]; then
-  warn "Installing Python dependencies (pip)…"
-  install_pip_reqs
+if [[ "$want_pip" -eq 1 ]]; then
+  if have_pip_reqs; then
+    want_pip=0
+    step_skip_record "Python packages (pip)"
+    plan_entries+=("Python packages (pip)|skip")
+  else
+    plan_entries+=("Python packages (pip)|run")
+    count_want=$((count_want + 1))
+  fi
 fi
 if [[ "$want_hardax" -eq 1 ]]; then
-  warn "Installing HARDAX…"
-  install_hardax
+  if have_hardax; then
+    want_hardax=0
+    step_skip_record "HARDAX"
+    plan_entries+=("HARDAX|skip")
+  else
+    plan_entries+=("HARDAX|run")
+    count_want=$((count_want + 1))
+  fi
 fi
 
-say ""
-say "Done. If commands are still not found, open a new terminal or log out and back in (PATH updates)."
-say "Activate the virtual environment and run:"
-say "  source .venv/bin/activate"
-say "  python3 phonesploitpro.py"
-say ""
+print_plan "${plan_entries[@]}"
+
+if [[ "$count_want" -eq 0 ]]; then
+  print_summary
+  exit 0
+fi
+
+STEP_TOTAL="$count_want"
+
+if [[ "$want_adb" -eq 1 ]]; then
+  run_step "Installing ADB (Android platform tools)" install_adb
+fi
+if [[ "$want_nmap" -eq 1 ]]; then
+  run_step "Installing Nmap" install_nmap
+fi
+if [[ "$want_scrcpy" -eq 1 ]]; then
+  run_step "Installing scrcpy" install_scrcpy
+fi
+if [[ "$want_metasploit" -eq 1 ]]; then
+  run_step "Installing Metasploit-Framework" install_metasploit
+fi
+if [[ "$want_pip" -eq 1 ]]; then
+  run_step "Installing Python packages (pip)" install_pip_reqs
+fi
+if [[ "$want_hardax" -eq 1 ]]; then
+  run_step "Installing HARDAX" install_hardax
+fi
+
+print_summary

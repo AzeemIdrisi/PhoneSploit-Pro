@@ -1,5 +1,7 @@
 "use client";
 
+import { repoInfo } from "@/data/constants";
+
 /** Labels match MenuItem.display_label in modules/menu.py MAIN_ITEMS. */
 const MENU_ITEMS = [
   "Device Connection ›",
@@ -83,7 +85,7 @@ export default function TerminalPreview() {
 
         <p className="mb-3 whitespace-pre">
           {"            "}
-          <span className="font-bold text-red-500">v2.3</span>
+          <span className="font-bold text-red-500">{repoInfo.version}</span>
           {"             "}
           <span className="font-bold text-white">By github.com/AzeemIdrisi</span>
         </p>
