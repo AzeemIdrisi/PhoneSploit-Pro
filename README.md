@@ -117,6 +117,12 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 | **Saved Wi‑Fi networks**                 | List saved Wi‑Fi networks known to the device.                                                                                                                                                                                                                                                                                                                                                                    |
 | **Root heuristics**                      | Heuristic checks for common signs of root access.                                                                                                                                                                                                                                                                                                                                                                 |
 | **Vulnerability analysis (HARDAX)**      | Read-only device audit over ADB via [HARDAX](https://github.com/V33RU/hardax): full scan, CVE/patch indicators, hardening (CIS/SELinux/boot/ADB/USB), app surface; Rich summary plus HTML/JSON/XLSX reports under `Downloaded-Files/vuln-reports/`. Installed with `pip install -r requirements.txt`.                                                                                                             |
+| **Investigate with LockKnife**           | Menu-driven [LockKnife](https://github.com/ImKKingshuk/LockKnife) CLI at the bottom of the main menu: case workspace, SMS/call/contacts extract, PIN/password/gesture recovery, forensics, APK scan, reports, posture/network/wallet, USB exploit wrappers. Requires separate install (Python 3.12+). Outputs under `Downloaded-Files/lockknife/`.                                                                  |
+| **Assess IPC with drozer**               | Install/cache drozer-agent, forward port 31415, run official console modules (manifest, attack surface, exported components, provider read/download/SQL scans, file transfer, agent shell, deploy/exploit builder). Optional: `./install.sh --components drozer,pip`.                                                                                                                                           |
+| **Instrument Apps with Frida**           | Push matching `frida-server`, status/stop, optional `objection patchapk`, and numbered `objection … run …` actions (SSL pinning, hooking watch, heap, intents, proxy, keystore, REPL). Optional: `./install.sh --components frida,objection,pip`.                                                                                                                                                                |
+| **Elevate Access with Shizuku**          | Cache/install official Shizuku APK, `start.sh`, version/status/stop, list Shizuku-aware packages and launch clients over ADB (no host binary).                                                                                                                                                                                                    |
+| **Parse Dumps with ALEAPP**              | Pull or pick a dump (zip/tar/fs/raw), rooted tar acquisition, run upstream `aleapp.py -t … -i … -o …`, open HTML under `Downloaded-Files/aleapp/`. Clone [ALEAPP](https://github.com/abrignoni/ALEAPP) separately.                                                                                                                                  |
+| **Static Scan with MobSF**               | Upload APK via MobSF REST (`MOBSF_URL`, `MOBSF_API_KEY`), scan/re-scan, search, logs, view source, compare, Rich findings; optional PDF/web UI. Run MobSF via Docker or local server — not bundled in this repo.                                                                                                                                  |
 | **Set resolution & display size**        | View current display settings; set screen resolution (`wm size`) from 720p/1080p/2K/4K presets in portrait or landscape, or a custom `WxH`; set display density (`wm density`) from common DPI presets or a custom value; toggle display scaling (`wm scaling`); and reset everything to device defaults.                                                                                                         |
 | **Clipboard management**                 | Read, set, or clear the device clipboard.                                                                                                                                                                                                                                                                                                                                                                         |
 | **GPS / location**                       | Retrieve the device's last-known GPS location (latitude, longitude, provider).                                                                                                                                                                                                                                                                                                                                    |
@@ -145,6 +151,14 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 - [`scrcpy`](https://github.com/Genymobile/scrcpy) — scrcpy
 - [`nmap`](https://nmap.org/) — Nmap
 - [`hardax`](https://github.com/V33RU/hardax) — HARDAX (**Vulnerability Analysis** hub; listed in `requirements.txt`)
+
+**Optional menu hubs (install separately):**
+
+- [LockKnife](https://github.com/ImKKingshuk/LockKnife) — host CLI (Python 3.12+); `brew install ImKKingshuk/tap/lockknife` or upstream installer
+- [drozer](https://github.com/WithSecureLabs/drozer) — `pip install drozer` or `./install.sh --components drozer,pip`
+- [Frida](https://frida.re/) / [objection](https://github.com/sensepost/objection) — `frida-tools` and `objection` in `.venv` via `./install.sh --components frida,objection,pip`
+- [ALEAPP](https://github.com/abrignoni/ALEAPP) — clone repo and run `aleapp.py`
+- [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) — Docker `opensecurity/mobile-security-framework-mobsf`; set `MOBSF_API_KEY`
 
 ---
 
@@ -229,6 +243,8 @@ chmod +x install.sh
 ```
 
 To install specific tools only: `./install.sh --components adb,nmap,pip`  
+Hub tools (default install includes `drozer`, `frida`, `objection`; optional `lockknife`, `aleapp`, `mobsf`):  
+`./install.sh --components adb,drozer,frida,objection,lockknife,aleapp,mobsf,pip`  
 For per-component prompts: `./install.sh --interactive`
 
 ### Windows

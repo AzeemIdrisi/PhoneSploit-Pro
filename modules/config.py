@@ -17,3 +17,12 @@ class AppConfig:
     scrcpy_path: str | None = None
     nmap_path: str | None = None
     hardax_argv0: list[str] | None = None
+    lockknife_path: str | None = None
+    drozer_path: str | None = None
+    frida_path: str | None = None
+    objection_path: str | None = None
+    aleapp_argv0: list[str] | None = None
+    mobsf_url: str = "http://127.0.0.1:8000"
+    mobsf_api_key: str | None = None
+    ext_target_package: str | None = None
+    lockknife_case_dir: str | None = None

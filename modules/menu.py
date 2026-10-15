@@ -5,7 +5,23 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-Require = Literal["adb", "scrcpy", "nmap", "metasploit", "hardax", "none"] | None
+Require = (
+    Literal[
+        "adb",
+        "scrcpy",
+        "nmap",
+        "metasploit",
+        "hardax",
+        "lockknife",
+        "drozer",
+        "frida",
+        "objection",
+        "aleapp",
+        "mobsf",
+        "none",
+    ]
+    | None
+)
 
 
 @dataclass(frozen=True)
@@ -357,6 +373,86 @@ HUB_VULNERABILITY = MenuItem(
     ),
 )
 
+HUB_LOCKKNIFE = MenuItem(
+    id="hub_lockknife",
+    label="Investigate with LockKnife",
+    children=(
+        _leaf("lk_case", "Case workspace", "lockknife", submenu=True),
+        _leaf("lk_crack", "Crack (PIN, password, gesture)", "lockknife", submenu=True),
+        _leaf("lk_extract", "Extract extras (browser, messaging)", "lockknife", submenu=True),
+        _leaf("lk_forensics", "Forensics & timeline", "lockknife", submenu=True),
+        _leaf("lk_apk", "APK quick scan", "lockknife", submenu=True),
+        _leaf("lk_report", "Forensic reports", "lockknife", submenu=True),
+        _leaf("lk_security", "Security, network, wallet", "lockknife", submenu=True),
+        _leaf("lk_usb", "USB exploit (official CLI)", "lockknife", submenu=True),
+        _leaf("lk_interactive", "LockKnife interactive TUI", "lockknife"),
+    ),
+)
+
+HUB_DROZER = MenuItem(
+    id="hub_drozer",
+    label="Assess IPC with drozer",
+    children=(
+        _leaf("dz_setup", "Install agent & start server", "drozer"),
+        _leaf("dz_assess", "Assessment modules", "drozer", submenu=True),
+        _leaf("dz_deploy", "Deploy / exploit builder", "drozer", submenu=True),
+    ),
+)
+
+HUB_FRIDA = MenuItem(
+    id="hub_frida",
+    label="Instrument Apps with Frida",
+    children=(
+        _leaf("fr_setup", "Setup (frida-server / patchapk)", "frida", submenu=True),
+        _leaf("fr_actions", "Runtime actions (objection)", "objection", submenu=True),
+    ),
+)
+
+HUB_SHIZUKU = MenuItem(
+    id="hub_shizuku",
+    label="Elevate Access with Shizuku",
+    children=(
+        _leaf("sh_install", "Install Shizuku APK", "adb"),
+        _leaf("sh_start", "Start via start.sh", "adb"),
+        _leaf("sh_status", "Status", "adb"),
+        _leaf("sh_stop", "Stop Shizuku app", "adb"),
+        _leaf("sh_launch_app", "Open Shizuku app", "adb"),
+        _leaf("sh_list_clients", "List Shizuku clients", "adb"),
+        _leaf("sh_launch_client", "Launch package", "adb"),
+        _leaf("sh_uninstall", "Uninstall Shizuku", "adb"),
+    ),
+)
+
+HUB_ALEAPP = MenuItem(
+    id="hub_aleapp",
+    label="Parse Dumps with ALEAPP",
+    children=(
+        _leaf("al_parse", "Parse dump (official aleapp.py)", "aleapp"),
+        _leaf("al_acquire_fs", "Acquire rooted fs paths (adb pull)", "adb"),
+        _leaf("al_acquire_tar", "Acquire rooted tar (adb + parse)", "adb"),
+        _leaf("al_acquire_backup", "Acquire adb backup", "adb"),
+        _leaf("al_open_last", "Open last HTML report", "none"),
+    ),
+)
+
+HUB_MOBSF = MenuItem(
+    id="hub_mobsf",
+    label="Static Scan with MobSF",
+    children=(
+        _leaf("mf_scan", "Upload & scan APK (REST)", "mobsf"),
+        _leaf("mf_rescan", "Re-scan existing hash", "mobsf"),
+        _leaf("mf_recent_scans", "List recent scans", "mobsf"),
+        _leaf("mf_search", "Search scans", "mobsf"),
+        _leaf("mf_tasks", "Scan queue / tasks", "mobsf"),
+        _leaf("mf_scan_logs", "Live scan logs", "mobsf"),
+        _leaf("mf_view_source", "View decompiled source", "mobsf"),
+        _leaf("mf_compare", "Compare two scans", "mobsf"),
+        _leaf("mf_open_report", "Open static report in browser", "mobsf"),
+        _leaf("mf_delete_scan", "Delete scan", "mobsf"),
+        _leaf("mf_open_ui", "Open MobSF web UI", "mobsf"),
+    ),
+)
+
 # ---------------------------------------------------------------------------
 # Single-page main menu
 # ---------------------------------------------------------------------------
@@ -399,6 +495,12 @@ MAIN_ITEMS: tuple[MenuItem, ...] = (
     HUB_PORT_FORWARD,
     _leaf("developer_settings", "Developer Settings"),
     _leaf("set_wallpaper", "Set Wallpaper"),
+    HUB_LOCKKNIFE,
+    HUB_DROZER,
+    HUB_FRIDA,
+    HUB_SHIZUKU,
+    HUB_ALEAPP,
+    HUB_MOBSF,
 )
 
 MAIN_MENU: tuple[MenuItem, ...] = MAIN_ITEMS

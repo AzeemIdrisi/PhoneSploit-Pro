@@ -242,6 +242,53 @@ export const features: Feature[] = [
     icon: 'ShieldCheck',
     category: 'network',
   },
+  {
+    id: 'lockknife',
+    name: 'Investigate with LockKnife',
+    description:
+      'Optional hub at the bottom of the menu: case workspace, SMS/call/contacts extract, credential recovery, forensics, reports, posture/network/wallet, and USB exploit wrappers.',
+    icon: 'Key',
+    category: 'exploit',
+  },
+  {
+    id: 'drozer',
+    name: 'Assess IPC with drozer',
+    description:
+      'drozer-agent setup plus console modules for manifest, attack surface, providers, scanners, file transfer, agent shell, and deploy/exploit builder.',
+    icon: 'Shield',
+    category: 'exploit',
+  },
+  {
+    id: 'frida-objection',
+    name: 'Instrument Apps with Frida',
+    description:
+      'frida-server setup/status, objection patchapk, and runtime actions: SSL pinning, hooking watch, heap, intents, proxy, keystore, REPL.',
+    icon: 'Cpu',
+    category: 'exploit',
+  },
+  {
+    id: 'shizuku',
+    name: 'Elevate Access with Shizuku',
+    description: 'Install and start Shizuku over ADB, version/status, list Shizuku-aware packages, and launch clients.',
+    icon: 'AppWindow',
+    category: 'apps',
+  },
+  {
+    id: 'aleapp',
+    name: 'Parse Dumps with ALEAPP',
+    description:
+      'Acquire dumps (including rooted tar pull), parse with upstream aleapp.py (zip/tar/fs/raw), open HTML under Downloaded-Files/aleapp/.',
+    icon: 'Database',
+    category: 'data',
+  },
+  {
+    id: 'mobsf',
+    name: 'Static Scan with MobSF',
+    description:
+      'MobSF REST: upload, scan/re-scan, search, logs, view source, compare, scorecard/findings (MOBSF_URL / MOBSF_API_KEY).',
+    icon: 'ShieldCheck',
+    category: 'apps',
+  },
 
   // Exploitation
   { id: 'hack-device', name: 'Hack device completely', description: 'Automated Metasploit flow: create payload with msfvenom, install and run it, launch Metasploit-Framework for a meterpreter session.', icon: 'Zap', category: 'exploit' },

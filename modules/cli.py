@@ -28,8 +28,14 @@ from modules.tools import (
     hardax_version,
     resolve_external_tools,
     require_adb,
+    require_aleapp,
+    require_drozer,
+    require_frida,
+    require_lockknife,
     require_metasploit,
+    require_mobsf,
     require_nmap,
+    require_objection,
     require_scrcpy,
     require_hardax,
 )
@@ -75,6 +81,68 @@ def _collect_missing_tools(config: AppConfig) -> list[tuple[str, str]]:
     if not hardax_ok:
         missing.append(("HARDAX", "hardax"))
     return missing
+
+
+def _collect_missing_hub_tools(config: AppConfig) -> list[tuple[str, str]]:
+    """Optional menu hubs; installer component keys (Shizuku needs no host binary)."""
+    from modules.tools import mobsf_reachable
+
+    missing: list[tuple[str, str]] = []
+    if not config.lockknife_path:
+        missing.append(("LockKnife (forensics hub)", "lockknife"))
+    if not config.drozer_path:
+        missing.append(("drozer (IPC assessment)", "drozer"))
+    if not config.frida_path:
+        missing.append(("frida-tools", "frida"))
+    if not config.objection_path:
+        missing.append(("objection", "objection"))
+    if not config.aleapp_argv0:
+        missing.append(("ALEAPP (clone + deps)", "aleapp"))
+    if not mobsf_reachable(config.mobsf_url):
+        missing.append(("MobSF Docker image / server", "mobsf"))
+    return missing
+
+
+def check_hub_tools(config: AppConfig) -> None:
+    """Offer to install optional hub tools; skip does not block the menu."""
+    while True:
+        missing = _collect_missing_hub_tools(config)
+        if not missing:
+            return
+
+        names = [name for name, _ in missing]
+        items = "\n".join(
+            f"  [bold yellow]{i + 1:>2}.[/bold yellow] [bold white]{name}[/bold white]"
+            for i, name in enumerate(names)
+        )
+        console.print(
+            Panel(
+                f"[bold cyan]Optional tool hubs[/bold cyan] (menu works without them):\n\n{items}\n\n"
+                "[dim]LockKnife needs Python 3.12+ on the host. MobSF needs a running server (Docker).[/dim]",
+                title="[bold cyan]Hub Dependencies[/bold cyan]",
+                border_style="cyan",
+            )
+        )
+        prompt = (
+            "\n[bold yellow]Press [bold]I[/bold] to install selected hub tools · "
+            "[bold]Y[/bold] skip and continue · [bold]N[/bold] exit[/bold yellow] > "
+        )
+        choice = ask(prompt).strip().lower()
+        while choice not in ("i", "y", "n", "", "yes", "no"):
+            choice = ask("[bold red]Invalid choice![/bold red] Press I, Y, or N > ").strip().lower()
+
+        os.system(config.clear_cmd)
+
+        if choice in ("n", "no"):
+            raise SystemExit(0)
+        if choice in ("i",):
+            keys = [k for _, k in missing]
+            _run_dependency_installer(config, keys)
+            resolve_external_tools(config)
+            set_adb_executable(config.adb_path)
+            continue
+        if choice in ("y", "", "yes"):
+            return
 
 
 def _run_dependency_installer(config: AppConfig, component_keys: list[str]) -> None:
@@ -171,6 +239,7 @@ def start(config: AppConfig) -> None:
     resolve_external_tools(config)
     set_adb_executable(config.adb_path)
     check_packages(config)
+    check_hub_tools(config)
 
 
 # ---------------------------------------------------------------------------
@@ -226,6 +295,7 @@ def _build_handlers() -> dict[str, object]:
         vulnerability,
         wifi_utils,
     )
+    from modules import aleapp, drozer, frida, lockknife, mobsf, shizuku
 
     return {
         "connect": connection.connect,
@@ -364,6 +434,44 @@ def _build_handlers() -> dict[str, object]:
         "vuln_hardening": vulnerability.hardening_config_checks,
         "vuln_app_surface": vulnerability.app_attack_surface,
         "vuln_export_report": vulnerability.export_last_report,
+        "lk_case": lockknife.lk_case,
+        "lk_crack": lockknife.lk_crack,
+        "lk_extract": lockknife.lk_extract,
+        "lk_forensics": lockknife.lk_forensics,
+        "lk_apk": lockknife.lk_apk,
+        "lk_report": lockknife.lk_report,
+        "lk_security": lockknife.lk_security,
+        "lk_usb": lockknife.lk_usb,
+        "lk_interactive": lockknife.lk_interactive,
+        "dz_setup": drozer.dz_setup,
+        "dz_assess": drozer.dz_assess_menu,
+        "dz_deploy": drozer.dz_deploy_menu,
+        "fr_setup": frida.fr_setup_menu,
+        "fr_actions": frida.fr_actions_menu,
+        "sh_install": shizuku.sh_install,
+        "sh_start": shizuku.sh_start,
+        "sh_status": shizuku.sh_status,
+        "sh_stop": shizuku.sh_stop,
+        "sh_launch_app": shizuku.sh_launch_app,
+        "sh_list_clients": shizuku.sh_list_clients,
+        "sh_launch_client": shizuku.sh_launch_client,
+        "sh_uninstall": shizuku.sh_uninstall,
+        "al_parse": aleapp.run_parse_menu,
+        "al_acquire_fs": aleapp.al_acquire_fs,
+        "al_acquire_tar": aleapp.al_acquire_tar,
+        "al_acquire_backup": aleapp.al_acquire_backup,
+        "al_open_last": aleapp.al_open_last,
+        "mf_scan": mobsf.scan_apk_menu,
+        "mf_rescan": mobsf.mf_rescan,
+        "mf_recent_scans": mobsf.mf_recent_scans,
+        "mf_search": mobsf.mf_search,
+        "mf_tasks": mobsf.mf_tasks,
+        "mf_scan_logs": mobsf.mf_scan_logs,
+        "mf_view_source": mobsf.mf_view_source,
+        "mf_compare": mobsf.mf_compare,
+        "mf_open_report": mobsf.mf_open_report,
+        "mf_delete_scan": mobsf.mf_delete_scan,
+        "mf_open_ui": mobsf.mf_open_ui,
     }
 
 
@@ -394,6 +502,26 @@ def _check_require(require: str | None, config: AppConfig) -> bool:
         if not require_adb(config):
             return False
         return require_hardax(config)
+    if require == "lockknife":
+        if not require_adb(config):
+            return False
+        return require_lockknife(config)
+    if require == "drozer":
+        if not require_adb(config):
+            return False
+        return require_drozer(config)
+    if require == "frida":
+        if not require_adb(config):
+            return False
+        return require_frida(config)
+    if require == "objection":
+        if not require_adb(config):
+            return False
+        return require_objection(config)
+    if require == "aleapp":
+        return require_aleapp(config)
+    if require == "mobsf":
+        return require_mobsf(config)
     return True
 
 
