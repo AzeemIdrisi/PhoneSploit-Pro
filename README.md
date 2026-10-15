@@ -133,6 +133,7 @@ You no longer need to memorize commands and arguments, PhoneSploit Pro does it f
 | **Suspend / unsuspend app**              | Suspend an app (icon greyed out, no data usage) or unsuspend it.                                                                                                                                                                                                                                                                                                                                                  |
 | **Ignore battery optimization**          | Whitelist an app from Doze battery optimization, un-whitelist it, or show the battery whitelist.                                                                                                                                                                                                                                                                                                                  |
 | **Set default home app**                 | Change the default launcher/home app to any installed launcher package, or show the current home app.                                                                                                                                                                                                                                                                                                             |
+| **Web interface**                        | Open the same menu in a browser on localhost.                                                                                                                                                                                                                                                                                                                                                                     |
 
 ---
 
@@ -248,6 +249,37 @@ For per-component prompts: `.\install.ps1 -Interactive`
 If a dependency is missing, the program shows a **Missing Dependencies** warning. Press **`I`** to run the installer, **`Y`** to continue anyway, or **`N`** to exit.
 
 ---
+
+## Web console
+
+PhoneSploit Pro includes a localhost web console: a FastAPI backend over the same ADB engine, and a Next.js dashboard for live devices, screen control, apps, files, and the rest of this branch's menu.
+
+The console has **no login**. It binds to `127.0.0.1` unless you pass `--host`. Do not expose it on a shared network.
+
+```
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m server
+```
+
+From the CLI menu, choose **Launch Web Interface**. That starts the API on port **8765**.
+
+The dashboard source is in `webui/`. For the live UI during development:
+
+```
+cd webui
+npm install
+npm run dev
+```
+
+Open `http://127.0.0.1:3000` while `python -m server` is running. To serve the built UI from FastAPI itself:
+
+```
+cd webui && npm run build
+python -m server
+```
+
+Then open `http://127.0.0.1:8765`. Device pages use the hash route `/#/device/<serial>` so a refresh still loads.
 
 ## Device setup tutorial
 
