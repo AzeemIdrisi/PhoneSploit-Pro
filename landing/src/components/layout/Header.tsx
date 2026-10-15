@@ -40,9 +40,13 @@ export default function Header() {
             </span>
           </a>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="nav-link group">
+              <a
+                key={link.href}
+                href={link.href}
+                className="nav-link group whitespace-nowrap"
+              >
                 <span className="nav-caret">&gt;</span>
                 {link.label}
               </a>
@@ -57,7 +61,7 @@ export default function Header() {
             </a>
           </div>
 
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2 border border-neon-red/20 text-neon-red hover:text-white transition-colors"
@@ -76,7 +80,7 @@ export default function Header() {
 
         <motion.div
           id="mobile-menu"
-          className="md:hidden overflow-hidden"
+          className="lg:hidden overflow-hidden"
           initial={false}
           animate={{
             height: mobileOpen ? "auto" : 0,

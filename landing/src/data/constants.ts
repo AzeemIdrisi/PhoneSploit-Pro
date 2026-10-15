@@ -1,11 +1,13 @@
 import githubStats from "./github-stats.json";
 
 export const navLinks = [
-  { href: "#features", label: "Features", num: "01" },
-  { href: "#demos", label: "Demos", num: "02" },
-  { href: "#install", label: "Install", num: "03" },
-  { href: "#compatibility", label: "Compatibility", num: "04" },
-  { href: "#faq", label: "FAQ", num: "05" },
+  { href: "#demos", label: "Demos", num: "01" },
+  { href: "#workflow", label: "Workflow", num: "02" },
+  { href: "#features", label: "Features", num: "03" },
+  { href: "#screenshot", label: "Interface", num: "04" },
+  { href: "#install", label: "Install", num: "05" },
+  { href: "#compatibility", label: "Compatibility", num: "06" },
+  { href: "#faq", label: "FAQ", num: "07" },
 ];
 
 export const socialLinks = [
