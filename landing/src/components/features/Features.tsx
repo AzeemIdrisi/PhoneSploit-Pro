@@ -12,15 +12,42 @@ import {
 import { FeatureRow } from "./FeatureRow";
 import { Section } from "@/components/ui/Section";
 import { SectionIntro } from "@/components/ui/SectionIntro";
-import { ExternalLink } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
+
+const COLLAPSED_COUNT = 12;
 
 export default function Features() {
   const [activeCategory, setActiveCategory] =
     useState<FeatureCategoryFilter>("all");
+  const [expanded, setExpanded] = useState(false);
+
+  const selectCategory = (cat: FeatureCategoryFilter) => {
+    if (cat === activeCategory) return;
+    setActiveCategory(cat);
+    setExpanded(false);
+  };
+
+  const toggleExpanded = () => {
+    const next = !expanded;
+    if (!next) {
+      const section = document.getElementById("features");
+      if (section && section.getBoundingClientRect().top < 0) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+    setExpanded(next);
+  };
+
   const filteredFeatures =
     activeCategory === "all"
       ? features
       : features.filter((f) => f.category === activeCategory);
+
+  const visibleFeatures = expanded
+    ? filteredFeatures
+    : filteredFeatures.slice(0, COLLAPSED_COUNT);
+  const hiddenCount = filteredFeatures.length - visibleFeatures.length;
+  const showToggle = filteredFeatures.length > COLLAPSED_COUNT;
 
   const panelId =
     activeCategory === "all"
@@ -48,7 +75,7 @@ export default function Features() {
       >
         <TabButton
           active={activeCategory === "all"}
-          onClick={() => setActiveCategory("all")}
+          onClick={() => selectCategory("all")}
           id="features-tab-all"
           controls="features-panel-all"
         >
@@ -62,7 +89,7 @@ export default function Features() {
               key={category.id}
               active={isActive}
               onClick={() =>
-                setActiveCategory(category.id as FeatureCategoryFilter)
+                selectCategory(category.id as FeatureCategoryFilter)
               }
               id={`features-tab-${category.id}`}
               controls={`features-panel-${category.id}`}
@@ -90,11 +117,36 @@ export default function Features() {
           transition={{ duration: 0.25 }}
           className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3"
         >
-          {filteredFeatures.map((feature, index) => (
+          {visibleFeatures.map((feature, index) => (
             <FeatureRow key={feature.id} feature={feature} index={index} />
           ))}
         </motion.div>
       </AnimatePresence>
+
+      {showToggle && (
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            aria-expanded={expanded}
+            aria-controls={panelId}
+            onClick={toggleExpanded}
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-widest border transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan",
+              "border-white/15 text-muted-foreground hover:text-white hover:border-white/30",
+            )}
+          >
+            {expanded ? "See less" : `See more (${hiddenCount})`}
+            <ChevronDown
+              className={cn(
+                "h-3.5 w-3.5 transition-transform",
+                expanded && "rotate-180",
+              )}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+      )}
 
       <div className="mt-10">
         <a

@@ -144,9 +144,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10">
           <p className="text-muted text-xs font-mono text-center md:text-left">
-            © {currentYear} Azeem Idrisi · GPL-3.0 · Educational use only ·
-            HarmonyOS Sans Fonts used under HarmonyOS Sans Fonts License
-            Agreement
+            © {currentYear} Azeem Idrisi · GPL-3.0 · Educational use only
           </p>
         </div>
       </Container>
