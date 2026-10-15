@@ -399,6 +399,7 @@ MAIN_ITEMS: tuple[MenuItem, ...] = (
     HUB_PORT_FORWARD,
     _leaf("developer_settings", "Developer Settings"),
     _leaf("set_wallpaper", "Set Wallpaper"),
+    _leaf("webui", "Launch Web Interface", "none"),
 )
 
 MAIN_MENU: tuple[MenuItem, ...] = MAIN_ITEMS

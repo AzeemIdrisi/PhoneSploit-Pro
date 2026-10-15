@@ -228,6 +228,7 @@ def _build_handlers() -> dict[str, object]:
     )
 
     return {
+        "webui": _launch_web_interface,
         "connect": connection.connect,
         "list_devices": connection.list_devices,
         "scan_network": connection.scan_network,
@@ -614,6 +615,12 @@ def main(config: AppConfig) -> None:
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+
+def _launch_web_interface(config: AppConfig) -> None:
+    from server.launcher import launch_web_interface
+
+    launch_web_interface()
+
 
 def run() -> None:
     global _selected_banner
