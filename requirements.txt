@@ -3,3 +3,6 @@ rich>=14.0.0
 hardax>=6.2.0
 mac-vendor-lookup>=0.1.15
 mccmnc>=3.3
+fastapi[standard]==0.143.1
+ptyprocess>=0.7.0; sys_platform != "win32"
+pywinpty>=2.0.15; sys_platform == "win32"
