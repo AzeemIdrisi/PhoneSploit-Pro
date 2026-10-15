@@ -37,6 +37,7 @@ const MENU_ITEMS = [
   "Port Forwarding ›",
   "Developer Settings",
   "Set Wallpaper",
+  "Launch Web Interface",
 ] as const;
 
 const NCOLS = 3;

@@ -176,6 +176,7 @@ export const features: Feature[] = [
   { id: 'display-size', name: 'Set resolution & display size', description: 'View current display settings; set screen resolution and density from presets or custom values; toggle display scaling; reset to defaults.', icon: 'Monitor', category: 'device' },
   { id: 'sound-display', name: 'Sound & display settings', description: 'Set media volume, screen brightness, screen timeout, and Do Not Disturb mode.', icon: 'Volume2', category: 'device' },
   { id: 'notifications', name: 'Notifications', description: 'Post a notification, expand or collapse the notification panel and quick settings.', icon: 'Bell', category: 'device' },
+  { id: 'web-interface', name: 'Web interface', description: 'Open the same menu in a browser on localhost.', icon: 'Globe', category: 'device' },
 
   // Data Extraction
   { id: 'list-files', name: 'List files and folders', description: 'List all files and folders on the target device.', icon: 'HardDrive', category: 'data' },
