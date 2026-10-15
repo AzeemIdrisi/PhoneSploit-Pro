@@ -50,10 +50,15 @@ test.py
 hidden.txt
 *.apk
 
-# Node (for landing page)
+# Node (for landing page and web console)
 landing/node_modules/
 landing/.next/
 landing/out/
+webui/node_modules/
+webui/.next/
+webui/out/
+webui/tsconfig.tsbuildinfo
+webui/bun.lock
 landing/*.log
 landing/.turbo/
 landing/.vercel
