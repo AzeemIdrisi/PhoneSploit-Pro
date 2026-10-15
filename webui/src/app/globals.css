@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #050505;
+  --color-foreground: #e8e8e8;
+  --color-card: #0c0c0c;
+  --color-card-foreground: #e8e8e8;
+  --color-muted: #141414;
+  --color-muted-foreground: #8a8a8a;
+  --color-border: #222222;
+  --color-input: #1a1a1a;
+  --color-primary: #ff2a2a;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #00f0ff;
+  --color-accent-foreground: #041014;
+  --color-lime: #a3e635;
+  --color-term: #00ff41;
+  --color-amber: #ff9900;
+  --color-ring: #00f0ff;
+  --font-sans:
+    var(--font-geist-sans), "HarmonyOS Sans", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-display:
+    "HarmonyOS Sans", var(--font-geist-sans), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-lg: 0.9rem;
+  --radius-md: 0.7rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    min-height: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: #ff2a2a;
+    color: white;
+  }
+}
+
+.grid-fade {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at top, black 20%, transparent 75%);
+}
+
+.glow-red {
+  box-shadow: 0 0 40px rgb(255 42 42 / 0.18);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 32px rgb(0 240 255 / 0.12);
+}
